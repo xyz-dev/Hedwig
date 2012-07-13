@@ -9,6 +9,7 @@ public interface InternalConstants {
 	public static String HASH_FUNCTION_MUR2 = "murmur2";
 
 	public static String LOG_PROFIX = "Hedwig said:";
+	public static String ENGINE_LOG_PROFIX = "Hedwig said:";
 
 	public static String BALANCER_NAME_ROUNDROBIN = "RoundRobin";
 	public static String BALANCER_NAME_WEIGHTED_ROUNDROBIN = "WeightedRoundRobin";
