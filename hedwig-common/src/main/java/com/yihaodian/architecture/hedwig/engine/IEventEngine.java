@@ -3,6 +3,8 @@
  */
 package com.yihaodian.architecture.hedwig.engine;
 
+import java.util.concurrent.Future;
+
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 import com.yihaodian.architecture.hedwig.engine.exception.EngineException;
 
@@ -22,7 +24,7 @@ public interface IEventEngine<T> {
 	 * @param retry
 	 * @return
 	 */
-	public T syncExecute(IEvent event) throws EngineException;
+	public T syncExecute(IEvent<T> event) throws EngineException;
 
 	/**
 	 * Invoke event handler in thread pool
@@ -31,14 +33,14 @@ public interface IEventEngine<T> {
 	 * @param retry
 	 * @return
 	 */
-	public void asyncExecute(IEvent event) throws EngineException;
+	public Future<Object> asyncExecute(IEvent<T> event) throws EngineException;
 
 	/**
 	 * Invoke event handler at most on time
 	 * 
 	 * @param event
 	 */
-	public T oneWayExecute(IEvent event) throws EngineException;
+	public T oneWayExecute(IEvent<T> event) throws EngineException;
 
 	/**
 	 * Invoke event handler after a specify interval
@@ -46,6 +48,6 @@ public interface IEventEngine<T> {
 	 * @param event
 	 * @param retry
 	 */
-	public void schedulerExecute(IEvent event) throws EngineException;
+	public void schedulerExecute(IEvent<T> event) throws EngineException;
 
 }
