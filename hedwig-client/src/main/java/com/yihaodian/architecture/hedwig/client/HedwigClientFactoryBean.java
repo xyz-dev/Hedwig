@@ -10,7 +10,7 @@ import org.springframework.beans.factory.FactoryBean;
  * @author Archer
  * 
  */
-public class HedwigClientFactoryBean extends HedwigHessianInterceptor implements FactoryBean {
+public class HedwigClientFactoryBean extends HedwigEventInterceptor implements FactoryBean {
 
 	private Object serviceProxy;
 

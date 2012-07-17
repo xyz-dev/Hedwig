@@ -17,12 +17,12 @@ import org.springframework.remoting.support.RemoteAccessor;
 
 import com.caucho.hessian.client.HessianProxyFactory;
 import com.caucho.hessian.client.HessianRuntimeException;
+import com.yihaodian.architecture.hedwig.client.locator.IServiceLocator;
+import com.yihaodian.architecture.hedwig.client.locator.ZkServiceLocator;
 import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
-import com.yihaodian.architecture.hedwig.locator.IServiceLocator;
-import com.yihaodian.architecture.hedwig.locator.ZkServiceLocator;
 
 /**
  * @author Archer

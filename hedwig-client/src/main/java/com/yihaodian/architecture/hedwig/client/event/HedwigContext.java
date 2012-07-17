@@ -5,19 +5,25 @@ package com.yihaodian.architecture.hedwig.client.event;
 
 import java.util.Map;
 
+import org.aopalliance.intercept.MethodInvocation;
+
+import com.caucho.hessian.client.HessianProxyFactory;
+import com.yihaodian.architecture.hedwig.client.locator.IServiceLocator;
 import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.engine.event.EventContext;
-import com.yihaodian.architecture.hedwig.locator.IServiceLocator;
 
 /**
  * @author Archer
  *
  */
-public class HedwigContext implements EventContext{
+public class HedwigContext implements EventContext, Cloneable {
 	private IServiceLocator<ServiceProfile> locator;
 	private Map<String, Object> hessianProxyMap;
 	private ClientProfile clientProfile;
+	private HessianProxyFactory proxyFactory;
+	private MethodInvocation invocation;
+	private Class serviceInterface;
 
 	public IServiceLocator<ServiceProfile> getLocator() {
 		return locator;
@@ -40,11 +46,54 @@ public class HedwigContext implements EventContext{
 		// TODO Auto-generated constructor stub
 	}
 
-	public HedwigContext(IServiceLocator<ServiceProfile> locator, Map<String, Object> hessianProxyMap, ClientProfile clientProfile) {
-		super();
-		this.locator = locator;
+	public ClientProfile getClientProfile() {
+		return clientProfile;
+	}
+
+	public void setClientProfile(ClientProfile clientProfile) {
+		this.clientProfile = clientProfile;
+	}
+
+	public MethodInvocation getInvocation() {
+		return invocation;
+	}
+
+	public void setInvocation(MethodInvocation invocation) {
+		this.invocation = invocation;
+	}
+
+	public Class getServiceInterface() {
+		return serviceInterface;
+	}
+
+	public void setServiceInterface(Class serviceInterface) {
+		this.serviceInterface = serviceInterface;
+	}
+
+	public HessianProxyFactory getProxyFactory() {
+		return proxyFactory;
+	}
+
+	public void setProxyFactory(HessianProxyFactory proxyFactory) {
+		this.proxyFactory = proxyFactory;
+	}
+
+
+	public HedwigContext(Map<String, Object> hessianProxyMap, ClientProfile clientProfile, HessianProxyFactory proxyFactory,
+			Class serviceInterface) {
 		this.hessianProxyMap = hessianProxyMap;
 		this.clientProfile = clientProfile;
+		this.proxyFactory = proxyFactory;
+		this.serviceInterface = serviceInterface;
+	}
+
+	@Override
+	public HedwigContext clone() throws CloneNotSupportedException {
+		HedwigContext context = new HedwigContext(hessianProxyMap, clientProfile, proxyFactory, serviceInterface);
+		if (locator != null) {
+			context.setLocator(locator);
+		}
+		return context;
 	}
 
 }
