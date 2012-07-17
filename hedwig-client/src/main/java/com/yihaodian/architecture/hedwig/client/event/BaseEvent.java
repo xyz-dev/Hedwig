@@ -5,8 +5,10 @@ package com.yihaodian.architecture.hedwig.client.event;
 
 import java.util.concurrent.TimeUnit;
 
+import org.aopalliance.intercept.MethodInvocation;
+
+import com.yihaodian.architecture.hedwig.client.event.engine.DefaultEventEngine;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
-import com.yihaodian.architecture.hedwig.engine.DefaultEventEngine;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
 import com.yihaodian.architecture.hedwig.engine.handler.IEventHandler;
@@ -16,30 +18,38 @@ import com.yihaodian.architecture.hedwig.engine.handler.IEventHandler;
  * @param <T>
  * 
  */
-public class BaseEvent<T> implements IEvent {
+public class BaseEvent implements IEvent<Object, MethodInvocation> {
 
-	private IEventHandler<T, HedwigContext> handler;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3268122380332784050L;
+	private IEventHandler<HedwigContext, Object, MethodInvocation> handler;
 	private long expireTime = InternalConstants.DEFAULT_REQUEST_TIMEOUT;
 	private TimeUnit expireTimeUnit = TimeUnit.MILLISECONDS;
 	private boolean retryable = false;
 	private int count = 0;
 	private int retryCount = 3;
 	private long start;
-	private T result;
+	private Object result;
 	private HedwigContext context;
+	private MethodInvocation invocation;
 
 
 	public BaseEvent(HedwigContext context) {
-		start = System.currentTimeMillis();
-		expireTime = context.getClientProfile().getTimeout();
+		this.retryCount = context.getLocator().getAllService().size();
+		retryable = this.retryCount > 1 ? true : false;
+		this.context = context;
+		this.start = System.currentTimeMillis();
+		this.expireTime = context.getClientProfile().getTimeout() * 200;
 	}
 
 	@Override
-	public T fire() {
+	public Object fire() {
 		count++;
-		if (!isExpired() && count < retryCount) {
+		if (!isExpired() && count <= retryCount) {
 			try {
-				result = handler.handle(context);
+				result = handler.handle(context, this);
 			} catch (HandlerException e) {
 				if (retryable) {
 					DefaultEventEngine.getEngine().syncExecute(this);
@@ -53,7 +63,7 @@ public class BaseEvent<T> implements IEvent {
 		return (System.currentTimeMillis() - start) > expireTime;
 	}
 
-	public void setHandler(IEventHandler<T, HedwigContext> handler) {
+	public void setHandler(IEventHandler<HedwigContext, Object, MethodInvocation> handler) {
 		this.handler = handler;
 	}
 
@@ -73,7 +83,7 @@ public class BaseEvent<T> implements IEvent {
 	}
 
 	@Override
-	public T getResult() {
+	public Object getResult() {
 		return result;
 	}
 
@@ -85,5 +95,12 @@ public class BaseEvent<T> implements IEvent {
 		this.retryCount = retryCount;
 	}
 
+	public MethodInvocation getInvocation() {
+		return invocation;
+	}
+
+	public void setInvocation(MethodInvocation invocation) {
+		this.invocation = invocation;
+	}
 
 }

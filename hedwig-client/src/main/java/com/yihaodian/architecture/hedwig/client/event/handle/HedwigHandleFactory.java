@@ -3,6 +3,8 @@
  */
 package com.yihaodian.architecture.hedwig.client.event.handle;
 
+import org.aopalliance.intercept.MethodInvocation;
+
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.engine.handler.IEventHandler;
 
@@ -22,7 +24,7 @@ public class HedwigHandleFactory {
 		super();
 	}
 
-	public IEventHandler<Object, HedwigContext> create(String handlerName) {
+	public IEventHandler<HedwigContext, Object, MethodInvocation> create(String handlerName) {
 		return null;
 
 	}

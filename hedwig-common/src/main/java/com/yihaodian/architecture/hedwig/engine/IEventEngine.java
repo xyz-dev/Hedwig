@@ -15,7 +15,7 @@ import com.yihaodian.architecture.hedwig.engine.exception.EngineException;
  * @author Archer
  * 
  */
-public interface IEventEngine<T> {
+public interface IEventEngine<T, I> {
 
 	/**
 	 * Invoke event handler in the caller's thread.
@@ -24,7 +24,7 @@ public interface IEventEngine<T> {
 	 * @param retry
 	 * @return
 	 */
-	public T syncExecute(IEvent<T> event) throws EngineException;
+	public T syncExecute(IEvent<T, I> event) throws EngineException;
 
 	/**
 	 * Invoke event handler in thread pool
@@ -33,14 +33,14 @@ public interface IEventEngine<T> {
 	 * @param retry
 	 * @return
 	 */
-	public Future<Object> asyncExecute(IEvent<T> event) throws EngineException;
+	public Future<Object> asyncExecute(IEvent<T, I> event) throws EngineException;
 
 	/**
 	 * Invoke event handler at most on time
 	 * 
 	 * @param event
 	 */
-	public T oneWayExecute(IEvent<T> event) throws EngineException;
+	public T oneWayExecute(IEvent<T, I> event) throws EngineException;
 
 	/**
 	 * Invoke event handler after a specify interval
@@ -48,6 +48,6 @@ public interface IEventEngine<T> {
 	 * @param event
 	 * @param retry
 	 */
-	public void schedulerExecute(IEvent<T> event) throws EngineException;
+	public void schedulerExecute(IEvent<T, I> event) throws EngineException;
 
 }

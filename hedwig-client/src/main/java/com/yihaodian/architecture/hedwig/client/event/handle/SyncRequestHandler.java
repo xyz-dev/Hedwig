@@ -8,6 +8,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
+import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
 import com.yihaodian.architecture.hedwig.engine.handler.IEventHandler;
 
@@ -15,10 +16,10 @@ import com.yihaodian.architecture.hedwig.engine.handler.IEventHandler;
  * @author Archer
  *
  */
-public class SyncRequestHandler implements IEventHandler<Object, HedwigContext> {
+public class SyncRequestHandler implements IEventHandler<HedwigContext, Object, MethodInvocation> {
 
 	@Override
-	public Object handle(HedwigContext context) throws HandlerException {
+	public Object handle(HedwigContext context, IEvent<Object, MethodInvocation> event) throws HandlerException {
 		Object result = null;
 		ServiceProfile sp = context.getLocator().getService();
 		Object hessianProxy = null;
@@ -33,10 +34,11 @@ public class SyncRequestHandler implements IEventHandler<Object, HedwigContext> 
 
 		if (hessianProxy == null) {
 			sp.setAvailable(false);
+			context.getHessianProxyMap().remove(sUrl);
 			throw new HandlerException("HedwigHessianInterceptor is not properly initialized");
 		}
 		try {
-			MethodInvocation invocation = context.getInvocation();
+			MethodInvocation invocation = event.getInvocation();
 			result = invocation.getMethod().invoke(hessianProxy, invocation.getArguments());
 		} catch (Exception e) {
 			throw new HandlerException(e.getCause());

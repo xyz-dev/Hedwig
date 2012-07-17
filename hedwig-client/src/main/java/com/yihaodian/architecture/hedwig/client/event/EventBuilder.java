@@ -11,8 +11,8 @@ import com.yihaodian.architecture.hedwig.client.event.handle.SyncRequestHandler;
  */
 public class EventBuilder {
 
-	public BaseEvent<Object> createSyncReqEvent(HedwigContext context) {
-		BaseEvent<Object> event = new BaseEvent<Object>(context);
+	public BaseEvent createSyncReqEvent(HedwigContext context) {
+		BaseEvent event = new BaseEvent(context);
 		event.setHandler(new SyncRequestHandler());
 		return event;
 	}

@@ -5,8 +5,6 @@ package com.yihaodian.architecture.hedwig.client.event;
 
 import java.util.Map;
 
-import org.aopalliance.intercept.MethodInvocation;
-
 import com.caucho.hessian.client.HessianProxyFactory;
 import com.yihaodian.architecture.hedwig.client.locator.IServiceLocator;
 import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
@@ -22,7 +20,6 @@ public class HedwigContext implements EventContext, Cloneable {
 	private Map<String, Object> hessianProxyMap;
 	private ClientProfile clientProfile;
 	private HessianProxyFactory proxyFactory;
-	private MethodInvocation invocation;
 	private Class serviceInterface;
 
 	public IServiceLocator<ServiceProfile> getLocator() {
@@ -52,14 +49,6 @@ public class HedwigContext implements EventContext, Cloneable {
 
 	public void setClientProfile(ClientProfile clientProfile) {
 		this.clientProfile = clientProfile;
-	}
-
-	public MethodInvocation getInvocation() {
-		return invocation;
-	}
-
-	public void setInvocation(MethodInvocation invocation) {
-		this.invocation = invocation;
 	}
 
 	public Class getServiceInterface() {

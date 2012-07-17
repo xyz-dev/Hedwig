@@ -4,8 +4,8 @@
 package com.yihaodian.architecture.hedwig.client;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -15,6 +15,7 @@ import org.springframework.remoting.support.RemoteAccessor;
 import com.caucho.hessian.client.HessianProxyFactory;
 import com.yihaodian.architecture.hedwig.client.event.BaseEvent;
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
+import com.yihaodian.architecture.hedwig.client.event.engine.DefaultEventEngine;
 import com.yihaodian.architecture.hedwig.client.event.handle.SyncRequestHandler;
 import com.yihaodian.architecture.hedwig.client.locator.IServiceLocator;
 import com.yihaodian.architecture.hedwig.client.locator.ZkServiceLocator;
@@ -23,7 +24,6 @@ import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
-import com.yihaodian.architecture.hedwig.engine.DefaultEventEngine;
 
 /**
  * @author Archer
@@ -33,7 +33,7 @@ public class HedwigEventInterceptor extends RemoteAccessor implements MethodInte
 	private ClientProfile clientProfile;
 	private HessianProxyFactory proxyFactory = new HessianProxyFactory();
 	private IServiceLocator<ServiceProfile> locator;
-	private Map<String, Object> hessianProxyMap = new HashMap<String, Object>();
+	private Map<String, Object> hessianProxyMap = new ConcurrentHashMap<String, Object>();
 	private Class serviceInterface;
 	private HedwigContext baseContext;
 
@@ -43,14 +43,16 @@ public class HedwigEventInterceptor extends RemoteAccessor implements MethodInte
 		Object result = null;
 		try {
 			HedwigContext eventContext = baseContext.clone();
-			eventContext.setInvocation(invocation);
+			BaseEvent syncEvent = null;
 			if (HedwigUtil.isBlankString(clientProfile.getTarget())) {
-
+				syncEvent = new BaseEvent(eventContext);
+				syncEvent.setInvocation(invocation);
+				syncEvent.setHandler(new SyncRequestHandler());
 			} else {
-
+				syncEvent = new BaseEvent(eventContext);
+				syncEvent.setInvocation(invocation);
+				syncEvent.setHandler(new SyncRequestHandler());
 			}
-			BaseEvent<Object> syncEvent = new BaseEvent<Object>(eventContext);
-			syncEvent.setHandler(new SyncRequestHandler());
 			result = DefaultEventEngine.getEngine().syncExecute(syncEvent);
 		} catch (Exception e) {
 			throw new HedwigException(e.getMessage(), e.getCause());
