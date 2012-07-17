@@ -7,10 +7,10 @@ import java.util.Collection;
 
 import junit.framework.TestCase;
 
+import com.yihaodian.architecture.hedwig.client.locator.ZkServiceLocator;
 import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
-import com.yihaodian.architecture.hedwig.locator.ZkServiceLocator;
 
 /**
  * @author Archer Jiang

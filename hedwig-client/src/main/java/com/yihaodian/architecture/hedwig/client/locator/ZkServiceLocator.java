@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.yihaodian.architecture.hedwig.locator;
+package com.yihaodian.architecture.hedwig.client.locator;
 
 import java.util.Collection;
 import java.util.HashMap;
