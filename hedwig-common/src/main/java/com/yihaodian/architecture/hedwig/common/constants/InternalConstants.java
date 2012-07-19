@@ -22,5 +22,6 @@ public interface InternalConstants {
 	public static String HEDWIG_URL_PATTERN = "hedwigService";
 
 	public static long DEFAULT_REQUEST_TIMEOUT = 2000;
+	public static long DEFAULT_READ_TIMEOUT = 1000;
 
 }

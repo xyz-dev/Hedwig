@@ -3,18 +3,25 @@ package com.yihaodian.architecture.hedwig.engine.event;
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
-public interface IEvent<T,I> extends Serializable {
+import org.aopalliance.intercept.MethodInvocation;
 
-	public T fire();
+public interface IEvent<C extends EventContext, T> extends Serializable {
+
+	public C getContext();
+
+	public boolean isRetryable();
+
+	public int getExecCount();
 
 	public long getExpireTime();
 
 	public TimeUnit getExpireTimeUnit();
 
-	public boolean isRetryable();
+	public void increaseExecCount();
 
 	public T getResult();
 	
-	public I getInvocation();
+	public void setResult(T result);
 
+	public MethodInvocation getInvocation();
 }

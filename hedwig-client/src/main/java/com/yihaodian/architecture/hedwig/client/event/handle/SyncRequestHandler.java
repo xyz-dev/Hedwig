@@ -10,16 +10,16 @@ import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
-import com.yihaodian.architecture.hedwig.engine.handler.IEventHandler;
+import com.yihaodian.architecture.hedwig.engine.handler.BaseHandler;
 
 /**
  * @author Archer
  *
  */
-public class SyncRequestHandler implements IEventHandler<HedwigContext, Object, MethodInvocation> {
+public class SyncRequestHandler extends BaseHandler<HedwigContext, Object> {
 
 	@Override
-	public Object handle(HedwigContext context, IEvent<Object, MethodInvocation> event) throws HandlerException {
+	public Object doHandle(HedwigContext context, IEvent<HedwigContext, Object> event) throws HandlerException {
 		Object result = null;
 		ServiceProfile sp = context.getLocator().getService();
 		Object hessianProxy = null;

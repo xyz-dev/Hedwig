@@ -3,7 +3,6 @@
  */
 package com.yihaodian.architecture.hedwig.common.exception;
 
-import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 
 
 /**
@@ -22,14 +21,14 @@ public class HedwigException extends Exception {
 	}
 
 	public HedwigException(String message, Throwable cause) {
-		super(InternalConstants.LOG_PROFIX + ":" + message, cause);
+		super(message, cause);
 	}
 
 	public HedwigException(String message) {
-		super(InternalConstants.LOG_PROFIX + ":" + message);
+		super(message);
 	}
 
 	public HedwigException(Throwable cause) {
-		super(InternalConstants.LOG_PROFIX + ":" + cause.getMessage(), cause);
+		super(cause.getMessage(), cause);
 	}
 }

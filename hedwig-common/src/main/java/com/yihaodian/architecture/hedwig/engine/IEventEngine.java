@@ -5,8 +5,9 @@ package com.yihaodian.architecture.hedwig.engine;
 
 import java.util.concurrent.Future;
 
+import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
+import com.yihaodian.architecture.hedwig.engine.event.EventContext;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
-import com.yihaodian.architecture.hedwig.engine.exception.EngineException;
 
 /**
  * Event engine is use to invoke event handler in different style such as
@@ -15,16 +16,17 @@ import com.yihaodian.architecture.hedwig.engine.exception.EngineException;
  * @author Archer
  * 
  */
-public interface IEventEngine<T, I> {
+public interface IEventEngine<C extends EventContext, T> {
 
 	/**
-	 * Invoke event handler in the caller's thread.
+	 * Invoke event handler in the caller's thread,can't retry.
 	 * 
 	 * @param event
 	 * @param retry
 	 * @return
+	 * @throws Exception
 	 */
-	public T syncExecute(IEvent<T, I> event) throws EngineException;
+	public T syncInnerExec(final IEvent<C, T> event) throws HedwigException;
 
 	/**
 	 * Invoke event handler in thread pool
@@ -33,14 +35,30 @@ public interface IEventEngine<T, I> {
 	 * @param retry
 	 * @return
 	 */
-	public Future<Object> asyncExecute(IEvent<T, I> event) throws EngineException;
+	public T syncPoolExec(final IEvent<C, T> event) throws HedwigException;
 
+	/**
+	 * Invoke event handler in thread pool
+	 * 
+	 * @param event
+	 * @param retry
+	 * @return
+	 */
+	public Future<T> asyncExec(final IEvent<C, T> event) throws HedwigException;
+
+	/**
+	 * Reliable asynchronous request executor,base on message server
+	 * 
+	 * @param event
+	 * @throws HedwigException
+	 */
+	public void asyncReliableExec(final IEvent<C, T> event) throws HedwigException;
 	/**
 	 * Invoke event handler at most on time
 	 * 
 	 * @param event
 	 */
-	public T oneWayExecute(IEvent<T, I> event) throws EngineException;
+	public T oneWayExec(final IEvent<C, T> event) throws HedwigException;
 
 	/**
 	 * Invoke event handler after a specify interval
@@ -48,6 +66,6 @@ public interface IEventEngine<T, I> {
 	 * @param event
 	 * @param retry
 	 */
-	public void schedulerExecute(IEvent<T, I> event) throws EngineException;
+	public void schedulerExec(final IEvent<C, T> event) throws HedwigException;
 
 }

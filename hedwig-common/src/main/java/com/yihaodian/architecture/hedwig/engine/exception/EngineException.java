@@ -3,13 +3,13 @@
  */
 package com.yihaodian.architecture.hedwig.engine.exception;
 
-import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
+import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 
 /**
  * @author Archer
  *
  */
-public class EngineException extends Exception {
+public class EngineException extends HedwigException {
 
 	/**
 	 * 
@@ -21,15 +21,15 @@ public class EngineException extends Exception {
 	}
 
 	public EngineException(String message, Throwable cause) {
-		super(InternalConstants.ENGINE_LOG_PROFIX + message, cause);
+		super(message, cause);
 	}
 
 	public EngineException(String message) {
-		super(InternalConstants.ENGINE_LOG_PROFIX + message);
+		super(message);
 	}
 
 	public EngineException(Throwable cause) {
-		super(InternalConstants.ENGINE_LOG_PROFIX + cause.getMessage(), cause);
+		super(cause.getMessage(), cause);
 	}
 
 }

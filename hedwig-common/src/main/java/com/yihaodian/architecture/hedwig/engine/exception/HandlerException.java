@@ -1,8 +1,8 @@
 package com.yihaodian.architecture.hedwig.engine.exception;
 
-import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
+import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 
-public class HandlerException extends Exception {
+public class HandlerException extends HedwigException {
 
 	/**
 	 * 
@@ -14,15 +14,15 @@ public class HandlerException extends Exception {
 	}
 
 	public HandlerException(String message, Throwable cause) {
-		super(InternalConstants.HANDLE_LOG_PROFIX + message, cause);
+		super(message, cause);
 	}
 
 	public HandlerException(String message) {
-		super(InternalConstants.HANDLE_LOG_PROFIX + message);
+		super(message);
 	}
 
 	public HandlerException(Throwable cause) {
-		super(InternalConstants.HANDLE_LOG_PROFIX + cause.getMessage(), cause);
+		super(cause.getMessage(), cause);
 	}
 
 }

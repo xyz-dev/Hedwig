@@ -62,4 +62,8 @@ public class HedwigUtil {
 		return i;
 	}
 
+	public static String generateHandlerName(Class clz) {
+		return clz.getName();
+	}
+
 }

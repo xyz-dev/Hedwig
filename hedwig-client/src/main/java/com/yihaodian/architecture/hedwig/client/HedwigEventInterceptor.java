@@ -10,74 +10,64 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.remoting.support.RemoteAccessor;
+import org.springframework.remoting.support.RemotingSupport;
 
 import com.caucho.hessian.client.HessianProxyFactory;
-import com.yihaodian.architecture.hedwig.client.event.BaseEvent;
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
-import com.yihaodian.architecture.hedwig.client.event.engine.DefaultEventEngine;
-import com.yihaodian.architecture.hedwig.client.event.handle.SyncRequestHandler;
+import com.yihaodian.architecture.hedwig.client.event.HedwigEventBuilder;
+import com.yihaodian.architecture.hedwig.client.event.engine.HedwigEventEngine;
 import com.yihaodian.architecture.hedwig.client.locator.IServiceLocator;
 import com.yihaodian.architecture.hedwig.client.locator.ZkServiceLocator;
 import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
+import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
+import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 
 /**
  * @author Archer
  * 
  */
-public class HedwigEventInterceptor extends RemoteAccessor implements MethodInterceptor, InitializingBean {
+public class HedwigEventInterceptor extends RemotingSupport implements MethodInterceptor, InitializingBean {
 	private ClientProfile clientProfile;
 	private HessianProxyFactory proxyFactory = new HessianProxyFactory();
 	private IServiceLocator<ServiceProfile> locator;
 	private Map<String, Object> hessianProxyMap = new ConcurrentHashMap<String, Object>();
 	private Class serviceInterface;
-	private HedwigContext baseContext;
-
+	private HedwigContext eventContext;
+	private HedwigEventBuilder eventBuilder;
 
 	@Override
 	public Object invoke(MethodInvocation invocation) throws HedwigException {
 		Object result = null;
-		try {
-			HedwigContext eventContext = baseContext.clone();
-			BaseEvent syncEvent = null;
-			if (HedwigUtil.isBlankString(clientProfile.getTarget())) {
-				syncEvent = new BaseEvent(eventContext);
-				syncEvent.setInvocation(invocation);
-				syncEvent.setHandler(new SyncRequestHandler());
-			} else {
-				syncEvent = new BaseEvent(eventContext);
-				syncEvent.setInvocation(invocation);
-				syncEvent.setHandler(new SyncRequestHandler());
-			}
-			result = DefaultEventEngine.getEngine().syncExecute(syncEvent);
-		} catch (Exception e) {
-			throw new HedwigException(e.getMessage(), e.getCause());
-		}
+		IEvent<HedwigContext, Object> event = eventBuilder.build(invocation);
+		result = HedwigEventEngine.getEngine().syncPoolExec(event);
 		return result;
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		baseContext = new HedwigContext(hessianProxyMap, clientProfile, proxyFactory, serviceInterface);
+		proxyFactory.setReadTimeout(InternalConstants.DEFAULT_READ_TIMEOUT);
+		proxyFactory.setHessian2Request(true);
+		proxyFactory.setHessian2Reply(true);
+		eventContext = new HedwigContext(hessianProxyMap, clientProfile, proxyFactory, serviceInterface);
 		try {
 			if (!HedwigUtil.isBlankString(clientProfile.getTarget())) {
-				HedwigClientUtil.createProxy(baseContext, clientProfile.getTarget());
+				HedwigClientUtil.createProxy(eventContext, clientProfile.getTarget());
 			} else {
 				locator = new ZkServiceLocator(clientProfile);
 				Collection<ServiceProfile> serviceProfiles = locator.getAllService();
-				baseContext.setLocator(locator);
+				eventContext.setLocator(locator);
 				for (ServiceProfile profile : serviceProfiles) {
-					HedwigClientUtil.createProxy(baseContext, profile.getServiceUrl());
+					HedwigClientUtil.createProxy(eventContext, profile.getServiceUrl());
 				}
 			}
+			eventBuilder = new HedwigEventBuilder(eventContext, clientProfile);
 		} catch (Exception e) {
 			throw new HedwigException(e.getCause());
 		}
-
 
 	}
 
