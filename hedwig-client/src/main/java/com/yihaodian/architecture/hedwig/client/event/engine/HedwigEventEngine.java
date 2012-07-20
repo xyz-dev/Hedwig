@@ -37,15 +37,11 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 	protected BlockingQueue<Runnable> eventQueue;
 	protected ExecutorService es;
 
-	private HedwigEventEngine() {
+	public HedwigEventEngine() {
 		super();
 		this.handlerFactory = new HedwigHandlerFactory();
 		this.eventQueue = new LinkedBlockingQueue<Runnable>();
 		this.es = HedwigExecutors.newCachedThreadPool(eventQueue);
-	}
-
-	public static HedwigEventEngine getEngine() {
-		return engine;
 	}
 
 	@Override

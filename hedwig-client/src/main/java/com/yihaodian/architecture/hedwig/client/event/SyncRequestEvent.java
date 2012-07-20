@@ -22,4 +22,9 @@ public class SyncRequestEvent extends BaseEvent {
 		this.invocation = invocation;
 	}
 
+	@Override
+	public String toString() {
+		return "SyncRequestEvent [" + super.toString() + "]";
+	}
+
 }

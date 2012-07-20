@@ -21,6 +21,7 @@ public class ClientProfile extends BaseProfile implements Serializable {
 	private String target = "";
 	private long timeout = 2000l;
 	private boolean profileSensitive = false;
+	private String requestType;
 
 	public String getTarget() {
 		return target;
@@ -52,6 +53,14 @@ public class ClientProfile extends BaseProfile implements Serializable {
 
 	public void setTimeout(long timeout) {
 		this.timeout = timeout;
+	}
+
+	public String getRequestType() {
+		return requestType;
+	}
+
+	public void setRequestType(String requestType) {
+		this.requestType = requestType;
 	}
 
 	@Override

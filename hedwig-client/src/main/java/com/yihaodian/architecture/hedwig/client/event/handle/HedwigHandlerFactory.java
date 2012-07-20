@@ -6,6 +6,7 @@ package com.yihaodian.architecture.hedwig.client.event.handle;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.yihaodian.architecture.hedwig.client.event.DirectRequestEvent;
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.client.event.SyncRequestEvent;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
@@ -25,6 +26,7 @@ public class HedwigHandlerFactory implements IHandlerFactory<HedwigContext, Obje
 
 	public HedwigHandlerFactory() {
 		handlerMap.put(HedwigUtil.generateHandlerName(SyncRequestEvent.class), new SyncRequestHandler());
+		handlerMap.put(HedwigUtil.generateHandlerName(DirectRequestEvent.class), new DirectRequestHandler());
 	}
 
 	@Override

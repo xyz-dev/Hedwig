@@ -101,4 +101,10 @@ public class BaseEvent implements IEvent<HedwigContext, Object> {
 		return execCount;
 	}
 
+	@Override
+	public String toString() {
+		return "BaseEvent [expireTime=" + expireTime + ", expireTimeUnit=" + expireTimeUnit + ", retryable=" + retryable + ", execCount="
+				+ execCount + ", maxRedoCount=" + maxRedoCount + ", start=" + start + ", result=" + result + ", context=" + context
+				+ ", invocation=" + invocation + "]";
+	}
 }

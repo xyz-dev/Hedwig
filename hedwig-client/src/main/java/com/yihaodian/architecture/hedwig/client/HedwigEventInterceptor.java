@@ -38,17 +38,20 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 	private Class serviceInterface;
 	private HedwigContext eventContext;
 	private HedwigEventBuilder eventBuilder;
+	private HedwigEventEngine eventEngine;
 
 	@Override
 	public Object invoke(MethodInvocation invocation) throws HedwigException {
 		Object result = null;
-		IEvent<HedwigContext, Object> event = eventBuilder.build(invocation);
-		result = HedwigEventEngine.getEngine().syncPoolExec(event);
+		IEvent<HedwigContext, Object> event = eventBuilder.buildRequestEvent(invocation);
+		result = eventEngine.syncPoolExec(event);
+		event = null;
 		return result;
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		eventEngine = new HedwigEventEngine();
 		proxyFactory.setReadTimeout(InternalConstants.DEFAULT_READ_TIMEOUT);
 		proxyFactory.setHessian2Request(true);
 		proxyFactory.setHessian2Reply(true);

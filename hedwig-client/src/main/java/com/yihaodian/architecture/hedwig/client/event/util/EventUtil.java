@@ -27,6 +27,6 @@ public class EventUtil {
 				logger.debug(e.getMessage());
 			}
 		}
-		throw new HedwigException("Exec " + event.getExecCount() + " times,Had been retry enough!!!");
+		throw new HedwigException("Exec " + event.getExecCount() + " times,event " + event.toString() + " had been retry enough!!!");
 	}
 }
