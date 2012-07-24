@@ -3,11 +3,11 @@
  */
 package com.yihaodian.architecture.hedwig.client.event.engine;
 
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,13 +35,13 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 	private static HedwigEventEngine engine = new HedwigEventEngine();
 	protected IHandlerFactory<HedwigContext, Object> handlerFactory;
 	protected BlockingQueue<Runnable> eventQueue;
-	protected ExecutorService es;
+	protected ThreadPoolExecutor tpes;
 
 	public HedwigEventEngine() {
 		super();
 		this.handlerFactory = new HedwigHandlerFactory();
-		this.eventQueue = new LinkedBlockingQueue<Runnable>();
-		this.es = HedwigExecutors.newCachedThreadPool(eventQueue);
+		this.eventQueue = new ArrayBlockingQueue<Runnable>(20);
+		this.tpes = HedwigExecutors.newCachedThreadPool(eventQueue);
 	}
 
 	@Override
@@ -61,7 +61,8 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		Future<Object> f = null;
 		try {
 			final IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
-			f = es.submit(new Callable<Object>() {
+			logger.debug("Pool size:" + tpes.getPoolSize());
+			f = tpes.submit(new Callable<Object>() {
 
 				@Override
 				public Object call() throws Exception {
@@ -75,7 +76,9 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 					return r;
 				}
 			});
-			result = f.get(event.getExpireTime(), event.getExpireTimeUnit());
+			if (f != null) {
+				result = f.get(event.getExpireTime(), event.getExpireTimeUnit());
+			}
 		} catch (Exception e) {
 			throw new EngineException(e.getCause());
 		}
@@ -88,7 +91,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		Future<Object> f = null;
 		try {
 			final IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
-			f = es.submit(new Callable<Object>() {
+			f = tpes.submit(new Callable<Object>() {
 
 				@Override
 				public Object call() throws Exception {

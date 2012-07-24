@@ -23,7 +23,7 @@ public class EventUtil {
 		while (event.isRetryable()) {
 			try {
 				return handler.handle(event.getContext(), event);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				logger.debug(e.getMessage());
 			}
 		}

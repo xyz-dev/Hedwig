@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.remoting.support.RemotingSupport;
 
@@ -31,6 +33,7 @@ import com.yihaodian.architecture.hedwig.engine.event.IEvent;
  * 
  */
 public class HedwigEventInterceptor extends RemotingSupport implements MethodInterceptor, InitializingBean {
+	private Logger logger = LoggerFactory.getLogger(HedwigEventInterceptor.class);
 	private ClientProfile clientProfile;
 	private HessianProxyFactory proxyFactory = new HessianProxyFactory();
 	private IServiceLocator<ServiceProfile> locator;
@@ -43,8 +46,16 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 	@Override
 	public Object invoke(MethodInvocation invocation) throws HedwigException {
 		Object result = null;
+		long start = HedwigClientUtil.getCurrentTime();
 		IEvent<HedwigContext, Object> event = eventBuilder.buildRequestEvent(invocation);
-		result = eventEngine.syncPoolExec(event);
+		try {
+			result = eventEngine.syncPoolExec(event);
+		} catch (Throwable e) {
+			logger.error(InternalConstants.LOG_PROFIX + e.getMessage());
+		}finally{
+			System.out.println("Event execute total time:" + (HedwigClientUtil.getCurrentTime() - start));
+		}
+
 		event = null;
 		return result;
 	}

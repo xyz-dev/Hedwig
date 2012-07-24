@@ -20,6 +20,7 @@ public class SyncRequestHandler extends BaseHandler<HedwigContext, Object> {
 
 	@Override
 	public Object doHandle(HedwigContext context, IEvent<HedwigContext, Object> event) throws HandlerException {
+		long start = HedwigClientUtil.getCurrentTime();
 		Object result = null;
 		ServiceProfile sp = context.getLocator().getService();
 		Object hessianProxy = null;
@@ -40,8 +41,10 @@ public class SyncRequestHandler extends BaseHandler<HedwigContext, Object> {
 		try {
 			MethodInvocation invocation = event.getInvocation();
 			result = invocation.getMethod().invoke(hessianProxy, invocation.getArguments());
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new HandlerException(e.getCause());
+		} finally {
+			System.out.println("Remote call cost:" + (HedwigClientUtil.getCurrentTime() - start));
 		}
 		return result;
 	}

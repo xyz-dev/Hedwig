@@ -43,5 +43,9 @@
 			<groupId>com.caucho</groupId>
 			<artifactId>hessian</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.yihaodian.architecture</groupId>
+			<artifactId>cal-client</artifactId>
+		</dependency>
 	</dependencies>
 </project>

@@ -19,9 +19,17 @@ public interface InternalConstants {
 	public static String SERVICE_REGISTER_ZK = "zkRegister";
 
 	public static String PROTOCOL_PROFIX_HTTP = "http";
-	public static String HEDWIG_URL_PATTERN = "hedwigService";
+	public static String HEDWIG_URL_PATTERN = "hedwigServices";
 
 	public static long DEFAULT_REQUEST_TIMEOUT = 2000;
 	public static long DEFAULT_READ_TIMEOUT = 1000;
+
+	public static int DEFAULT_SYNC_POOL_CORESIZE = 20;
+	public static int DEFAULT_SYNC_POOL_MAXSIZE = 30;
+	public static int DEFAULT_SYNC_POOL_IDLETIME = 60;
+
+	public static int DEFAULT_SCHEDULER_POOL_CORESIZE = 5;
+	public static int DEFAULT_SCHEDULER_POOL_MAXSIZE = 10;
+	public static int DEFAULT_SCHEDULER_POOL_IDLETIME = 60;
 
 }

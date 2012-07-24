@@ -63,6 +63,11 @@
 				<artifactId>aopalliance</artifactId>
 				<version>1.0</version>
 			</dependency>
+			<dependency>
+				<groupId>com.yihaodian.architecture</groupId>
+				<artifactId>cal-client</artifactId>
+				<version>1.7-SNAPSHOT</version>
+			</dependency>
 		</dependencies>
 
 	</dependencyManagement>

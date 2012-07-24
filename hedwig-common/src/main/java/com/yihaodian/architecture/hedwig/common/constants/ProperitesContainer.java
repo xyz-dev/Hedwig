@@ -102,4 +102,33 @@ public class ProperitesContainer {
 		return HATHAWAY_ENV.getProperty(key);
 	}
 
+	public String getProperty(String key, String defValue) {
+		String value = getProperty(key);
+		return value == null ? defValue : value.trim();
+	}
+
+	public int getIntProperty(String key, int defValue) {
+		int v = defValue;
+		String value = getProperty(key);
+		if (value != null) {
+			try {
+				v = Integer.valueOf(value.trim());
+			} catch (Exception e) {
+			}
+		}
+		return v;
+	}
+
+	public long getLongProperty(String key, long defValue) {
+		long v = defValue;
+		String value = getProperty(key);
+		if (value != null) {
+			try {
+				v = Long.valueOf(value.trim());
+			} catch (Exception e) {
+			}
+		}
+		return v;
+	}
+
 }

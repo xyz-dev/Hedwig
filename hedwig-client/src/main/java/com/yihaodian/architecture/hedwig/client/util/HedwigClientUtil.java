@@ -4,6 +4,7 @@
 package com.yihaodian.architecture.hedwig.client.util;
 
 import java.net.MalformedURLException;
+import java.util.Map;
 
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 
@@ -12,6 +13,8 @@ import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
  * 
  */
 public class HedwigClientUtil {
+
+	private static ThreadLocal<Map<String, Long>> tl = new ThreadLocal<Map<String, Long>>();
 	public static Object getHessianProxy(HedwigContext context, String serviceUrl) throws MalformedURLException {
 		Object proxy = null;
 		if (context.getHessianProxyMap().containsKey(serviceUrl)) {
@@ -30,4 +33,9 @@ public class HedwigClientUtil {
 		}
 		return proxy;
 	}
+
+	public static long getCurrentTime() {
+		return System.currentTimeMillis();
+	}
+
 }

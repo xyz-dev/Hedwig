@@ -36,7 +36,7 @@ public class HedwigHandlerFactory implements IHandlerFactory<HedwigContext, Obje
 		if (handlerMap.size() > 0 && handlerMap.containsKey(hName)) {
 			handler = handlerMap.get(hName);
 		}
-		HedwigAssert.isNull(handler, hName + " is not proper initialed ");
+		HedwigAssert.isNull(handler, hName + " is not proper initialized!!!");
 		return handler;
 	}
 

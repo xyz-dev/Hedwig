@@ -70,9 +70,11 @@ public class HedwigWebserviceExporter extends HessianExporter implements HttpReq
 			if (logger.isDebugEnabled()) {
 				logger.debug("Ending regist service " + strService);
 			}
-		} catch (HedwigException e) {
+		} catch (Throwable e) {
 			logger.debug(e.getMessage());
-			System.exit(1);
+			if (e instanceof HedwigException) {
+				System.exit(1);
+			}
 		}
 
 	}

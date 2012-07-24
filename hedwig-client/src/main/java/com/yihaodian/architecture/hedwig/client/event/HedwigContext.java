@@ -85,4 +85,10 @@ public class HedwigContext implements EventContext, Cloneable {
 		return context;
 	}
 
+	@Override
+	public String toString() {
+		return "HedwigContext [locator=" + locator + ", hessianProxyMap=" + hessianProxyMap + ", clientProfile=" + clientProfile
+				+ ", proxyFactory=" + proxyFactory + ", serviceInterface=" + serviceInterface + "]";
+	}
+
 }
