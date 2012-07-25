@@ -15,7 +15,7 @@ import com.yihaodian.architecture.hedwig.engine.event.IEvent;
  * @param <T>
  * 
  */
-public class BaseEvent implements IEvent<HedwigContext, Object> {
+public class BaseEvent implements IEvent<Object> {
 
 	private static final long serialVersionUID = -3268122380332784050L;
 	protected long expireTime = InternalConstants.DEFAULT_REQUEST_TIMEOUT;
@@ -28,10 +28,6 @@ public class BaseEvent implements IEvent<HedwigContext, Object> {
 	protected HedwigContext context;
 	protected MethodInvocation invocation;
 
-	@Override
-	public HedwigContext getContext() {
-		return context;
-	}
 
 	@Override
 	public boolean isRetryable() {
@@ -104,7 +100,7 @@ public class BaseEvent implements IEvent<HedwigContext, Object> {
 	@Override
 	public String toString() {
 		return "BaseEvent [expireTime=" + expireTime + ", expireTimeUnit=" + expireTimeUnit + ", retryable=" + retryable + ", execCount="
-				+ execCount + ", maxRedoCount=" + maxRedoCount + ", start=" + start + ", result=" + result + ", context=" + context
-				+ ", invocation=" + invocation + "]";
+				+ execCount + ", maxRedoCount=" + maxRedoCount + ", start=" + start + ", result=" + result + ", invocation=" + invocation
+				+ "]";
 	}
 }

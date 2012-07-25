@@ -9,13 +9,13 @@ import com.caucho.hessian.client.HessianProxyFactory;
 import com.yihaodian.architecture.hedwig.client.locator.IServiceLocator;
 import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
-import com.yihaodian.architecture.hedwig.engine.event.EventContext;
+import com.yihaodian.architecture.hedwig.engine.event.IEventContext;
 
 /**
  * @author Archer
  *
  */
-public class HedwigContext implements EventContext, Cloneable {
+public class HedwigContext implements IEventContext, Cloneable {
 	private IServiceLocator<ServiceProfile> locator;
 	private Map<String, Object> hessianProxyMap;
 	private ClientProfile clientProfile;

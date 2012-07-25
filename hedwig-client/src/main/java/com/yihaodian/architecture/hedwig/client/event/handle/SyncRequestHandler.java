@@ -19,7 +19,7 @@ import com.yihaodian.architecture.hedwig.engine.handler.BaseHandler;
 public class SyncRequestHandler extends BaseHandler<HedwigContext, Object> {
 
 	@Override
-	public Object doHandle(HedwigContext context, IEvent<HedwigContext, Object> event) throws HandlerException {
+	public Object doHandle(HedwigContext context, IEvent<Object> event) throws HandlerException {
 		long start = HedwigClientUtil.getCurrentTime();
 		Object result = null;
 		ServiceProfile sp = context.getLocator().getService();

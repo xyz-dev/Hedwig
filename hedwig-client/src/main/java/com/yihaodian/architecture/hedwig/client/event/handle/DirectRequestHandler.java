@@ -19,7 +19,7 @@ import com.yihaodian.architecture.hedwig.engine.handler.BaseHandler;
 public class DirectRequestHandler extends BaseHandler<HedwigContext, Object> {
 
 	@Override
-	protected Object doHandle(HedwigContext context, IEvent<HedwigContext, Object> event) throws HandlerException {
+	protected Object doHandle(HedwigContext context, IEvent<Object> event) throws HandlerException {
 		Object hessianProxy = null;
 		Object result = null;
 		String sUrl = context.getClientProfile().getTarget();

@@ -25,9 +25,9 @@ public class HedwigEventBuilder {
 	}
 
 
-	public IEvent<HedwigContext, Object> buildRequestEvent(MethodInvocation invocation) {
+	public IEvent<Object> buildRequestEvent(MethodInvocation invocation) {
 		if (!HedwigUtil.isBlankString(clientProfile.getTarget())) {
-			return DirectRequestEvent(invocation);
+			return directRequestEvent(invocation);
 		} else {
 			return SyncRequestEvent(invocation);
 		}
@@ -41,7 +41,7 @@ public class HedwigEventBuilder {
 		return event;
 	}
 
-	private DirectRequestEvent DirectRequestEvent(MethodInvocation invocation) {
+	private DirectRequestEvent directRequestEvent(MethodInvocation invocation) {
 		return new DirectRequestEvent(context, invocation);
 	}
 

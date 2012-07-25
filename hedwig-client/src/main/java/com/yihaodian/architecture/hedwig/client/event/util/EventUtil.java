@@ -19,10 +19,11 @@ public class EventUtil {
 
 	public static Logger logger = LoggerFactory.getLogger(EventUtil.class);
 
-	public static Object retry(IEventHandler<HedwigContext, Object> handler, IEvent<HedwigContext, Object> event) throws HedwigException {
+	public static Object retry(IEventHandler<HedwigContext, Object> handler, IEvent<Object> event, HedwigContext context)
+			throws HedwigException {
 		while (event.isRetryable()) {
 			try {
-				return handler.handle(event.getContext(), event);
+				return handler.handle(context, event);
 			} catch (Throwable e) {
 				logger.debug(e.getMessage());
 			}

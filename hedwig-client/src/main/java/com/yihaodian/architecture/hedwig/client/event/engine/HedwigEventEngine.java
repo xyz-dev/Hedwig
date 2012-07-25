@@ -7,6 +7,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.slf4j.Logger;
@@ -20,7 +21,9 @@ import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigAssert;
 import com.yihaodian.architecture.hedwig.engine.IEventEngine;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
+import com.yihaodian.architecture.hedwig.engine.event.IScheduledEvent;
 import com.yihaodian.architecture.hedwig.engine.exception.EngineException;
+import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
 import com.yihaodian.architecture.hedwig.engine.handler.IEventHandler;
 import com.yihaodian.architecture.hedwig.engine.handler.IHandlerFactory;
 
@@ -36,26 +39,28 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 	protected IHandlerFactory<HedwigContext, Object> handlerFactory;
 	protected BlockingQueue<Runnable> eventQueue;
 	protected ThreadPoolExecutor tpes;
+	protected ScheduledThreadPoolExecutor stpes;
 
 	public HedwigEventEngine() {
 		super();
 		this.handlerFactory = new HedwigHandlerFactory();
 		this.eventQueue = new ArrayBlockingQueue<Runnable>(20);
 		this.tpes = HedwigExecutors.newCachedThreadPool(eventQueue);
+		this.stpes = HedwigExecutors.newSchedulerThreadPool();
 	}
 
 	@Override
-	public Object syncInnerExec(final IEvent<HedwigContext, Object> event) throws HedwigException {
+	public Object syncInnerExec(HedwigContext context, final IEvent<Object> event) throws HedwigException {
 		HedwigAssert.isNull(event, "Execute event must not null!!!");
 		Object result = null;
 		IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
 		event.increaseExecCount();
-		result = handler.handle(event.getContext(), event);
+		result = handler.handle(context, event);
 		return result;
 	}
 
 	@Override
-	public Object syncPoolExec(final IEvent<HedwigContext, Object> event) throws HedwigException {
+	public Object syncPoolExec(final HedwigContext context, final IEvent<Object> event) throws HedwigException {
 		HedwigAssert.isNull(event, "Execute event must not null!!!");
 		Object result = null;
 		Future<Object> f = null;
@@ -68,10 +73,10 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 				public Object call() throws Exception {
 					Object r = null;
 					try {
-						r = handler.handle(event.getContext(), event);
+						r = handler.handle(context, event);
 					} catch (Throwable e) {
 						logger.debug(e.getMessage());
-						EventUtil.retry(handler, event);
+						EventUtil.retry(handler, event, context);
 					}
 					return r;
 				}
@@ -86,7 +91,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 	}
 
 	@Override
-	public Future<Object> asyncExec(final IEvent<HedwigContext, Object> event) throws HedwigException {
+	public Future<Object> asyncExec(final HedwigContext context, final IEvent<Object> event) throws HedwigException {
 		HedwigAssert.isNull(event, "Execute event must not null!!!");
 		Future<Object> f = null;
 		try {
@@ -97,10 +102,10 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 				public Object call() throws Exception {
 					Object r = null;
 					try {
-						r = handler.handle(event.getContext(), event);
+						r = handler.handle(context, event);
 					} catch (Throwable e) {
 						logger.debug(e.getMessage());
-						EventUtil.retry(handler, event);
+						EventUtil.retry(handler, event, context);
 					}
 					return r;
 				}
@@ -112,17 +117,28 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 	}
 
 	@Override
-	public void asyncReliableExec(IEvent event) throws HedwigException {
+	public void asyncReliableExec(final HedwigContext context, final IEvent<Object> event) throws HedwigException {
 		throw new HedwigException("Not supported!!!");
 	}
 
 	@Override
-	public Object oneWayExec(IEvent event) throws HedwigException {
+	public Object oneWayExec(final HedwigContext context, final IEvent<Object> event) throws HedwigException {
 		throw new HedwigException("Not supported!!!");
 	}
 
 	@Override
-	public void schedulerExec(IEvent event) throws HedwigException {
-		throw new HedwigException("Not supported!!!");
+	public void schedulerExec(final HedwigContext context, final IScheduledEvent<Object> event) throws HedwigException {
+		final IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
+		stpes.schedule(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					handler.handle(context, event);
+				} catch (HandlerException e) {
+					logger.debug(e.getMessage());
+				}
+			}
+		}, event.getDelay(), event.getDelayUnit());
 	}
 }

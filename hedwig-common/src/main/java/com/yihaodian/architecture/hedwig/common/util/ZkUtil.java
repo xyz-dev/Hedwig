@@ -53,7 +53,8 @@ public class ZkUtil {
 		if (profile == null)
 			throw new InvalidParamException(" Service profile must not null!!!");
 		StringBuilder path = new StringBuilder(profile.getRootPath());
-		path.append("/").append(profile.getServiceAppName()).append("/").append(profile.getServiceName()).append("/")
+		path.append("/").append(profile.getDomain()).append("/").append(profile.getServiceAppName()).append("/")
+				.append(profile.getServiceName()).append("/")
 				.append(profile.getServiceVersion());
 		return path.toString();
 	}

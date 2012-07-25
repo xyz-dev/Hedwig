@@ -5,9 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.aopalliance.intercept.MethodInvocation;
 
-public interface IEvent<C extends EventContext, T> extends Serializable {
-
-	public C getContext();
+public interface IEvent<T> extends Serializable {
 
 	public boolean isRetryable();
 

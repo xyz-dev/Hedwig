@@ -3,8 +3,8 @@
  */
 package com.yihaodian.architecture.hedwig.engine.handler;
 
-import com.yihaodian.architecture.hedwig.engine.event.EventContext;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
+import com.yihaodian.architecture.hedwig.engine.event.IEventContext;
 import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
 
 /**
@@ -12,15 +12,15 @@ import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
  * @param <C>
  *
  */
-public abstract class BaseHandler<C extends EventContext, T> implements IEventHandler<C, T> {
+public abstract class BaseHandler<C extends IEventContext, T> implements IEventHandler<C, T> {
 
 	@Override
-	public T handle(C context, IEvent<C, T> event) throws HandlerException {
+	public T handle(C context, IEvent<T> event) throws HandlerException {
 		event.increaseExecCount();
-		return doHandle(context,event);
+		return doHandle(context, event);
 	}
 
-	abstract protected T doHandle(C context, IEvent<C, T> event) throws HandlerException;
+	abstract protected T doHandle(C context, IEvent<T> event) throws HandlerException;
 
 
 }

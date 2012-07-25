@@ -2,7 +2,8 @@ package com.yihaodian.architecture.hedwig.common.constants;
 
 public interface InternalConstants {
 
-	public static String BASE_ROOT = "/TheStore/Hedwig";
+	public static String BASE_ROOT = "/TheStore";
+	public static String UNKONW_DOMAIN = "UnknowDomain";
 	public static String PROPERITIES_FILE_NAME = "hedwig.properties";
 	public static String PROPERITIES_PATH_KEY = "hedwig_config";
 
