@@ -9,10 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.I0Itec.zkclient.IZkChildListener;
-import org.I0Itec.zkclient.IZkDataListener;
-import org.I0Itec.zkclient.ZkClient;
-
 import com.yihaodian.architecture.hedwig.balancer.BalancerFactory;
 import com.yihaodian.architecture.hedwig.balancer.LoadBalancer;
 import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
@@ -20,11 +16,13 @@ import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.common.util.ZkUtil;
+import com.yihaodian.architecture.zkclient.IZkChildListener;
+import com.yihaodian.architecture.zkclient.IZkDataListener;
+import com.yihaodian.architecture.zkclient.ZkClient;
 
 /**
  * This locator is implemented base on zookeeper ephemeral node. It will
- * synchronize with zk server to make sure the profileContainer and
- * nodeContainer is up-to-date.
+ * synchronize with zk server to make sure the profileContainer is up-to-date.
  * 
  * @author Archer Jiang
  * 

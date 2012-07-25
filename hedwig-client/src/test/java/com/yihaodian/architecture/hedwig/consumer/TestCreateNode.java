@@ -5,10 +5,9 @@ package com.yihaodian.architecture.hedwig.consumer;
 
 import junit.framework.TestCase;
 
-import org.I0Itec.zkclient.ZkClient;
-
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.util.ZkUtil;
+import com.yihaodian.architecture.zkclient.ZkClient;
 
 /**
  * @author Archer Jiang

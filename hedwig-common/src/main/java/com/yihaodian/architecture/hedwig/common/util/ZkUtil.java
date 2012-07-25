@@ -6,14 +6,13 @@ package com.yihaodian.architecture.hedwig.common.util;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.I0Itec.zkclient.ZkClient;
-
 import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
 import com.yihaodian.architecture.hedwig.common.constants.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.dto.BaseProfile;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
+import com.yihaodian.architecture.zkclient.ZkClient;
 
 /**
  * @author Archer Jiang
