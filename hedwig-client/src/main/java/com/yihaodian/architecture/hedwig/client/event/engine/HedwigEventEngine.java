@@ -20,6 +20,7 @@ import com.yihaodian.architecture.hedwig.client.util.HedwigExecutors;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigAssert;
 import com.yihaodian.architecture.hedwig.engine.IEventEngine;
+import com.yihaodian.architecture.hedwig.engine.event.EventState;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 import com.yihaodian.architecture.hedwig.engine.event.IScheduledEvent;
 import com.yihaodian.architecture.hedwig.engine.exception.EngineException;
@@ -54,7 +55,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		HedwigAssert.isNull(event, "Execute event must not null!!!");
 		Object result = null;
 		IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
-		event.increaseExecCount();
+		event.setState(EventState.processing);
 		result = handler.handle(context, event);
 		return result;
 	}
@@ -73,9 +74,10 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 				public Object call() throws Exception {
 					Object r = null;
 					try {
+						event.setState(EventState.processing);
 						r = handler.handle(context, event);
 					} catch (Throwable e) {
-						logger.debug(e.getMessage());
+						logger.debug(e.getMessage(), e);
 						EventUtil.retry(handler, event, context);
 					}
 					return r;
@@ -102,6 +104,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 				public Object call() throws Exception {
 					Object r = null;
 					try {
+						event.setState(EventState.processing);
 						r = handler.handle(context, event);
 					} catch (Throwable e) {
 						logger.debug(e.getMessage());
@@ -134,6 +137,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 			@Override
 			public void run() {
 				try {
+					event.setState(EventState.processing);
 					handler.handle(context, event);
 				} catch (HandlerException e) {
 					logger.debug(e.getMessage());

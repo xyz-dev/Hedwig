@@ -22,4 +22,10 @@ public interface IEvent<T> extends Serializable {
 	public void setResult(T result);
 
 	public MethodInvocation getInvocation();
+
+	public EventState getState();
+
+	public void setState(EventState state);
+
+	public void setErrorMessage(String errorMessage);
 }

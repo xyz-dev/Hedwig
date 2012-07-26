@@ -7,6 +7,7 @@ import org.aopalliance.intercept.MethodInvocation;
 
 import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
+import com.yihaodian.architecture.hedwig.engine.event.EventState;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 
 /**
@@ -35,14 +36,17 @@ public class HedwigEventBuilder {
 	}
 
 	private SyncRequestEvent SyncRequestEvent(MethodInvocation invocation) {
-		SyncRequestEvent event = new SyncRequestEvent(context, invocation);
+		SyncRequestEvent event = new SyncRequestEvent(invocation);
 		event.setMaxRedoCount(context.getLocator().getAllService().size());
 		event.setRetryable(true);
+		event.setState(EventState.init);
 		return event;
 	}
 
 	private DirectRequestEvent directRequestEvent(MethodInvocation invocation) {
-		return new DirectRequestEvent(context, invocation);
+		DirectRequestEvent event = new DirectRequestEvent(invocation);
+		event.setState(EventState.init);
+		return event;
 	}
 
 }

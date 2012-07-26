@@ -3,11 +3,15 @@
  */
 package com.yihaodian.architecture.hedwig.client.event;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.aopalliance.intercept.MethodInvocation;
 
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
+import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
+import com.yihaodian.architecture.hedwig.engine.event.EventState;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 
 /**
@@ -26,8 +30,9 @@ public class BaseEvent implements IEvent<Object> {
 	protected int maxRedoCount = 3;
 	protected long start;
 	protected Object result;
-	protected HedwigContext context;
 	protected MethodInvocation invocation;
+	protected EventState state;
+	protected List<String> errorMessages = new ArrayList<String>();
 
 	public long getId() {
 		return id;
@@ -105,10 +110,31 @@ public class BaseEvent implements IEvent<Object> {
 		return execCount;
 	}
 
+
+
 	@Override
 	public String toString() {
-		return "BaseEvent [expireTime=" + expireTime + ", expireTimeUnit=" + expireTimeUnit + ", retryable=" + retryable + ", execCount="
-				+ execCount + ", maxRedoCount=" + maxRedoCount + ", start=" + start + ", result=" + result + ", invocation=" + invocation
-				+ "]";
+		return "BaseEvent [id=" + id + ", expireTime=" + expireTime + ", expireTimeUnit=" + expireTimeUnit + ", retryable=" + retryable
+				+ ", execCount=" + execCount + ", maxRedoCount=" + maxRedoCount + ", start=" + start + ", result=" + result
+				+ ", invocation=" + invocation + ", state=" + state + ", errorMessages=" + getErrorMessages() + "]";
 	}
+
+	@Override
+	public EventState getState() {
+		return state;
+	}
+
+	@Override
+	public void setState(EventState state) {
+		this.state = state;
+	}
+
+	public String getErrorMessages() {
+		return HedwigUtil.list2String(errorMessages);
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessages.add(errorMessage);
+	}
+
 }
