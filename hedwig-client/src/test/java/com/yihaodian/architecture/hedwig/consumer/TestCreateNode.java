@@ -14,8 +14,8 @@ import com.yihaodian.architecture.zkclient.ZkClient;
  *
  */
 public class TestCreateNode extends TestCase {
-	public static String PATH = "/TheStore/Hathaway/testService/0.1";
-	public static String serverList = "ArcherDesktop:2181";
+	public static String PATH = "/TheStore/UnknowDomain/testService/0.1";
+	public static String serverList = "192.168.16.195:2181";
 	public static String hostIp;
 	public static String CPATH = "";
 	public void testCreate() {
@@ -23,8 +23,10 @@ public class TestCreateNode extends TestCase {
 		ServiceProfile bp = TestUtil.getServiceProfile();
 		_zkCLient.createPersistent(bp.getParentPath(), true);
 		try {
-			_zkCLient.createEphemeral(ZkUtil.createChildPath(bp), bp);
-			Thread.currentThread().sleep(10000000);
+			String path = ZkUtil.createChildPath(bp);
+			_zkCLient.createEphemeral(path, bp);
+			ServiceProfile rsp = _zkCLient.readData(path);
+			assertEquals(bp.getServiceUrl(), rsp.getServiceUrl());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

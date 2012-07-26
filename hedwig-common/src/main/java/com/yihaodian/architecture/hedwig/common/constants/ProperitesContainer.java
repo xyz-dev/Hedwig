@@ -47,17 +47,15 @@ public class ProperitesContainer {
 		String path = System
 				.getProperty(InternalConstants.PROPERITIES_PATH_KEY);
 		try {
-			File file = new File(path);
-			if (file.exists()) {
-				input = new FileInputStream(file);
-			} else {
-				ClassLoader clzLoader = this.getClass().getClassLoader();
-				URL url = clzLoader.getSystemResource(fileName);
-				if (url != null) {
-					input = url.openStream();
+			if(path!=null){
+				File file = new File(path);
+				if (file.exists()) {
+					input = new FileInputStream(file);
 				} else {
-					input = clzLoader.getSystemResourceAsStream(fileName);
+					input = loadFileFromClasspath();
 				}
+			}else {
+				input = loadFileFromClasspath();
 			}
 			if (input != null) {
 				p.load(input);
@@ -74,6 +72,17 @@ public class ProperitesContainer {
 		}
 	}
 
+	public InputStream loadFileFromClasspath() throws IOException {
+		InputStream input = null;
+		ClassLoader clzLoader = this.getClass().getClassLoader();
+		URL url = clzLoader.getSystemResource(fileName);
+		if (url != null) {
+			input = url.openStream();
+		} else {
+			input = clzLoader.getSystemResourceAsStream(fileName);
+		}
+		return input;
+	}
 	public void loadFromZK() {
 		loadSource = SOURCE_ZK;
 		// TODO load properties from remote server.
