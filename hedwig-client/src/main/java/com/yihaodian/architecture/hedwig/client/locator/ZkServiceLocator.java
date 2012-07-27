@@ -40,7 +40,7 @@ public class ZkServiceLocator implements IServiceLocator<ServiceProfile> {
 		isProfileSensitive = clientProfile.isProfileSensitive();
 		_zkClient = ZkUtil.getZkClientInstance();
 		balancer = BalancerFactory.getInstance().getBalancer(
-				clientProfile.getBalanceAlg());
+				clientProfile.getBalanceAlgo());
 		loadServiceProfile(clientProfile);
 		balancer.updateProfiles(profileContainer.values());
 

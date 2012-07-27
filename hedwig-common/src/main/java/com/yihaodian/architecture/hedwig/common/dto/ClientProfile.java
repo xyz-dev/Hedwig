@@ -17,7 +17,7 @@ public class ClientProfile extends BaseProfile implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -5339046889514181081L;
-	private String balanceAlg = InternalConstants.BALANCER_NAME_ROUNDROBIN;
+	private String balanceAlgo = InternalConstants.BALANCER_NAME_ROUNDROBIN;
 	private String target = "";
 	private long timeout = 2000l;
 	private boolean profileSensitive = false;
@@ -31,12 +31,12 @@ public class ClientProfile extends BaseProfile implements Serializable {
 		this.target = target;
 	}
 
-	public String getBalanceAlg() {
-		return balanceAlg;
+	public String getBalanceAlgo() {
+		return balanceAlgo;
 	}
 
-	public void setBalanceAlg(String balanceAlg) {
-		this.balanceAlg = balanceAlg;
+	public void setBalanceAlg(String balanceAlgo) {
+		this.balanceAlgo = balanceAlgo;
 	}
 
 	public boolean isProfileSensitive() {
@@ -65,7 +65,7 @@ public class ClientProfile extends BaseProfile implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ClientProfile [balanceAlg=" + balanceAlg + ", target=" + target + ", timeout=" + timeout + ", profileSensitive="
+		return "ClientProfile [balanceAlg=" + balanceAlgo + ", target=" + target + ", timeout=" + timeout + ", profileSensitive="
 				+ profileSensitive + "," + super.toString() + "]";
 	}
 
