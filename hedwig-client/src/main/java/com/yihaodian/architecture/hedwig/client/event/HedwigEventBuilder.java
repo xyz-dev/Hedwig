@@ -5,10 +5,10 @@ package com.yihaodian.architecture.hedwig.client.event;
 
 import org.aopalliance.intercept.MethodInvocation;
 
+import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
 import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.engine.event.EventState;
-import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 
 /**
  * @author Archer
@@ -26,13 +26,16 @@ public class HedwigEventBuilder {
 	}
 
 
-	public IEvent<Object> buildRequestEvent(MethodInvocation invocation) {
+	public BaseEvent buildRequestEvent(MethodInvocation invocation) {
+		BaseEvent event = null;
+		String reqId = HedwigClientUtil.generateReqId();
 		if (!HedwigUtil.isBlankString(clientProfile.getTarget())) {
-			return directRequestEvent(invocation);
+			event = directRequestEvent(invocation);
 		} else {
-			return SyncRequestEvent(invocation);
+			event = SyncRequestEvent(invocation);
 		}
-
+		event.setReqestId(reqId);
+		return event;
 	}
 
 	private SyncRequestEvent SyncRequestEvent(MethodInvocation invocation) {

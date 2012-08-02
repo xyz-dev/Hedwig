@@ -33,4 +33,6 @@ public interface InternalConstants {
 	public static int DEFAULT_SCHEDULER_POOL_MAXSIZE = 10;
 	public static int DEFAULT_SCHEDULER_POOL_IDLETIME = 60;
 
+	public static String HEDWIG_REQUEST_ID = "reqId";
+
 }

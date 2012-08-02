@@ -4,9 +4,12 @@
 package com.yihaodian.architecture.hedwig.client.util;
 
 import java.net.MalformedURLException;
-import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
+import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
+import com.yihaodian.architecture.hedwig.common.constants.ProperitesContainer;
 
 /**
  * @author Archer
@@ -14,7 +17,8 @@ import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
  */
 public class HedwigClientUtil {
 
-	private static ThreadLocal<Map<String, Long>> tl = new ThreadLocal<Map<String, Long>>();
+	private static Lock lock = new ReentrantLock();
+
 	public static Object getHessianProxy(HedwigContext context, String serviceUrl) throws MalformedURLException {
 		Object proxy = null;
 		if (context.getHessianProxyMap().containsKey(serviceUrl)) {
@@ -36,6 +40,30 @@ public class HedwigClientUtil {
 
 	public static long getCurrentTime() {
 		return System.currentTimeMillis();
+	}
+
+	public static long getCurrentNanoTime() {
+		return System.nanoTime();
+	}
+
+	public static String generateReqId() {
+		String reqId = "";
+		String hostIp = ProperitesContainer.getInstance().getProperty(PropKeyConstants.HOST_IP);
+		lock.lock();
+		try {
+			reqId = hostIp + "." + System.nanoTime();
+		} finally {
+			lock.unlock();
+		}
+		return reqId;
+	}
+
+	public static void main(String[] args) {
+		for (int i = 0; i < 100; i++) {
+			long start = HedwigClientUtil.getCurrentNanoTime();
+			System.out.println(HedwigClientUtil.generateReqId());
+			System.out.println("Cost:" + (HedwigClientUtil.getCurrentNanoTime() - start));
+		}
 	}
 
 }

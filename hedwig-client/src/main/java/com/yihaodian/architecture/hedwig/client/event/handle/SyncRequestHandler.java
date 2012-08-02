@@ -40,7 +40,8 @@ public class SyncRequestHandler extends BaseHandler<HedwigContext, Object> {
 		}
 		try {
 			MethodInvocation invocation = event.getInvocation();
-			result = invocation.getMethod().invoke(hessianProxy, invocation.getArguments());
+			Object[] params = invocation.getArguments();
+			result = invocation.getMethod().invoke(hessianProxy, params);
 		} catch (Throwable e) {
 			throw new HandlerException(e.getCause());
 		} finally {
