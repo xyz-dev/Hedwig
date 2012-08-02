@@ -102,7 +102,7 @@ public class HedwigWebserviceExporter extends HessianExporter implements HttpReq
 		}
 		p.setServiceAppName(appName);
 		if (HedwigUtil.isBlankString(serviceName)) {
-			p.setServiceName(getServiceInterface().getSimpleName());
+			throw new InvalidParamException("serviceName must not blank!!!");
 		}
 		p.setServiceName(serviceName);
 		if (HedwigUtil.isBlankString(serviceVersion)) {
@@ -129,6 +129,10 @@ public class HedwigWebserviceExporter extends HessianExporter implements HttpReq
 
 	public void setProfile(ServiceProfile profile) {
 		this.profile = profile;
+	}
+
+	public void setAppName(String appName) {
+		this.appName = appName;
 	}
 
 }
