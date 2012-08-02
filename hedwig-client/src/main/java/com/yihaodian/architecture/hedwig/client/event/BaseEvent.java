@@ -23,6 +23,7 @@ public class BaseEvent implements IEvent<Object> {
 
 	private static final long serialVersionUID = -3268122380332784050L;
 	protected long id;
+	protected String reqestId;
 	protected long expireTime = InternalConstants.DEFAULT_REQUEST_TIMEOUT;
 	protected TimeUnit expireTimeUnit = TimeUnit.MILLISECONDS;
 	protected boolean retryable = false;
@@ -40,6 +41,14 @@ public class BaseEvent implements IEvent<Object> {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	public void setReqestId(String reqestId) {
+		this.reqestId = reqestId;
+	}
+
+	public String getReqestId() {
+		return reqestId;
 	}
 
 	@Override

@@ -21,13 +21,13 @@ public class BalancerFactory {
 
 	private static BalancerFactory factory = new BalancerFactory();
 
-	private static Map<String, LoadBalancer<ServiceProfile>> balancerContainer;
+	private static Map<String, String> balancerContainer;
 
 	private BalancerFactory() {
 		super();
-		balancerContainer =new HashMap<String, LoadBalancer<ServiceProfile>>();
-		balancerContainer.put(InternalConstants.BALANCER_NAME_ROUNDROBIN, new RoundRobinBalancer());
-		balancerContainer.put(InternalConstants.BALANCER_NAME_WEIGHTED_ROUNDROBIN, new WeightedRoundRobinBalancer());
+		balancerContainer = new HashMap<String, String>();
+		balancerContainer.put(InternalConstants.BALANCER_NAME_ROUNDROBIN, RoundRobinBalancer.class.getName());
+		balancerContainer.put(InternalConstants.BALANCER_NAME_WEIGHTED_ROUNDROBIN, WeightedRoundRobinBalancer.class.getName());
 
 	}
 
@@ -38,9 +38,14 @@ public class BalancerFactory {
 	public LoadBalancer<ServiceProfile> getBalancer(String name) throws HedwigException {
 		if (HedwigUtil.isBlankString(name))
 			throw new InvalidParamException("Balancer name must not null");
-		LoadBalancer<ServiceProfile> b = balancerContainer.get(name);
-		if (b != null) {
-			return b;
+		String clazzName = balancerContainer.get(name);
+		if (clazzName != null) {
+			try {
+				Class clazz = Class.forName(clazzName);
+				return (LoadBalancer<ServiceProfile>) clazz.newInstance();
+			} catch (Throwable e) {
+				throw new InvalidReturnValueException("Can't find " + clazzName + " balancer");
+			}
 		} else {
 			throw new InvalidReturnValueException("Can't find " + name + " balancer");
 		}

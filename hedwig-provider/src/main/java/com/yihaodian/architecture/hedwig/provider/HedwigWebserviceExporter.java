@@ -18,6 +18,7 @@ import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.util.NestedServletException;
 
+import com.caucho.services.server.ServiceContext;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
@@ -40,11 +41,16 @@ public class HedwigWebserviceExporter extends HessianExporter implements HttpReq
 			throw new HttpRequestMethodNotSupportedException(request.getMethod(), new String[] { "POST" },
 					"HessianServiceExporter only supports POST requests");
 		}
-
+		ServiceContext.begin(request, profile.getServiceName(), profile.getServiceUrl());
 		try {
 			invoke(request.getInputStream(), response.getOutputStream());
+			Object obj = ServiceContext.getContextHeader(InternalConstants.HEDWIG_REQUEST_ID);
+			String reqId = obj == null ? "" : (String) obj;
+			System.out.println(reqId);
 		} catch (Throwable ex) {
 			throw new NestedServletException("Hessian skeleton invocation failed", ex);
+		} finally {
+			ServiceContext.end();
 		}
 
 	}

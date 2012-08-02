@@ -40,7 +40,7 @@ public class ZkServiceLocator implements IServiceLocator<ServiceProfile> {
 		isProfileSensitive = clientProfile.isProfileSensitive();
 		_zkClient = ZkUtil.getZkClientInstance();
 		balancer = BalancerFactory.getInstance().getBalancer(
-				clientProfile.getBalanceAlg());
+				clientProfile.getBalanceAlgo());
 		loadServiceProfile(clientProfile);
 		balancer.updateProfiles(profileContainer.values());
 
@@ -52,7 +52,7 @@ public class ZkServiceLocator implements IServiceLocator<ServiceProfile> {
 		if (parentPath != null) {
 			while (!_zkClient.exists(parentPath)) {
 				try {
-					Thread.currentThread().sleep(10000);
+					Thread.yield();
 				} catch (Exception e) {
 				}
 			}
@@ -155,7 +155,11 @@ public class ZkServiceLocator implements IServiceLocator<ServiceProfile> {
 
 	@Override
 	public ServiceProfile getService() {
-		ServiceProfile sp = balancer.select();
+		ServiceProfile sp = null;
+		while (!initialized) {
+			Thread.yield();
+		}
+		sp = balancer.select();
 		return sp;
 	}
 

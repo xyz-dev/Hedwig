@@ -14,10 +14,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.remoting.support.RemotingSupport;
 
-import com.caucho.hessian.client.HessianProxyFactory;
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.client.event.HedwigEventBuilder;
 import com.yihaodian.architecture.hedwig.client.event.engine.HedwigEventEngine;
+import com.yihaodian.architecture.hedwig.client.hessian.HedwigHessianProxyFactory;
 import com.yihaodian.architecture.hedwig.client.locator.IServiceLocator;
 import com.yihaodian.architecture.hedwig.client.locator.ZkServiceLocator;
 import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
@@ -35,7 +35,7 @@ import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 public class HedwigEventInterceptor extends RemotingSupport implements MethodInterceptor, InitializingBean {
 	private Logger logger = LoggerFactory.getLogger(HedwigEventInterceptor.class);
 	private ClientProfile clientProfile;
-	private HessianProxyFactory proxyFactory = new HessianProxyFactory();
+	private HedwigHessianProxyFactory proxyFactory = new HedwigHessianProxyFactory();
 	private IServiceLocator<ServiceProfile> locator;
 	private Map<String, Object> hessianProxyMap = new ConcurrentHashMap<String, Object>();
 	private Class serviceInterface;
@@ -62,7 +62,7 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		eventEngine = new HedwigEventEngine();
+		eventEngine = HedwigEventEngine.getEngine();
 		proxyFactory.setReadTimeout(InternalConstants.DEFAULT_READ_TIMEOUT);
 		proxyFactory.setHessian2Request(true);
 		proxyFactory.setHessian2Reply(true);

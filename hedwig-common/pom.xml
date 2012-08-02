@@ -41,5 +41,9 @@
     	<groupId>com.yihaodian.architecture</groupId>
     	<artifactId>hedwig-zk</artifactId>
     </dependency>
+    <dependency>
+    	<groupId>com.caucho</groupId>
+    	<artifactId>hessian</artifactId>
+    </dependency>
  </dependencies>
 </project>

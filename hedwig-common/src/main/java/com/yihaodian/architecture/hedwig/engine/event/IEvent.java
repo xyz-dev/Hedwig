@@ -28,4 +28,6 @@ public interface IEvent<T> extends Serializable {
 	public void setState(EventState state);
 
 	public void setErrorMessage(String errorMessage);
+
+	public String getReqestId();
 }

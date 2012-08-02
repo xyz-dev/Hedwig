@@ -42,7 +42,11 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 	protected ThreadPoolExecutor tpes;
 	protected ScheduledThreadPoolExecutor stpes;
 
-	public HedwigEventEngine() {
+	public static HedwigEventEngine getEngine() {
+		return engine;
+	}
+
+	private HedwigEventEngine() {
 		super();
 		this.handlerFactory = new HedwigHandlerFactory();
 		this.eventQueue = new ArrayBlockingQueue<Runnable>(20);
