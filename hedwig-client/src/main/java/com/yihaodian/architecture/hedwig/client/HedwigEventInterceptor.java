@@ -34,7 +34,7 @@ import com.yihaodian.architecture.hedwig.engine.event.IEvent;
  */
 public class HedwigEventInterceptor extends RemotingSupport implements MethodInterceptor, InitializingBean {
 	private Logger logger = LoggerFactory.getLogger(HedwigEventInterceptor.class);
-	private ClientProfile clientProfile;
+	protected ClientProfile clientProfile;
 	private HedwigHessianProxyFactory proxyFactory = new HedwigHessianProxyFactory();
 	private IServiceLocator<ServiceProfile> locator;
 	private Map<String, Object> hessianProxyMap = new ConcurrentHashMap<String, Object>();

@@ -22,6 +22,8 @@ import com.caucho.services.server.ServiceContext;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
+import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
+import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.register.IServiceProviderRegister;
 import com.yihaodian.architecture.hedwig.register.RegisterFactory;
 
@@ -33,7 +35,11 @@ public class HedwigWebserviceExporter extends HessianExporter implements HttpReq
 
 	private Logger logger = LoggerFactory.getLogger(HedwigWebserviceExporter.class);
 	private IServiceProviderRegister register;
-	private ServiceProfile profile = new ServiceProfile();
+	private ServiceProfile profile;
+	private String appName;
+	private String serviceName;
+	private String serviceVersion;
+	private String urlPattern;
 
 	@Override
 	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -64,8 +70,12 @@ public class HedwigWebserviceExporter extends HessianExporter implements HttpReq
 	@Override
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
-		String strService = profile.toString();
+
 		try {
+			if (profile == null) {
+				profile = createServiceProfile();
+			}
+			String strService = profile.toString();
 			if (register == null) {
 				register = RegisterFactory.getRegister(InternalConstants.SERVICE_REGISTER_ZK);
 			}
@@ -83,6 +93,38 @@ public class HedwigWebserviceExporter extends HessianExporter implements HttpReq
 			}
 		}
 
+	}
+
+	private ServiceProfile createServiceProfile() throws InvalidParamException {
+		ServiceProfile p = new ServiceProfile();
+		if (HedwigUtil.isBlankString(appName)) {
+			throw new InvalidParamException("appName must not blank!!!");
+		}
+		p.setServiceAppName(appName);
+		if (HedwigUtil.isBlankString(serviceName)) {
+			p.setServiceName(getServiceInterface().getSimpleName());
+		}
+		p.setServiceName(serviceName);
+		if (HedwigUtil.isBlankString(serviceVersion)) {
+			throw new InvalidParamException("serviceVersion must not blank!!!");
+		}
+		p.setServiceVersion(serviceVersion);
+		if (!HedwigUtil.isBlankString(urlPattern)) {
+			p.setUrlPattern(urlPattern);
+		}
+		return p;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+	}
+
+	public void setServiceVersion(String serviceVersion) {
+		this.serviceVersion = serviceVersion;
+	}
+
+	public void setUrlPattern(String urlPattern) {
+		this.urlPattern = urlPattern;
 	}
 
 	public void setProfile(ServiceProfile profile) {
