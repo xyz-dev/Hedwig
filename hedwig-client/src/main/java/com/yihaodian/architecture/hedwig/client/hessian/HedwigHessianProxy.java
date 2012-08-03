@@ -14,8 +14,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.WeakHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.caucho.hessian.client.HessianProxy;
 import com.caucho.hessian.client.HessianRuntimeException;
@@ -30,7 +31,7 @@ import com.caucho.services.server.AbstractSkeleton;
  */
 public class HedwigHessianProxy implements InvocationHandler {
 
-	private static final Logger log = Logger.getLogger(HessianProxy.class.getName());
+	private static final Logger log = LoggerFactory.getLogger(HessianProxy.class);
 
 	private HedwigHessianProxyFactory _factory;
 	private WeakHashMap<Method, String> _mangleMap = new WeakHashMap<Method, String>();
@@ -169,14 +170,14 @@ public class HedwigHessianProxy implements InvocationHandler {
 				if (is != null)
 					is.close();
 			} catch (Throwable e) {
-				log.log(Level.FINE, e.toString(), e);
+				log.error(e.getMessage(), e);
 			}
 
 			try {
 				if (httpConn != null)
 					httpConn.disconnect();
 			} catch (Throwable e) {
-				log.log(Level.FINE, e.toString(), e);
+				log.error(e.getMessage(), e);
 			}
 		}
 	}
@@ -286,7 +287,7 @@ public class HedwigHessianProxy implements InvocationHandler {
 				if (hessianIs != null)
 					hessianIs.close();
 			} catch (Exception e) {
-				log.log(Level.FINE, e.toString(), e);
+				log.debug(e.getMessage(), e);
 			}
 
 			try {
@@ -295,7 +296,7 @@ public class HedwigHessianProxy implements InvocationHandler {
 					in.close();
 				}
 			} catch (Exception e) {
-				log.log(Level.FINE, e.toString(), e);
+				log.error(e.getMessage(), e);
 			}
 
 			try {
@@ -303,7 +304,7 @@ public class HedwigHessianProxy implements InvocationHandler {
 					connIs.close();
 				}
 			} catch (Exception e) {
-				log.log(Level.FINE, e.toString(), e);
+				log.error(e.getMessage(), e);
 			}
 
 			try {
@@ -311,7 +312,7 @@ public class HedwigHessianProxy implements InvocationHandler {
 					conn.disconnect();
 				}
 			} catch (Exception e) {
-				log.log(Level.FINE, e.toString(), e);
+				log.error(e.getMessage(), e);
 			}
 		}
 	}

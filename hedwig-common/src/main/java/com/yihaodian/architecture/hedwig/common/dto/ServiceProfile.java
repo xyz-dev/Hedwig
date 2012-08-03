@@ -7,9 +7,9 @@ import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
-import com.yihaodian.architecture.hedwig.common.constants.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.common.util.ZkUtil;
@@ -40,10 +40,12 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 
 	public ServiceProfile() {
 		super();
-		hostIp = ProperitesContainer.getInstance().getProperty(PropKeyConstants.HOST_IP);
-		jvmPid = ProperitesContainer.getInstance().getProperty(PropKeyConstants.JVM_PID);
-		port = ProperitesContainer.getInstance().getProperty(PropKeyConstants.HOST_PORT);
-		weighted = HedwigUtil.ParseString2Int(ProperitesContainer.getInstance().getProperty(PropKeyConstants.HOST_WEIGHTED), 1);
+		ProperitesContainer container = ProperitesContainer.provider();
+		hostIp = container.getProperty(PropKeyConstants.HOST_IP);
+		jvmPid = container.getProperty(PropKeyConstants.JVM_PID);
+		port = container.getProperty(PropKeyConstants.HOST_PORT, port);
+		parentPath = container.getProperty(PropKeyConstants.ZK_ROOT_PATH, parentPath);
+		weighted = HedwigUtil.ParseString2Int(container.getProperty(PropKeyConstants.HOST_WEIGHTED), 1);
 	}
 
 	public String getServiceUrl() {

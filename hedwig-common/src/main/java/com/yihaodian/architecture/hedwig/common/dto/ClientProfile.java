@@ -5,6 +5,7 @@ package com.yihaodian.architecture.hedwig.common.dto;
 
 import java.io.Serializable;
 
+import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 
 /**
@@ -22,6 +23,11 @@ public class ClientProfile extends BaseProfile implements Serializable {
 	private long timeout = 2000l;
 	private boolean profileSensitive = false;
 	private String requestType;
+
+	public ClientProfile() {
+		super();
+		ProperitesContainer.client();
+	}
 
 	public String getTarget() {
 		return target;

@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.yihaodian.architecture.hedwig.balancer.BalancerFactory;
 import com.yihaodian.architecture.hedwig.balancer.LoadBalancer;
+import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
@@ -52,7 +53,7 @@ public class ZkServiceLocator implements IServiceLocator<ServiceProfile> {
 		if (parentPath != null) {
 			while (!_zkClient.exists(parentPath)) {
 				try {
-					Thread.yield();
+					Thread.sleep(InternalConstants.DEFAULT_WAITING);
 				} catch (Exception e) {
 				}
 			}

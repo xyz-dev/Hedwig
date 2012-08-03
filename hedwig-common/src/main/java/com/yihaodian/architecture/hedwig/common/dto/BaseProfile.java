@@ -6,8 +6,6 @@ package com.yihaodian.architecture.hedwig.common.dto;
 import java.io.Serializable;
 
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
-import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
-import com.yihaodian.architecture.hedwig.common.constants.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.common.util.ZkUtil;
@@ -22,12 +20,12 @@ public class BaseProfile implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -6856572567927129370L;
-	private String rootPath = InternalConstants.BASE_ROOT;
-	private String domain = InternalConstants.UNKONW_DOMAIN;
-	private String parentPath;
-	private String serviceAppName = "defaultAppName";
-	private String serviceName = "defaultServiceName";
-	private String serviceVersion = "defaultVersion";
+	protected String rootPath = InternalConstants.BASE_ROOT;
+	protected String domain = InternalConstants.UNKONW_DOMAIN;
+	protected String parentPath;
+	protected String serviceAppName = "defaultAppName";
+	protected String serviceName = "defaultServiceName";
+	protected String serviceVersion = "defaultVersion";
 
 	public BaseProfile() {
 		super();
@@ -46,10 +44,6 @@ public class BaseProfile implements Serializable {
 	}
 
 	public void setRootPath(String rootPath) {
-		String customerRoot = ProperitesContainer.getInstance().getProperty(PropKeyConstants.ZK_ROOT_PATH);
-		if (!HedwigUtil.isBlankString(customerRoot)) {
-			rootPath = customerRoot;
-		}
 		this.rootPath = rootPath;
 	}
 

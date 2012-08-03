@@ -6,6 +6,7 @@ package com.yihaodian.architecture.hedwig.client;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.FactoryBean;
 
+import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
 import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
@@ -21,6 +22,7 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 	private String serviceName;
 	private String serviceVersion;
 	private String target;
+	private Long reqTimeout;
 
 	@Override
 	public Object getObject() throws Exception {
@@ -60,6 +62,9 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 				throw new InvalidParamException("serviceVersion must not blank!!!");
 			}
 			p.setServiceVersion(serviceVersion);
+			if (reqTimeout != null && (reqTimeout.longValue() > InternalConstants.DEFAULT_REQUEST_TIMEOUT)) {
+				p.setTimeout(reqTimeout);
+			}
 		} else {
 			p.setTarget(target);
 		}
@@ -82,4 +87,7 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 		this.target = target;
 	}
 
+	public void setReqTimeout(Long reqTimeout) {
+		this.reqTimeout = reqTimeout;
+	}
 }

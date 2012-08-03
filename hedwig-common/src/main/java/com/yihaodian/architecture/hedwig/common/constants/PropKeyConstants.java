@@ -16,4 +16,6 @@ public interface PropKeyConstants {
 	public static final String HEDWIG_SCHEDULER_POOL_CORESIZE = "schedulerPool.size";
 	public static final String HEDWIG_SCHEDULER_POOL_MAXSIZE = "schedulerPool.maxSize";
 	public static final String HEDWIG_SCHEDULER_POOL_IDLETIME = "schedulerPool.idleTime";
+
+	public static final String HEDWIG_READ_TIMEOUT = "read.timeout";
 }

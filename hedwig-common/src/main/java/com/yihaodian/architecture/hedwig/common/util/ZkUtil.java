@@ -6,8 +6,8 @@ package com.yihaodian.architecture.hedwig.common.util;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
-import com.yihaodian.architecture.hedwig.common.constants.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.dto.BaseProfile;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
@@ -24,7 +24,7 @@ public class ZkUtil {
 	public static Lock lock = new ReentrantLock();
 
 	public static ZkClient getZkClientInstance() throws HedwigException {
-		String serverList = ProperitesContainer.getInstance().getProperty(PropKeyConstants.ZK_SERVER_LIST);
+		String serverList = ProperitesContainer.provider().getProperty(PropKeyConstants.ZK_SERVER_LIST);
 		lock.lock();
 		try {
 			if (_zkClient == null) {
@@ -43,7 +43,7 @@ public class ZkUtil {
 	public static String createChildPath(ServiceProfile profile) throws InvalidParamException {
 		if (profile == null)
 			throw new InvalidParamException(" Service profile must not null!!!");
-		String pid = ProperitesContainer.getInstance().getProperty(PropKeyConstants.JVM_PID);
+		String pid = ProperitesContainer.client().getProperty(PropKeyConstants.JVM_PID);
 		StringBuilder path = new StringBuilder(profile.getParentPath()).append("/").append(profile.getHostIp()).append(":").append(pid);
 		return path.toString();
 	}

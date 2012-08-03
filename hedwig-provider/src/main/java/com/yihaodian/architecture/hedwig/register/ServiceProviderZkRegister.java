@@ -3,8 +3,8 @@
  */
 package com.yihaodian.architecture.hedwig.register;
 
+import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
-import com.yihaodian.architecture.hedwig.common.constants.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
@@ -23,7 +23,7 @@ public class ServiceProviderZkRegister implements IServiceProviderRegister {
 	private boolean isRegisted = false;
 
 	public ServiceProviderZkRegister() throws HedwigException {
-		String serverList = ProperitesContainer.getInstance().getProperty(PropKeyConstants.ZK_SERVER_LIST);
+		String serverList = ProperitesContainer.provider().getProperty(PropKeyConstants.ZK_SERVER_LIST);
 		_zkClient = ZkUtil.getZkClientInstance();
 	}
 

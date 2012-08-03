@@ -8,8 +8,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
+import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
-import com.yihaodian.architecture.hedwig.common.constants.ProperitesContainer;
 
 /**
  * @author Archer
@@ -48,7 +48,7 @@ public class HedwigClientUtil {
 
 	public static String generateReqId() {
 		String reqId = "";
-		String hostIp = ProperitesContainer.getInstance().getProperty(PropKeyConstants.HOST_IP);
+		String hostIp = ProperitesContainer.client().getProperty(PropKeyConstants.HOST_IP);
 		lock.lock();
 		try {
 			reqId = hostIp + "." + System.nanoTime();

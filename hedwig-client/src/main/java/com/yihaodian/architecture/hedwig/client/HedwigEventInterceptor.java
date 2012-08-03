@@ -21,7 +21,9 @@ import com.yihaodian.architecture.hedwig.client.hessian.HedwigHessianProxyFactor
 import com.yihaodian.architecture.hedwig.client.locator.IServiceLocator;
 import com.yihaodian.architecture.hedwig.client.locator.ZkServiceLocator;
 import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
+import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
+import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
@@ -63,7 +65,9 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		eventEngine = HedwigEventEngine.getEngine();
-		proxyFactory.setReadTimeout(InternalConstants.DEFAULT_READ_TIMEOUT);
+		long timeOut = ProperitesContainer.client().getLongProperty(PropKeyConstants.HEDWIG_READ_TIMEOUT,
+				InternalConstants.DEFAULT_READ_TIMEOUT);
+		proxyFactory.setReadTimeout(timeOut);
 		proxyFactory.setHessian2Request(true);
 		proxyFactory.setHessian2Reply(true);
 		eventContext = new HedwigContext(hessianProxyMap, clientProfile, proxyFactory, serviceInterface);
