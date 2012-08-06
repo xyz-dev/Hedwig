@@ -20,7 +20,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.remoting.caucho.HessianExporter;
 import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.util.NestedServletException;
 
 import com.caucho.services.server.ServiceContext;
@@ -104,8 +103,14 @@ public class HedwigWebserviceExporter extends HessianExporter implements HttpReq
 
 	private ServiceProfile createServiceProfile() throws InvalidParamException {
 		ServiceProfile p = new ServiceProfile();
-		p.setServiceAppName(lookupAppName());
-		p.setServiceName(lookupServiceName());
+		if (HedwigUtil.isBlankString(appName)) {
+			throw new InvalidParamException("appName must not blank!!!");
+		}
+		p.setServiceAppName(appName);
+		if (HedwigUtil.isBlankString(serviceName)) {
+			serviceName = lookupServiceName();
+		}
+		p.setServiceName(serviceName);
 		if (HedwigUtil.isBlankString(serviceVersion)) {
 			throw new InvalidParamException("serviceVersion must not blank!!!");
 		}
@@ -117,19 +122,6 @@ public class HedwigWebserviceExporter extends HessianExporter implements HttpReq
 		return p;
 	}
 
-
-	private String lookupAppName() throws InvalidParamException {
-		String app = null;
-		Object obj = BeanFactoryUtils.beanOfType(springContext, DispatcherServlet.class);
-		if (obj != null) {
-			DispatcherServlet ds = (DispatcherServlet) obj;
-			app = ds.getServletContext().getServletContextName();
-		}
-		if (app == null) {
-			throw new InvalidParamException("appNamem must not blank!!!");
-		}
-		return app;
-	}
 
 	private String lookupServiceName() throws InvalidParamException {
 		String name = null;
