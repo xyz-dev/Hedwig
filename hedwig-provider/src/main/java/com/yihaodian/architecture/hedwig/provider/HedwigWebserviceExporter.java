@@ -11,11 +11,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.remoting.caucho.HessianExporter;
 import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.util.NestedServletException;
 
 import com.caucho.services.server.ServiceContext;
@@ -31,7 +36,8 @@ import com.yihaodian.architecture.hedwig.register.RegisterFactory;
  * @author Archer Jiang
  * 
  */
-public class HedwigWebserviceExporter extends HessianExporter implements HttpRequestHandler, InitializingBean, DisposableBean {
+public class HedwigWebserviceExporter extends HessianExporter implements HttpRequestHandler, InitializingBean, DisposableBean,
+		ApplicationContextAware {
 
 	private Logger logger = LoggerFactory.getLogger(HedwigWebserviceExporter.class);
 	private IServiceProviderRegister register;
@@ -40,6 +46,7 @@ public class HedwigWebserviceExporter extends HessianExporter implements HttpReq
 	private String serviceName;
 	private String serviceVersion;
 	private String urlPattern;
+	private ApplicationContext springContext;
 
 	@Override
 	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -97,22 +104,43 @@ public class HedwigWebserviceExporter extends HessianExporter implements HttpReq
 
 	private ServiceProfile createServiceProfile() throws InvalidParamException {
 		ServiceProfile p = new ServiceProfile();
-		if (HedwigUtil.isBlankString(appName)) {
-			throw new InvalidParamException("appName must not blank!!!");
-		}
-		p.setServiceAppName(appName);
-		if (HedwigUtil.isBlankString(serviceName)) {
-			throw new InvalidParamException("serviceName must not blank!!!");
-		}
-		p.setServiceName(serviceName);
+		p.setServiceAppName(lookupAppName());
+		p.setServiceName(lookupServiceName());
 		if (HedwigUtil.isBlankString(serviceVersion)) {
 			throw new InvalidParamException("serviceVersion must not blank!!!");
 		}
 		p.setServiceVersion(serviceVersion);
-		if (!HedwigUtil.isBlankString(urlPattern)) {
-			p.setUrlPattern(urlPattern);
+		if (HedwigUtil.isBlankString(urlPattern)) {
+			urlPattern = InternalConstants.HEDWIG_URL_PATTERN;
 		}
+		p.setUrlPattern(urlPattern);
 		return p;
+	}
+
+
+	private String lookupAppName() throws InvalidParamException {
+		String app = null;
+		Object obj = BeanFactoryUtils.beanOfType(springContext, DispatcherServlet.class);
+		if (obj != null) {
+			DispatcherServlet ds = (DispatcherServlet) obj;
+			app = ds.getServletContext().getServletContextName();
+		}
+		if (app == null) {
+			throw new InvalidParamException("appNamem must not blank!!!");
+		}
+		return app;
+	}
+
+	private String lookupServiceName() throws InvalidParamException {
+		String name = null;
+		String[] names = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(springContext, getServiceInterface());
+		if (names != null && names.length >= 1) {
+			name = names[0];
+		}
+		if (HedwigUtil.isBlankString(name)) {
+			throw new InvalidParamException("serviceName must not blank!!!");
+		}
+		return name;
 	}
 
 	public void setServiceName(String serviceName) {
@@ -133,6 +161,12 @@ public class HedwigWebserviceExporter extends HessianExporter implements HttpReq
 
 	public void setAppName(String appName) {
 		this.appName = appName;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.springContext = applicationContext;
+
 	}
 
 }
