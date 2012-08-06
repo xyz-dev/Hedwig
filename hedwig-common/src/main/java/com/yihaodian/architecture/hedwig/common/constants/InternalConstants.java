@@ -23,7 +23,7 @@ public interface InternalConstants {
 	public static final String SERVICE_REGISTER_ZK = "zkRegister";
 
 	public static final String PROTOCOL_PROFIX_HTTP = "http";
-	public static final String HEDWIG_URL_PATTERN = "hessian";
+	public static final String HEDWIG_URL_PATTERN = "hedwigServices";
 
 	public static final long DEFAULT_REQUEST_TIMEOUT = 3000;
 	public static final long DEFAULT_READ_TIMEOUT = 1000;

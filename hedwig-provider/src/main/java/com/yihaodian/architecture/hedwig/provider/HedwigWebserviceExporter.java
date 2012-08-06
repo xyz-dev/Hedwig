@@ -11,12 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.remoting.caucho.HessianExporter;
 import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -26,8 +22,6 @@ import com.caucho.services.server.ServiceContext;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
-import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
-import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.register.IServiceProviderRegister;
 import com.yihaodian.architecture.hedwig.register.RegisterFactory;
 
@@ -35,17 +29,11 @@ import com.yihaodian.architecture.hedwig.register.RegisterFactory;
  * @author Archer Jiang
  * 
  */
-public class HedwigWebserviceExporter extends HessianExporter implements HttpRequestHandler, InitializingBean, DisposableBean,
-		ApplicationContextAware {
+public class HedwigWebserviceExporter extends HessianExporter implements HttpRequestHandler, InitializingBean, DisposableBean {
 
 	private Logger logger = LoggerFactory.getLogger(HedwigWebserviceExporter.class);
 	private IServiceProviderRegister register;
-	private ServiceProfile profile;
-	private String appName;
-	private String serviceName;
-	private String serviceVersion;
-	private String urlPattern;
-	private ApplicationContext springContext;
+	private ServiceProfile profile = new ServiceProfile();
 
 	@Override
 	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -76,12 +64,8 @@ public class HedwigWebserviceExporter extends HessianExporter implements HttpReq
 	@Override
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
-
+		String strService = profile.toString();
 		try {
-			if (profile == null) {
-				profile = createServiceProfile();
-			}
-			String strService = profile.toString();
 			if (register == null) {
 				register = RegisterFactory.getRegister(InternalConstants.SERVICE_REGISTER_ZK);
 			}
@@ -101,63 +85,8 @@ public class HedwigWebserviceExporter extends HessianExporter implements HttpReq
 
 	}
 
-	private ServiceProfile createServiceProfile() throws InvalidParamException {
-		ServiceProfile p = new ServiceProfile();
-		if (HedwigUtil.isBlankString(appName)) {
-			throw new InvalidParamException("appName must not blank!!!");
-		}
-		p.setServiceAppName(lookupAppName());
-		if (HedwigUtil.isBlankString(serviceName)) {
-			serviceName = lookupServiceName();
-		}
-		p.setServiceName(serviceName);
-		if (HedwigUtil.isBlankString(serviceVersion)) {
-			throw new InvalidParamException("serviceVersion must not blank!!!");
-		}
-		p.setServiceVersion(serviceVersion);
-		if (!HedwigUtil.isBlankString(urlPattern)) {
-			p.setUrlPattern(urlPattern);
-		}
-		return p;
-	}
-	
-
-	private String lookupServiceName() throws InvalidParamException {
-		String name = null;
-		String[] names = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(springContext, getServiceInterface());
-		if (names != null && names.length >= 1) {
-			name = names[0];
-		}
-		if (HedwigUtil.isBlankString(name)) {
-			throw new InvalidParamException("serviceName must not blank!!!");
-		}
-		return name;
-	}
-
-	public void setServiceName(String serviceName) {
-		this.serviceName = serviceName;
-	}
-
-	public void setServiceVersion(String serviceVersion) {
-		this.serviceVersion = serviceVersion;
-	}
-
-	public void setUrlPattern(String urlPattern) {
-		this.urlPattern = urlPattern;
-	}
-
 	public void setProfile(ServiceProfile profile) {
 		this.profile = profile;
-	}
-
-	public void setAppName(String appName) {
-		this.appName = appName;
-	}
-
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.springContext = applicationContext;
-
 	}
 
 }
