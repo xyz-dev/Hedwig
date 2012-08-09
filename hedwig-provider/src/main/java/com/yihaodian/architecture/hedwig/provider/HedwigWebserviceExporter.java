@@ -42,6 +42,7 @@ public class HedwigWebserviceExporter extends HessianExporter implements HttpReq
 	private IServiceProviderRegister register;
 	private ServiceProfile profile;
 	private String appName;
+	private String domainName;
 	private String serviceName;
 	private String serviceVersion;
 	private String urlPattern;
@@ -107,6 +108,9 @@ public class HedwigWebserviceExporter extends HessianExporter implements HttpReq
 			throw new InvalidParamException("appName must not blank!!!");
 		}
 		p.setServiceAppName(appName);
+		if (!HedwigUtil.isBlankString(domainName)) {
+			p.setDomain(domainName);
+		}
 		if (HedwigUtil.isBlankString(serviceName)) {
 			serviceName = lookupServiceName();
 		}

@@ -7,18 +7,13 @@ package com.yihaodian.architecture.hedwig.common.util;
  * @author Archer
  *
  */
-public class RequestContext {
+public class InvocationContext {
 
+	private String globalId;
 	private String requestId;
 
-	public RequestContext(String requestId) {
+	public InvocationContext() {
 		super();
-		this.requestId = requestId;
-	}
-
-	public RequestContext() {
-		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getRequestId() {
@@ -27,6 +22,14 @@ public class RequestContext {
 
 	public void setRequestId(String requestId) {
 		this.requestId = requestId;
+	}
+
+	public String getGlobalId() {
+		return globalId;
+	}
+
+	public void setGlobalId(String globalId) {
+		this.globalId = globalId;
 	}
 
 }

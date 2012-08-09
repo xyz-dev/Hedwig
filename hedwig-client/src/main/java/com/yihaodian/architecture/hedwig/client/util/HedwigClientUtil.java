@@ -51,19 +51,22 @@ public class HedwigClientUtil {
 		String hostIp = ProperitesContainer.client().getProperty(PropKeyConstants.HOST_IP);
 		lock.lock();
 		try {
-			reqId = hostIp + "." + System.nanoTime();
+			reqId = hostIp + "." + getCurrentNanoTime();
 		} finally {
 			lock.unlock();
 		}
 		return reqId;
 	}
 
-	public static void main(String[] args) {
-		for (int i = 0; i < 100; i++) {
-			long start = HedwigClientUtil.getCurrentNanoTime();
-			System.out.println(HedwigClientUtil.generateReqId());
-			System.out.println("Cost:" + (HedwigClientUtil.getCurrentNanoTime() - start));
+	public static String generateGlobalId() {
+		String reqId = "";
+		String hostIp = ProperitesContainer.client().getProperty(PropKeyConstants.HOST_IP);
+		lock.lock();
+		try {
+			reqId = "global." + hostIp + "." + getCurrentNanoTime();
+		} finally {
+			lock.unlock();
 		}
+		return reqId;
 	}
-
 }

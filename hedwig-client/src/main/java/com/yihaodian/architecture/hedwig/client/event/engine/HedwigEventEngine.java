@@ -16,9 +16,12 @@ import org.slf4j.LoggerFactory;
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.client.event.handle.HedwigHandlerFactory;
 import com.yihaodian.architecture.hedwig.client.event.util.EventUtil;
+import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
 import com.yihaodian.architecture.hedwig.client.util.HedwigExecutors;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigAssert;
+import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
+import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.engine.IEventEngine;
 import com.yihaodian.architecture.hedwig.engine.event.EventState;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
@@ -70,6 +73,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		Object result = null;
 		Future<Object> f = null;
 		try {
+			final String globalId = getGlobalId();
 			final IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
 			logger.debug("Pool size:" + tpes.getPoolSize());
 			f = tpes.submit(new Callable<Object>() {
@@ -78,6 +82,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 				public Object call() throws Exception {
 					Object r = null;
 					try {
+						HedwigContextUtil.setGlobalId(globalId);
 						event.setState(EventState.processing);
 						r = handler.handle(context, event);
 					} catch (Throwable e) {
@@ -96,11 +101,20 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		return result;
 	}
 
+	private String getGlobalId() {
+		String globalId = HedwigContextUtil.getGlobalId();
+		if (HedwigUtil.isBlankString(globalId)) {
+			globalId = HedwigClientUtil.generateGlobalId();
+		}
+		return globalId;
+	}
+
 	@Override
 	public Future<Object> asyncExec(final HedwigContext context, final IEvent<Object> event) throws HedwigException {
 		HedwigAssert.isNull(event, "Execute event must not null!!!");
 		Future<Object> f = null;
 		try {
+			final String globalId = getGlobalId();
 			final IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
 			f = tpes.submit(new Callable<Object>() {
 
@@ -108,6 +122,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 				public Object call() throws Exception {
 					Object r = null;
 					try {
+						HedwigContextUtil.setGlobalId(globalId);
 						event.setState(EventState.processing);
 						r = handler.handle(context, event);
 					} catch (Throwable e) {
@@ -136,11 +151,13 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 	@Override
 	public void schedulerExec(final HedwigContext context, final IScheduledEvent<Object> event) throws HedwigException {
 		final IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
+		final String globalId = getGlobalId();
 		stpes.schedule(new Runnable() {
 			
 			@Override
 			public void run() {
 				try {
+					HedwigContextUtil.setGlobalId(globalId);
 					event.setState(EventState.processing);
 					handler.handle(context, event);
 				} catch (HandlerException e) {
