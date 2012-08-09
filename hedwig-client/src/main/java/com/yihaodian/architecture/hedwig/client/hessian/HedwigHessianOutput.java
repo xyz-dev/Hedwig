@@ -12,7 +12,7 @@ import com.caucho.hessian.io.Hessian2Constants;
 import com.caucho.hessian.io.Serializer;
 import com.caucho.hessian.util.IdentityIntMap;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
-import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
+import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
 
 /**
  * @author Archer
@@ -111,7 +111,9 @@ implements Hessian2Constants {
 		buffer[_offset++] = (byte) 0;
 		// add requestId start
 		writeHeader(InternalConstants.HEDWIG_REQUEST_ID);
-		writeString(HedwigUtil.getRequestId());
+		writeString(HedwigContextUtil.getRequestId());
+		writeHeader(InternalConstants.HEDWIG_GLOBAL_ID);
+		writeString(HedwigContextUtil.getGlobalId());
 		// add requestId end
 		buffer[_offset++] = (byte) 'm';
 	    int len = method.length();

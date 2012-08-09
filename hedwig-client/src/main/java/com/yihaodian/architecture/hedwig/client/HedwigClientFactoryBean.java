@@ -19,6 +19,7 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 
 	private Object serviceProxy;
 	private String appName;
+	private String domainName;
 	private String serviceName;
 	private String serviceVersion;
 	private String target;
@@ -54,6 +55,9 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 				throw new InvalidParamException("appName must not blank!!!");
 			}
 			p.setServiceAppName(appName);
+			if (!HedwigUtil.isBlankString(domainName)) {
+				p.setDomain(domainName);
+			}
 			if (HedwigUtil.isBlankString(serviceName)) {
 				throw new InvalidParamException("serviceName must not blank!!!");
 			}

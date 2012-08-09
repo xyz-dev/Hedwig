@@ -3,7 +3,7 @@
  */
 package com.yihaodian.architecture.hedwig.engine.handler;
 
-import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
+import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
 import com.yihaodian.architecture.hedwig.engine.event.EventState;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 import com.yihaodian.architecture.hedwig.engine.event.IEventContext;
@@ -20,7 +20,7 @@ public abstract class BaseHandler<C extends IEventContext, T> implements IEventH
 	public T handle(C context, IEvent<T> event) throws HandlerException {
 		T r=null;
 		event.increaseExecCount();
-		HedwigUtil.initRequestContext(event.getReqestId());
+		HedwigContextUtil.setRequestId(event.getReqestId());
 		try {
 			r = doHandle(context, event);
 			event.setState(EventState.sucess);
@@ -31,10 +31,10 @@ public abstract class BaseHandler<C extends IEventContext, T> implements IEventH
 			if (e instanceof HandlerException) {
 				throw (HandlerException) e;
 			} else {
-				throw new HandlerException(e.getMessage());
+				throw new HandlerException(event.getReqestId(), e.getMessage());
 			}
 		} finally {
-			HedwigUtil.destoryRequestContext();
+			HedwigContextUtil.clean();
 		}
 		
 		return r;

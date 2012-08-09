@@ -32,7 +32,7 @@ public class BaseEvent implements IEvent<Object> {
 	protected long start;
 	protected Object result;
 	protected MethodInvocation invocation;
-	protected EventState state;
+	protected List<EventState> states = new ArrayList<EventState>();
 	protected List<String> errorMessages = new ArrayList<String>();
 
 	public long getId() {
@@ -125,17 +125,26 @@ public class BaseEvent implements IEvent<Object> {
 	public String toString() {
 		return "BaseEvent [id=" + id + ", expireTime=" + expireTime + ", expireTimeUnit=" + expireTimeUnit + ", retryable=" + retryable
 				+ ", execCount=" + execCount + ", maxRedoCount=" + maxRedoCount + ", start=" + start + ", result=" + result
-				+ ", invocation=" + invocation + ", state=" + state + ", errorMessages=" + getErrorMessages() + "]";
+				+ ", invocation=" + invocation + ", state=" + list2String(states) + ", errorMessages=" + getErrorMessages()
+				+ "]";
 	}
 
+	public static String list2String(List<EventState> list) {
+		StringBuilder sb = new StringBuilder("[");
+		for (EventState o : list) {
+			sb.append(o.toString()).append(",");
+		}
+		sb.append("]");
+		return sb.toString();
+	}
 	@Override
 	public EventState getState() {
-		return state;
+		return states.get((states.size() - 1));
 	}
 
 	@Override
 	public void setState(EventState state) {
-		this.state = state;
+		this.states.add(state);
 	}
 
 	public String getErrorMessages() {

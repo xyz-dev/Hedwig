@@ -14,30 +14,6 @@ import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
  */
 public class HedwigUtil {
 
-	private static ThreadLocal<RequestContext> _threadLocal = new ThreadLocal<RequestContext>();
-
-	public static void initRequestContext(String requestId) {
-		_threadLocal.set(new RequestContext(requestId));
-	}
-
-	public static RequestContext getRequestConext() {
-		return _threadLocal.get();
-	}
-
-	public static String getRequestId() {
-		String reqId = "";
-		RequestContext rc = getRequestConext();
-		if (rc != null) {
-			reqId = rc.getRequestId();
-		}
-		return reqId;
-	}
-
-	public static void destoryRequestContext() {
-		_threadLocal.remove();
-	}
-
-
 	public static String generateKey(BaseProfile profile) {
 		StringBuilder sb = new StringBuilder(profile.getServiceAppName());
 		sb.append("_").append(profile.getServiceName()).append("_")
@@ -62,6 +38,7 @@ public class HedwigUtil {
 		sb.append("]");
 		return sb.toString();
 	}
+
 
 	public static boolean isBlankString(String value) {
 		return value == null || "".equals(value);

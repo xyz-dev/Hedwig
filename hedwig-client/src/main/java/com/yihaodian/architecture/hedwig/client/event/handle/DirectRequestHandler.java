@@ -23,23 +23,24 @@ public class DirectRequestHandler extends BaseHandler<HedwigContext, Object> {
 		Object hessianProxy = null;
 		Object result = null;
 		String sUrl = context.getClientProfile().getTarget();
+		String reqId = event.getReqestId();
 		if (HedwigUtil.isBlankString(sUrl))
-			throw new HandlerException("Target url must not null!!!");
+			throw new HandlerException(reqId, "Target url must not null!!!");
 		try {
 			hessianProxy = HedwigClientUtil.getHessianProxy(context, sUrl);
 		} catch (Exception e) {
-			throw new HandlerException(e.getCause());
+			throw new HandlerException(reqId, e.getCause());
 		}
 
 		if (hessianProxy == null) {
 			context.getHessianProxyMap().remove(sUrl);
-			throw new HandlerException("HedwigHessianInterceptor is not properly initialized");
+			throw new HandlerException(reqId, "HedwigHessianInterceptor is not properly initialized");
 		}
 		try {
 			MethodInvocation invocation = event.getInvocation();
 			result = invocation.getMethod().invoke(hessianProxy, invocation.getArguments());
 		} catch (Exception e) {
-			throw new HandlerException(e.getCause());
+			throw new HandlerException(reqId, e.getCause());
 		}
 		return result;
 	}
