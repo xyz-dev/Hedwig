@@ -162,7 +162,10 @@ public class HedwigWebserviceExporter extends HessianExporter implements HttpReq
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.springContext = applicationContext;
+	}
 
+	public void setDomainName(String domainName) {
+		this.domainName = domainName;
 	}
 
 }
