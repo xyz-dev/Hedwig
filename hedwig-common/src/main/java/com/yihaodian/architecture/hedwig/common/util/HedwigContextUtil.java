@@ -28,7 +28,6 @@ public class HedwigContextUtil {
 		try {
 			InvocationContext ic = getInvocationContext();
 			id = ic.getRequestId();
-			id = id == null ? "" : id;
 		} catch (Exception e) {
 		}
 		return id;
@@ -41,6 +40,7 @@ public class HedwigContextUtil {
 			ic = getInvocationContext();
 		} catch (Exception e) {
 			ic = new InvocationContext();
+			tl.set(ic);
 		}
 		ic.setRequestId(requestId);
 	}
@@ -50,7 +50,6 @@ public class HedwigContextUtil {
 		try {
 			InvocationContext ic = getInvocationContext();
 			id = ic.getGlobalId();
-			id = id == null ? "" : id;
 		} catch (Exception e) {
 		}
 		return id;
@@ -63,8 +62,31 @@ public class HedwigContextUtil {
 			ic = getInvocationContext();
 		} catch (Exception e) {
 			ic = new InvocationContext();
+			tl.set(ic);
 		}
-		ic.setRequestId(globalId);
+		ic.setGlobalId(globalId);
+	}
+
+	public static void setAttribute(String key, Object value) {
+		InvocationContext ic = null;
+		try {
+			ic = getInvocationContext();
+		} catch (Exception e) {
+			ic = new InvocationContext();
+			tl.set(ic);
+		}
+		ic.put(key, value);
+	}
+	
+	public static Object getAttribute(String key, Object defValue) {
+		Object value = defValue;
+		InvocationContext ic = null;
+		try {
+			ic = getInvocationContext();
+			value = ic.getValue(key, defValue);
+		} catch (Exception e) {
+		}
+		return value;
 	}
 
 	public static void clean() {

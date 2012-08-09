@@ -94,4 +94,8 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 	public void setReqTimeout(Long reqTimeout) {
 		this.reqTimeout = reqTimeout;
 	}
+
+	public void setDomainName(String domainName) {
+		this.domainName = domainName;
+	}
 }

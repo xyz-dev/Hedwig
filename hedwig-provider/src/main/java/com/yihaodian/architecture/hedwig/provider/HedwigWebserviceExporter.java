@@ -17,17 +17,17 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.remoting.caucho.HessianExporter;
 import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.util.NestedServletException;
 
-import com.caucho.services.server.ServiceContext;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
+import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
+import com.yihaodian.architecture.hedwig.hessian.HedwigHessianExporter;
 import com.yihaodian.architecture.hedwig.register.IServiceProviderRegister;
 import com.yihaodian.architecture.hedwig.register.RegisterFactory;
 
@@ -35,7 +35,7 @@ import com.yihaodian.architecture.hedwig.register.RegisterFactory;
  * @author Archer Jiang
  * 
  */
-public class HedwigWebserviceExporter extends HessianExporter implements HttpRequestHandler, InitializingBean, DisposableBean,
+public class HedwigWebserviceExporter extends HedwigHessianExporter implements HttpRequestHandler, InitializingBean, DisposableBean,
 		ApplicationContextAware {
 
 	private Logger logger = LoggerFactory.getLogger(HedwigWebserviceExporter.class);
@@ -54,16 +54,14 @@ public class HedwigWebserviceExporter extends HessianExporter implements HttpReq
 			throw new HttpRequestMethodNotSupportedException(request.getMethod(), new String[] { "POST" },
 					"HessianServiceExporter only supports POST requests");
 		}
-		ServiceContext.begin(request, profile.getServiceName(), profile.getServiceUrl());
 		try {
 			invoke(request.getInputStream(), response.getOutputStream());
-			Object obj = ServiceContext.getContextHeader(InternalConstants.HEDWIG_REQUEST_ID);
-			String reqId = obj == null ? "" : (String) obj;
-			System.out.println(reqId);
+			System.out.println(HedwigContextUtil.getRequestId());
+			System.out.println(HedwigContextUtil.getGlobalId());
 		} catch (Throwable ex) {
 			throw new NestedServletException("Hessian skeleton invocation failed", ex);
 		} finally {
-			ServiceContext.end();
+			HedwigContextUtil.clean();
 		}
 
 	}
