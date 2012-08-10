@@ -21,6 +21,7 @@ import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.util.NestedServletException;
 
+import com.caucho.services.server.ServiceContext;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
@@ -55,6 +56,7 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 					"HessianServiceExporter only supports POST requests");
 		}
 		try {
+			ServiceContext.begin(request, profile.getServiceName(), profile.getServicePath());
 			invoke(request.getInputStream(), response.getOutputStream());
 			System.out.println(HedwigContextUtil.getRequestId());
 			System.out.println(HedwigContextUtil.getGlobalId());
