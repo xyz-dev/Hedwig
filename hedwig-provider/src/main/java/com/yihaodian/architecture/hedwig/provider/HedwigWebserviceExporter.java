@@ -83,7 +83,11 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 			throw new NestedServletException("Hessian skeleton invocation failed", ex);
 		} finally {
 			HedwigContextUtil.clean();
-			MonitorJmsSendUtil.asyncSendServerBizLog(sbLog);
+			try {
+				MonitorJmsSendUtil.asyncSendServerBizLog(sbLog);
+			} catch (Exception e) {
+			}
+
 		}
 
 	}

@@ -44,7 +44,11 @@ public abstract class BaseHandler implements IEventHandler<HedwigContext, Object
 			}
 		} finally {
 			HedwigContextUtil.clean();
-			MonitorJmsSendUtil.asyncSendClientBizLog(cbLog);
+			try {
+				MonitorJmsSendUtil.asyncSendClientBizLog(cbLog);
+			} catch (Exception e2) {
+			}
+
 		}
 		
 		return r;
