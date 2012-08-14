@@ -10,6 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
+import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 
 /**
  * @author Archer
@@ -38,20 +39,13 @@ public class HedwigClientUtil {
 		return proxy;
 	}
 
-	public static long getCurrentTime() {
-		return System.currentTimeMillis();
-	}
-
-	public static long getCurrentNanoTime() {
-		return System.nanoTime();
-	}
 
 	public static String generateReqId() {
 		String reqId = "";
 		String hostIp = ProperitesContainer.client().getProperty(PropKeyConstants.HOST_IP);
 		lock.lock();
 		try {
-			reqId = hostIp + "." + getCurrentNanoTime();
+			reqId = hostIp + "." + HedwigUtil.getCurrentNanoTime();
 		} finally {
 			lock.unlock();
 		}
@@ -63,7 +57,7 @@ public class HedwigClientUtil {
 		String hostIp = ProperitesContainer.client().getProperty(PropKeyConstants.HOST_IP);
 		lock.lock();
 		try {
-			reqId = "global." + hostIp + "." + getCurrentNanoTime();
+			reqId = "global." + hostIp + "." + HedwigUtil.getCurrentNanoTime();
 		} finally {
 			lock.unlock();
 		}

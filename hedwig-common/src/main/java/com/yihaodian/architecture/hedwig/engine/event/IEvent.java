@@ -30,4 +30,6 @@ public interface IEvent<T> extends Serializable {
 	public void setErrorMessage(String errorMessage);
 
 	public String getReqestId();
+
+	public long getStart();
 }

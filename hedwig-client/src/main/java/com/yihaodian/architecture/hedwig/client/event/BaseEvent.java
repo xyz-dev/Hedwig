@@ -35,6 +35,17 @@ public class BaseEvent implements IEvent<Object> {
 	protected List<EventState> states = new ArrayList<EventState>();
 	protected List<String> errorMessages = new ArrayList<String>();
 
+	public BaseEvent() {
+		super();
+		this.start = HedwigUtil.getCurrentTime();
+	}
+
+	@Override
+	public long getStart() {
+		return start;
+	}
+
+
 	public long getId() {
 		return id;
 	}
@@ -57,7 +68,7 @@ public class BaseEvent implements IEvent<Object> {
 	}
 
 	protected boolean isExpire() {
-		return (System.currentTimeMillis() - start) > expireTime;
+		return (HedwigUtil.getCurrentTime() - start) > expireTime;
 	}
 
 	protected boolean isReachMaxRedoCount() {
@@ -154,5 +165,6 @@ public class BaseEvent implements IEvent<Object> {
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessages.add(errorMessage);
 	}
+
 
 }

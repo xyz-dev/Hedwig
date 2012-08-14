@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
@@ -7,7 +7,6 @@
     <groupId>com.yihaodian.architecture</groupId>
     <version>0.1-SNAPSHOT</version>
   </parent>
-  <groupId>com.yihaodian.architecture</groupId>
   <artifactId>hedwig-common</artifactId>
   <version>0.1-SNAPSHOT</version>
   <name>hedwig-common</name>
@@ -20,34 +19,42 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
     	<groupId>org.slf4j</groupId>
     	<artifactId>slf4j-api</artifactId>
+    	<optional>true</optional>
     </dependency>
     <dependency>
     	<groupId>org.slf4j</groupId>
     	<artifactId>slf4j-log4j12</artifactId>
+    	<optional>true</optional>
     </dependency>
     <dependency>
     	<groupId>log4j</groupId>
     	<artifactId>log4j</artifactId>
+    	<optional>true</optional>
     </dependency>
     <dependency>
     	<groupId>aopalliance</groupId>
     	<artifactId>aopalliance</artifactId>
+    	<optional>true</optional>
     </dependency>
     <dependency>
     	<groupId>com.yihaodian.architecture</groupId>
     	<artifactId>hedwig-zk</artifactId>
+    	<optional>true</optional>
     </dependency>
     <dependency>
     	<groupId>com.caucho</groupId>
     	<artifactId>hessian</artifactId>
+    	<optional>true</optional>
     </dependency>
     <dependency>
     	<groupId>com.yihaodian.configcentre</groupId>
     	<artifactId>ycc-client</artifactId>
     </dependency>
+
  </dependencies>
 </project>

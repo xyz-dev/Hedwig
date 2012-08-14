@@ -6,8 +6,6 @@ package com.yihaodian.architecture.hedwig.common.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
-
 /**
  * @author Archer
  *
@@ -15,25 +13,37 @@ import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 public class InvocationContext {
 
 	private Map<String, Object> context = new HashMap<String, Object>();
+	private String requestId;
+	private String globalId;
+	private Object[] args;
 
 	public InvocationContext() {
 		super();
 	}
 
+
 	public String getRequestId() {
-		return getStrValue(InternalConstants.HEDWIG_REQUEST_ID);
+		return requestId;
 	}
 
 	public void setRequestId(String requestId) {
-		put(InternalConstants.HEDWIG_REQUEST_ID, requestId);
+		this.requestId = requestId;
 	}
 
 	public String getGlobalId() {
-		return getStrValue(InternalConstants.HEDWIG_GLOBAL_ID);
+		return globalId;
 	}
 
 	public void setGlobalId(String globalId) {
-		put(InternalConstants.HEDWIG_REQUEST_ID, globalId);
+		this.globalId = globalId;
+	}
+
+	public Object[] getArgs() {
+		return args;
+	}
+
+	public void setArgs(Object[] args) {
+		this.args = args;
 	}
 
 	public void put(String key, Object value) {

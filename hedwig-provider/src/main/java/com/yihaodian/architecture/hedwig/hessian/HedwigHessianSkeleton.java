@@ -106,6 +106,7 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 		Object result = null;
 
 		try {
+			HedwigContextUtil.setArguments(values);
 			result = method.invoke(_service, values);
 		} catch (Throwable e) {
 			if (e instanceof InvocationTargetException)

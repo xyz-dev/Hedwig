@@ -10,13 +10,12 @@ import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
-import com.yihaodian.architecture.hedwig.engine.handler.BaseHandler;
 
 /**
  * @author Archer
  *
  */
-public class DirectRequestHandler extends BaseHandler<HedwigContext, Object> {
+public class DirectRequestHandler extends BaseHandler {
 
 	@Override
 	protected Object doHandle(HedwigContext context, IEvent<Object> event) throws HandlerException {

@@ -4,6 +4,7 @@
 package com.yihaodian.architecture.hedwig.provider;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +23,9 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.util.NestedServletException;
 
 import com.caucho.services.server.ServiceContext;
+import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
+import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
@@ -31,6 +34,9 @@ import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.hessian.HedwigHessianExporter;
 import com.yihaodian.architecture.hedwig.register.IServiceProviderRegister;
 import com.yihaodian.architecture.hedwig.register.RegisterFactory;
+import com.yihaodian.monitor.dto.ServerBizLog;
+import com.yihaodian.monitor.util.MonitorConstants;
+import com.yihaodian.monitor.util.MonitorJmsSendUtil;
 
 /**
  * @author Archer Jiang
@@ -48,26 +54,39 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 	private String serviceVersion;
 	private String urlPattern;
 	private ApplicationContext springContext;
+	private ServerBizLog sbLog;
 
 	@Override
 	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Date start =new Date();
+		sbLog = new ServerBizLog();
 		if (!"POST".equals(request.getMethod())) {
 			throw new HttpRequestMethodNotSupportedException(request.getMethod(), new String[] { "POST" },
 					"HessianServiceExporter only supports POST requests");
 		}
 		try {
 			ServiceContext.begin(request, profile.getServiceName(), profile.getServicePath());
+			sbLog.setReqId(HedwigContextUtil.getRequestId());
+			sbLog.setUniqReqId(HedwigContextUtil.getGlobalId());
+			sbLog.setGetReqTime(start);
+			sbLog.setProviderApp(profile.getServiceAppName());
+			sbLog.setProviderHost(ProperitesContainer.provider().getProperty(PropKeyConstants.HOST_IP));
+			sbLog.setServiceName(profile.getServiceName());
 			invoke(request.getInputStream(), response.getOutputStream());
-			System.out.println(HedwigContextUtil.getRequestId());
-			System.out.println(HedwigContextUtil.getGlobalId());
+			sbLog.setRespResultTime(new Date());
+			sbLog.setSuccessed(MonitorConstants.SUCCESS);
 		} catch (Throwable ex) {
+			sbLog.setInParamObjects(HedwigContextUtil.getArguments());
+			sbLog.setSuccessed(MonitorConstants.FAIL);
+			sbLog.setExceptionClassname(HedwigUtil.getExceptionClassName(ex));
+			sbLog.setExceptionDesc(HedwigUtil.getExceptionMsg(ex));
 			throw new NestedServletException("Hessian skeleton invocation failed", ex);
 		} finally {
 			HedwigContextUtil.clean();
+			MonitorJmsSendUtil.asyncSendServerBizLog(sbLog);
 		}
 
 	}
-
 	@Override
 	public void destroy() throws Exception {
 		register.unRegist(profile);
