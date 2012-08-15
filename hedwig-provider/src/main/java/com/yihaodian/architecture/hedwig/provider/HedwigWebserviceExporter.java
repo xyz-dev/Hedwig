@@ -66,8 +66,6 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 		}
 		try {
 			ServiceContext.begin(request, profile.getServiceName(), profile.getServicePath());
-			sbLog.setReqId(HedwigContextUtil.getRequestId());
-			sbLog.setUniqReqId(HedwigContextUtil.getGlobalId());
 			sbLog.setGetReqTime(start);
 			sbLog.setProviderApp(profile.getServiceAppName());
 			sbLog.setProviderHost(ProperitesContainer.provider().getProperty(PropKeyConstants.HOST_IP));
@@ -82,11 +80,13 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 			sbLog.setExceptionDesc(HedwigUtil.getExceptionMsg(ex));
 			throw new NestedServletException("Hessian skeleton invocation failed", ex);
 		} finally {
-			HedwigContextUtil.clean();
+			sbLog.setReqId(HedwigContextUtil.getRequestId());
+			sbLog.setUniqReqId(HedwigContextUtil.getGlobalId());
 			try {
 				MonitorJmsSendUtil.asyncSendServerBizLog(sbLog);
 			} catch (Exception e) {
 			}
+			HedwigContextUtil.clean();
 
 		}
 

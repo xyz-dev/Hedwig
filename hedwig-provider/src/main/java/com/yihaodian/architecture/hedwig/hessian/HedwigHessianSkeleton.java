@@ -68,7 +68,14 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 			Object value = in.readObject();
 
 			context.addHeader(header, value);
-			HedwigContextUtil.setAttribute(header, value);
+			if(value!=null){
+				if(InternalConstants.HEDWIG_REQUEST_ID.equals(header)){
+					HedwigContextUtil.setRequestId((String)value);
+				}else if(InternalConstants.HEDWIG_GLOBAL_ID.equals(header)){
+					HedwigContextUtil.setGlobalId((String)value);
+				}
+				HedwigContextUtil.setAttribute(header, value);
+			}
 		}
 
 		String methodName = in.readMethod();
