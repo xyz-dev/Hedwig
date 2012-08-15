@@ -16,6 +16,7 @@ public class InvocationContext {
 	private String requestId;
 	private String globalId;
 	private Object[] args;
+	private boolean voidMethod;
 
 	public InvocationContext() {
 		super();
@@ -64,6 +65,14 @@ public class InvocationContext {
 	public String getStrValue(String key) {
 		Object obj = getValue(key, null);
 		return obj == null ? "" : (String) obj;
+	}
+
+	public boolean isVoidMethod() {
+		return voidMethod;
+	}
+
+	public void setVoidMethod(boolean voidMethod) {
+		this.voidMethod = voidMethod;
 	}
 
 }

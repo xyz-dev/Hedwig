@@ -26,6 +26,14 @@ public class HedwigContextUtil {
 
 	}
 
+	public static boolean isVoidMethod() {
+		return getInvocationContext().isVoidMethod();
+	}
+
+	public static void setVoidMethod(boolean b) {
+		getInvocationContext().setVoidMethod(b);
+	}
+
 	public static void setArguments(Object[] params) {
 		if (params == null)
 			return;

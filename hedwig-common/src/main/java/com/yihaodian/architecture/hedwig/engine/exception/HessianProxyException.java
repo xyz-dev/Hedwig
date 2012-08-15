@@ -1,9 +1,8 @@
 /**
  * 
  */
-package com.yihaodian.architecture.hedwig.client.event.handle.exception;
+package com.yihaodian.architecture.hedwig.engine.exception;
 
-import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
 
 /**
  * @author Archer

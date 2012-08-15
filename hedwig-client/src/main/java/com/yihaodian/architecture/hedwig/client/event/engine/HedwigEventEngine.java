@@ -3,7 +3,6 @@
  */
 package com.yihaodian.architecture.hedwig.client.event.engine;
 
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -17,10 +16,11 @@ import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.client.event.handle.HedwigHandlerFactory;
 import com.yihaodian.architecture.hedwig.client.event.util.EventUtil;
 import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
-import com.yihaodian.architecture.hedwig.client.util.HedwigExecutors;
+import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigAssert;
 import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
+import com.yihaodian.architecture.hedwig.common.util.HedwigExecutors;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.engine.IEventEngine;
 import com.yihaodian.architecture.hedwig.engine.event.EventState;
@@ -52,9 +52,8 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 	private HedwigEventEngine() {
 		super();
 		this.handlerFactory = new HedwigHandlerFactory();
-		this.eventQueue = new ArrayBlockingQueue<Runnable>(20);
-		this.tpes = HedwigExecutors.newCachedThreadPool(eventQueue);
-		this.stpes = HedwigExecutors.newSchedulerThreadPool();
+		this.tpes = HedwigExecutors.newCachedThreadPool(InternalConstants.HEDWIG_CLIENT);
+		this.stpes = HedwigExecutors.newSchedulerThreadPool(InternalConstants.HEDWIG_CLIENT);
 	}
 
 	@Override

@@ -29,9 +29,10 @@ public interface InternalConstants {
 	public static final long DEFAULT_READ_TIMEOUT = 1000;
 	public static final long DEFAULT_WAITING = 5000;
 
-	public static final int DEFAULT_SYNC_POOL_CORESIZE = 20;
-	public static final int DEFAULT_SYNC_POOL_MAXSIZE = 30;
-	public static final int DEFAULT_SYNC_POOL_IDLETIME = 60;
+	public static final int DEFAULT_POOL_CORESIZE = 20;
+	public static final int DEFAULT_POOL_MAXSIZE = 30;
+	public static final int DEFAULT_POOL_IDLETIME = 60;
+	public static final int DEFAULT_POOL_QUEUESIZE = 20;
 
 	public static final int DEFAULT_SCHEDULER_POOL_CORESIZE = 5;
 	public static final int DEFAULT_SCHEDULER_POOL_MAXSIZE = 10;
@@ -40,4 +41,6 @@ public interface InternalConstants {
 	public static final String HEDWIG_REQUEST_ID = "reqId";
 	public static final String HEDWIG_GLOBAL_ID = "globalId";
 
+	public static final int HEDWIG_CLIENT = -1;
+	public static final int HEDWIG_PROVIDER = 1;
 }

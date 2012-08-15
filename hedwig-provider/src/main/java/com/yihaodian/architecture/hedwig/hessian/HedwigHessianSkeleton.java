@@ -5,21 +5,26 @@ package com.yihaodian.architecture.hedwig.hessian;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.concurrent.ExecutorService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.caucho.hessian.io.AbstractHessianInput;
 import com.caucho.hessian.io.AbstractHessianOutput;
 import com.caucho.services.server.AbstractSkeleton;
 import com.caucho.services.server.ServiceContext;
+import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
+import com.yihaodian.architecture.hedwig.common.util.HedwigExecutors;
 
 /**
  * @author Archer
  *
  */
 public class HedwigHessianSkeleton extends AbstractSkeleton {
-	private static final Logger log = Logger.getLogger(HedwigHessianSkeleton.class.getName());
+	private static final Logger log = LoggerFactory.getLogger(HedwigHessianSkeleton.class);
+	ExecutorService es = HedwigExecutors.newCachedThreadPool(InternalConstants.HEDWIG_PROVIDER);
 
 	private Object _service;
 
@@ -67,7 +72,7 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 		}
 
 		String methodName = in.readMethod();
-		Method method = getMethod(methodName);
+		final Method method = getMethod(methodName);
 
 		if (method != null) {
 		} else if ("_hessian_getAttribute".equals(methodName)) {
@@ -97,8 +102,7 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 		}
 
 		Class[] args = method.getParameterTypes();
-		Object[] values = new Object[args.length];
-
+		final Object[] values = new Object[args.length];
 		for (int i = 0; i < args.length; i++) {
 			values[i] = in.readObject(args[i]);
 		}
@@ -107,12 +111,29 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 
 		try {
 			HedwigContextUtil.setArguments(values);
-			result = method.invoke(_service, values);
+			String rt = method.getReturnType().getName();
+			boolean isVoid = "void".equalsIgnoreCase(rt);
+			HedwigContextUtil.setVoidMethod(isVoid);
+			if (isVoid) {
+				es.execute(new Runnable() {
+
+					@Override
+					public void run() {
+						try {
+							method.invoke(_service, values);
+						} catch (Throwable e) {
+							log.debug(e.getMessage(), e);
+						}
+					}
+				});
+			} else {
+				result = method.invoke(_service, values);
+			}
 		} catch (Throwable e) {
 			if (e instanceof InvocationTargetException)
 				e = ((InvocationTargetException) e).getTargetException();
 
-			log.log(Level.WARNING, e.toString(), e);
+			log.debug(e.getMessage(), e);
 
 			out.startReply();
 			out.writeFault("ServiceException", e.getMessage(), e);

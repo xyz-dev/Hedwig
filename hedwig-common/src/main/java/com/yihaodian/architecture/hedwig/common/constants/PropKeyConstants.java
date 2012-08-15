@@ -9,9 +9,10 @@ public interface PropKeyConstants {
 	public static final String HOST_PORT = "host.port";
 	public static final String HOST_WEIGHTED = "host.weight";
 
-	public static final String HEDWIG_SYNC_POOL_CORESIZE = "syncPool.size";
-	public static final String HEDWIG_SYNC_POOL_MAXSIZE = "syncPool.maxSize";
-	public static final String HEDWIG_SYNC_POOL_IDLETIME = "syncPool.idleTime";
+	public static final String HEDWIG_POOL_CORESIZE = "pool.size";
+	public static final String HEDWIG_POOL_MAXSIZE = "pool.maxSize";
+	public static final String HEDWIG_POOL_IDLETIME = "pool.idleTime";
+	public static final String HEDWIG_POOL_QUEUESIZE = "pool.queueSize";
 
 	public static final String HEDWIG_SCHEDULER_POOL_CORESIZE = "schedulerPool.size";
 	public static final String HEDWIG_SCHEDULER_POOL_MAXSIZE = "schedulerPool.maxSize";
