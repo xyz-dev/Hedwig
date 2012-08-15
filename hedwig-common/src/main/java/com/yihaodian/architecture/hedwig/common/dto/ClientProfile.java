@@ -23,6 +23,7 @@ public class ClientProfile extends BaseProfile implements Serializable {
 	private long timeout = 2000l;
 	private boolean profileSensitive = false;
 	private String requestType;
+	private String clientAppName;
 
 	public ClientProfile() {
 		super();
@@ -39,6 +40,10 @@ public class ClientProfile extends BaseProfile implements Serializable {
 
 	public String getBalanceAlgo() {
 		return balanceAlgo;
+	}
+
+	public void setBalanceAlgo(String balanceAlgo) {
+		this.balanceAlgo = balanceAlgo;
 	}
 
 	public void setBalanceAlg(String balanceAlgo) {
@@ -67,6 +72,14 @@ public class ClientProfile extends BaseProfile implements Serializable {
 
 	public void setRequestType(String requestType) {
 		this.requestType = requestType;
+	}
+
+	public String getClientAppName() {
+		return clientAppName;
+	}
+
+	public void setClientAppName(String clientAppName) {
+		this.clientAppName = clientAppName;
 	}
 
 	@Override

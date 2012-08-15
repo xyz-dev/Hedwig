@@ -27,7 +27,7 @@ public interface IEventEngine<C extends IEventContext, T> {
 	 * @return
 	 * @throws Exception
 	 */
-	public T syncInnerExec(C context, final IEvent<T> event) throws HedwigException;
+	public T syncInnerThreadExec(C context, final IEvent<T> event) throws HedwigException;
 
 	/**
 	 * Invoke event handler in thread pool

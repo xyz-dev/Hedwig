@@ -58,12 +58,22 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 	}
 
 	@Override
-	public Object syncInnerExec(HedwigContext context, final IEvent<Object> event) throws HedwigException {
+	public Object syncInnerThreadExec(HedwigContext context, final IEvent<Object> event) throws HedwigException {
 		HedwigAssert.isNull(event, "Execute event must not null!!!");
 		Object result = null;
+		String globalId = getGlobalId();
+		HedwigContextUtil.setGlobalId(globalId);
+		HedwigContextUtil.setRequestId(event.getReqestId());
 		IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
 		event.setState(EventState.processing);
-		result = handler.handle(context, event);
+		try {
+			result = handler.handle(context, event);
+		} catch (Exception e) {
+			logger.debug(e.getMessage(), e);
+		} finally {
+			HedwigContextUtil.clean();
+		}
+
 		return result;
 	}
 
@@ -83,11 +93,14 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 					Object r = null;
 					try {
 						HedwigContextUtil.setGlobalId(globalId);
+						HedwigContextUtil.setRequestId(event.getReqestId());
 						event.setState(EventState.processing);
 						r = handler.handle(context, event);
 					} catch (Throwable e) {
 						logger.debug(e.getMessage(), e);
 						EventUtil.retry(handler, event, context);
+					} finally {
+						HedwigContextUtil.clean();
 					}
 					return r;
 				}
@@ -123,11 +136,14 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 					Object r = null;
 					try {
 						HedwigContextUtil.setGlobalId(globalId);
+						HedwigContextUtil.setRequestId(event.getReqestId());
 						event.setState(EventState.processing);
 						r = handler.handle(context, event);
 					} catch (Throwable e) {
 						logger.debug(e.getMessage());
 						EventUtil.retry(handler, event, context);
+					} finally {
+						HedwigContextUtil.clean();
 					}
 					return r;
 				}
@@ -158,10 +174,13 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 			public void run() {
 				try {
 					HedwigContextUtil.setGlobalId(globalId);
+					HedwigContextUtil.setRequestId(event.getReqestId());
 					event.setState(EventState.processing);
 					handler.handle(context, event);
 				} catch (HandlerException e) {
 					logger.debug(e.getMessage());
+				} finally {
+					HedwigContextUtil.clean();
 				}
 			}
 		}, event.getDelay(), event.getDelayUnit());

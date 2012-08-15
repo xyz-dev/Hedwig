@@ -18,11 +18,12 @@ import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 public class HedwigClientFactoryBean extends HedwigEventInterceptor implements FactoryBean {
 
 	private Object serviceProxy;
-	private String appName;
+	private String serviceAppName;
 	private String domainName;
 	private String serviceName;
 	private String serviceVersion;
 	private String target;
+	private String clientAppName;
 	private Long reqTimeout;
 
 	@Override
@@ -51,10 +52,14 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 	private ClientProfile createClientProfile() throws InvalidParamException {
 		ClientProfile p = new ClientProfile();
 		if (HedwigUtil.isBlankString(target)) {
-			if (HedwigUtil.isBlankString(appName)) {
-				throw new InvalidParamException("appName must not blank!!!");
+			if (HedwigUtil.isBlankString(serviceAppName)) {
+				throw new InvalidParamException("serviceAppName must not blank!!!");
 			}
-			p.setServiceAppName(appName);
+			p.setServiceAppName(serviceAppName);
+			if (HedwigUtil.isBlankString(clientAppName)) {
+				throw new InvalidParamException("clientAppName must not blank!!!");
+			}
+			p.setClientAppName(clientAppName);
 			if (!HedwigUtil.isBlankString(domainName)) {
 				p.setDomain(domainName);
 			}
@@ -75,8 +80,9 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 
 		return p;
 	}
-	public void setAppName(String appName) {
-		this.appName = appName;
+
+	public void setServiceAppName(String serviceAppName) {
+		this.serviceAppName = serviceAppName;
 	}
 
 	public void setServiceName(String serviceName) {
@@ -98,4 +104,9 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 	public void setDomainName(String domainName) {
 		this.domainName = domainName;
 	}
+
+	public void setClientAppName(String clientAppName) {
+		this.clientAppName = clientAppName;
+	}
+
 }
