@@ -61,7 +61,6 @@ public abstract class BaseHandler implements IEventHandler<HedwigContext, Object
 			try {
 				MonitorJmsSendUtil.asyncSendClientBizLog(cbLog);
 			} catch (Exception e2) {
-				e2.printStackTrace();
 			}
 		}
 		
