@@ -27,7 +27,8 @@ public class SyncRequestHandler extends BaseHandler {
 		String reqId = event.getReqestId();
 		Object hessianProxy = null;
 		if (sp == null)
-			throw new ProviderNotFindException(reqId, "Can't find service provider for :" + context.getClientProfile().toString());
+			throw new ProviderNotFindException(reqId, " Can't find service provider for :"
+					+ context.getClientProfile().toString());
 		String sUrl = sp.getServiceUrl();
 		try {
 			hessianProxy = HedwigClientUtil.getHessianProxy(context, sUrl);
@@ -38,7 +39,7 @@ public class SyncRequestHandler extends BaseHandler {
 		if (hessianProxy == null) {
 			sp.setAvailable(false);
 			context.getHessianProxyMap().remove(sUrl);
-			throw new HessianProxyException(reqId, "HedwigHessianInterceptor is not properly initialized");
+			throw new HessianProxyException(reqId, "Server is not avaliable" + sp.toString());
 		}
 		MethodInvocation invocation = event.getInvocation();
 		Object[] params = invocation.getArguments();
@@ -46,7 +47,7 @@ public class SyncRequestHandler extends BaseHandler {
 			cbLog.setProviderHost(sp.getHostIp());
 			result = invocation.getMethod().invoke(hessianProxy, params);
 		} catch (Throwable e) {
-			throw new HandlerException(reqId, e.getCause());
+			throw new HandlerException(reqId, sp.toString(), e.getCause());
 		}
 		return result;
 	}

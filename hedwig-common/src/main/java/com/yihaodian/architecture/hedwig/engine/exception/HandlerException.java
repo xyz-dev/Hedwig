@@ -36,7 +36,7 @@ public class HandlerException extends HedwigException {
 	public static String createMessage(String reqId, String message) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(InternalConstants.HEDWIG_REQUEST_ID).append(":").append(reqId);
-		sb.append(",").append(message);
+		sb.append(" , ").append(message).append("; ");
 		return sb.toString();
 
 	}
