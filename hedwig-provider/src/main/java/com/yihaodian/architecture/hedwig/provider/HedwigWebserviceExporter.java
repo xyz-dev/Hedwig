@@ -152,9 +152,14 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 
 	private String lookupServiceName() throws InvalidParamException {
 		String name = null;
-		String[] names = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(springContext, getServiceInterface());
+		String[] names = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(springContext, this.getClass());
 		if (names != null && names.length >= 1) {
-			name = names[0];
+			for(String beanName:names){
+				HedwigHessianExporter hhe = (HedwigHessianExporter)springContext.getBean(beanName);
+				if(hhe.getServiceInterface().equals(getServiceInterface())){
+					return beanName;
+				}
+			}
 		}
 		if (HedwigUtil.isBlankString(name)) {
 			throw new InvalidParamException("serviceName must not blank!!!");
