@@ -24,7 +24,7 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 	private String serviceVersion;
 	private String target;
 	private String clientAppName;
-	private Long reqTimeout;
+	private Long timeout;
 
 	@Override
 	public Object getObject() throws Exception {
@@ -71,8 +71,8 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 				throw new InvalidParamException("serviceVersion must not blank!!!");
 			}
 			p.setServiceVersion(serviceVersion);
-			if (reqTimeout != null && (reqTimeout.longValue() > InternalConstants.DEFAULT_REQUEST_TIMEOUT)) {
-				p.setTimeout(reqTimeout);
+			if (timeout != null && (timeout.longValue() > InternalConstants.DEFAULT_REQUEST_TIMEOUT)) {
+				p.setTimeout(timeout);
 			}
 		} else {
 			p.setTarget(target);
@@ -97,8 +97,8 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 		this.target = target;
 	}
 
-	public void setReqTimeout(Long reqTimeout) {
-		this.reqTimeout = reqTimeout;
+	public void setTimeout(Long timeout) {
+		this.timeout = timeout;
 	}
 
 	public void setDomainName(String domainName) {
