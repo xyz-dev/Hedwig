@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
+import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
 
 /**
  * @author Archer Jiang
@@ -20,7 +21,8 @@ public class ClientProfile extends BaseProfile implements Serializable {
 	private static final long serialVersionUID = -5339046889514181081L;
 	private String balanceAlgo = InternalConstants.BALANCER_NAME_WEIGHTED_ROUNDROBIN;
 	private String target = "";
-	private long timeout = InternalConstants.DEFAULT_READ_TIMEOUT;
+	private long timeout = ProperitesContainer.client().getLongProperty(PropKeyConstants.HEDWIG_READ_TIMEOUT,
+			InternalConstants.DEFAULT_READ_TIMEOUT);
 	private boolean profileSensitive = false;
 	private String requestType;
 	private String clientAppName;
