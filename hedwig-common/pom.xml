@@ -44,6 +44,7 @@
     <dependency>
     	<groupId>com.yihaodian.architecture</groupId>
     	<artifactId>hedwig-zk</artifactId>
+    	<version>0.1-SNAPSHOT</version>
     	<optional>true</optional>
     </dependency>
     <dependency>

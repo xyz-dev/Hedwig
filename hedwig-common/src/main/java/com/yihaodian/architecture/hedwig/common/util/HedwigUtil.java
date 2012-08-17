@@ -85,15 +85,14 @@ public class HedwigUtil {
 	}
 
 	public static String getExceptionMsg(Throwable throwable) {
-		String msg = "";
+		StringBuilder msg = new StringBuilder();
 		if (throwable != null) {
-			Throwable cause = throwable.getCause();
-			if (cause != null) {
-				msg = cause.getMessage();
-			} else {
-				msg = throwable.getMessage();
+			Throwable cause = throwable;
+			while (cause != null) {
+				msg.append(cause.getMessage());
+				cause = cause.getCause();
 			}
 		}
-		return msg;
+		return msg.toString();
 	}
 }
