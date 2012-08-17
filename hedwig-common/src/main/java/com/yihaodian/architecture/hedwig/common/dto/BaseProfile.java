@@ -21,7 +21,7 @@ public class BaseProfile implements Serializable {
 	 */
 	private static final long serialVersionUID = -6856572567927129370L;
 	protected String rootPath = InternalConstants.BASE_ROOT;
-	protected String domain = InternalConstants.UNKONW_DOMAIN;
+	protected String domainName = InternalConstants.UNKONW_DOMAIN;
 	protected String parentPath;
 	protected String serviceAppName = "defaultAppName";
 	protected String serviceName = "defaultServiceName";
@@ -35,12 +35,12 @@ public class BaseProfile implements Serializable {
 		return rootPath;
 	}
 
-	public String getDomain() {
-		return domain;
+	public String getDomainName() {
+		return domainName;
 	}
 
-	public void setDomain(String domain) {
-		this.domain = domain;
+	public void setDomainName(String domainName) {
+		this.domainName = domainName;
 	}
 
 	public void setRootPath(String rootPath) {

@@ -30,7 +30,7 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	private String urlPattern=InternalConstants.HEDWIG_URL_PATTERN;
 	private String hostIp;
 	private String jvmPid;
-	private String port = "8080";
+	private int port = 8080;
 	private int revision = 0;
 	private int weighted = 1;
 	private double loadRate = 0.0d;
@@ -43,7 +43,7 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 		ProperitesContainer container = ProperitesContainer.provider();
 		hostIp = container.getProperty(PropKeyConstants.HOST_IP);
 		jvmPid = container.getProperty(PropKeyConstants.JVM_PID);
-		port = container.getProperty(PropKeyConstants.HOST_PORT, port);
+		port = container.getIntProperty(PropKeyConstants.HOST_PORT, port);
 		parentPath = container.getProperty(PropKeyConstants.ZK_ROOT_PATH, parentPath);
 		weighted = HedwigUtil.ParseString2Int(container.getProperty(PropKeyConstants.HOST_WEIGHTED), 1);
 	}
@@ -132,11 +132,11 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 		this.revision = revision;
 	}
 
-	public String getPort() {
+	public int getPort() {
 		return port;
 	}
 
-	public void setPort(String port) {
+	public void setPort(int port) {
 		this.port = port;
 	}
 

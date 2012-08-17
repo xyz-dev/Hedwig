@@ -48,11 +48,9 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 	private Logger logger = LoggerFactory.getLogger(HedwigWebserviceExporter.class);
 	private IServiceProviderRegister register;
 	private ServiceProfile profile;
-	private String appName;
-	private String domainName;
+	private AppContext appContext;
 	private String serviceName;
 	private String serviceVersion;
-	private String urlPattern;
 	private ApplicationContext springContext;
 	private ServerBizLog sbLog;
 
@@ -122,18 +120,16 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 				System.exit(1);
 			}
 		}
-
 	}
 
 	private ServiceProfile createServiceProfile() throws InvalidParamException {
+		if (appContext == null) {
+			throw new InvalidParamException("appContexts must not blank!!!");
+		}
 		ServiceProfile p = new ServiceProfile();
-		if (HedwigUtil.isBlankString(appName)) {
-			throw new InvalidParamException("appName must not blank!!!");
-		}
-		p.setServiceAppName(appName);
-		if (!HedwigUtil.isBlankString(domainName)) {
-			p.setDomain(domainName);
-		}
+		p.setDomainName(appContext.getDomainName());
+		p.setServiceAppName(appContext.getServiceAppName());
+		p.setUrlPattern(appContext.getUrlPattern());
 		if (HedwigUtil.isBlankString(serviceName)) {
 			serviceName = lookupServiceName();
 		}
@@ -142,10 +138,6 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 			throw new InvalidParamException("serviceVersion must not blank!!!");
 		}
 		p.setServiceVersion(serviceVersion);
-		if (HedwigUtil.isBlankString(urlPattern)) {
-			urlPattern = InternalConstants.HEDWIG_URL_PATTERN;
-		}
-		p.setUrlPattern(urlPattern);
 		return p;
 	}
 
@@ -175,16 +167,8 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 		this.serviceVersion = serviceVersion;
 	}
 
-	public void setUrlPattern(String urlPattern) {
-		this.urlPattern = urlPattern;
-	}
-
 	public void setProfile(ServiceProfile profile) {
 		this.profile = profile;
-	}
-
-	public void setAppName(String appName) {
-		this.appName = appName;
 	}
 
 	@Override
@@ -192,8 +176,5 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 		this.springContext = applicationContext;
 	}
 
-	public void setDomainName(String domainName) {
-		this.domainName = domainName;
-	}
 
 }

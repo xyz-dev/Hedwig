@@ -18,9 +18,9 @@ public class ClientProfile extends BaseProfile implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -5339046889514181081L;
-	private String balanceAlgo = InternalConstants.BALANCER_NAME_ROUNDROBIN;
+	private String balanceAlgo = InternalConstants.BALANCER_NAME_WEIGHTED_ROUNDROBIN;
 	private String target = "";
-	private long timeout = 2000l;
+	private long timeout = InternalConstants.DEFAULT_READ_TIMEOUT;
 	private boolean profileSensitive = false;
 	private String requestType;
 	private String clientAppName;

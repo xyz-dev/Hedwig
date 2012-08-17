@@ -61,7 +61,7 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 			}
 			p.setClientAppName(clientAppName);
 			if (!HedwigUtil.isBlankString(domainName)) {
-				p.setDomain(domainName);
+				p.setDomainName(domainName);
 			}
 			if (HedwigUtil.isBlankString(serviceName)) {
 				throw new InvalidParamException("serviceName must not blank!!!");

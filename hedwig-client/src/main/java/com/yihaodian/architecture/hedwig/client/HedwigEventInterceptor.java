@@ -57,7 +57,6 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 		}finally{
 			System.out.println("Event execute total time:" + (HedwigUtil.getCurrentTime() - start));
 		}
-
 		event = null;
 		return result;
 	}
@@ -65,9 +64,10 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		eventEngine = HedwigEventEngine.getEngine();
-		long timeOut = ProperitesContainer.client().getLongProperty(PropKeyConstants.HEDWIG_READ_TIMEOUT,
+		long defaultReadTime = ProperitesContainer.client().getLongProperty(PropKeyConstants.HEDWIG_READ_TIMEOUT,
 				InternalConstants.DEFAULT_READ_TIMEOUT);
-		proxyFactory.setReadTimeout(timeOut);
+		long customReadTime = clientProfile.getTimeout();
+		proxyFactory.setReadTimeout(customReadTime > defaultReadTime ? customReadTime : defaultReadTime);
 		proxyFactory.setHessian2Request(true);
 		proxyFactory.setHessian2Reply(true);
 		eventContext = new HedwigContext(hessianProxyMap, clientProfile, proxyFactory, serviceInterface);
