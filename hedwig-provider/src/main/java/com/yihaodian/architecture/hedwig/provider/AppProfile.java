@@ -9,7 +9,7 @@ import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
  * @author Archer
  *
  */
-public class AppContext {
+public class AppProfile {
 
 	private String domainName = InternalConstants.UNKONW_DOMAIN;
 	private String serviceAppName = "defaultAppName";

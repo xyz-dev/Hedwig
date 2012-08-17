@@ -48,7 +48,7 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 	private Logger logger = LoggerFactory.getLogger(HedwigWebserviceExporter.class);
 	private IServiceProviderRegister register;
 	private ServiceProfile profile;
-	private AppContext appContext;
+	private AppProfile appProfile;
 	private String serviceName;
 	private String serviceVersion;
 	private ApplicationContext springContext;
@@ -103,6 +103,9 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 			if (profile == null) {
 				profile = createServiceProfile();
 			}
+			profile.setDomainName(appProfile.getDomainName());
+			profile.setServiceAppName(appProfile.getServiceAppName());
+			profile.setUrlPattern(appProfile.getUrlPattern());
 			String strService = profile.toString();
 			if (register == null) {
 				register = RegisterFactory.getRegister(InternalConstants.SERVICE_REGISTER_ZK);
@@ -123,13 +126,10 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 	}
 
 	private ServiceProfile createServiceProfile() throws InvalidParamException {
-		if (appContext == null) {
+		if (appProfile == null) {
 			throw new InvalidParamException("appContexts must not blank!!!");
 		}
 		ServiceProfile p = new ServiceProfile();
-		p.setDomainName(appContext.getDomainName());
-		p.setServiceAppName(appContext.getServiceAppName());
-		p.setUrlPattern(appContext.getUrlPattern());
 		if (HedwigUtil.isBlankString(serviceName)) {
 			serviceName = lookupServiceName();
 		}
@@ -149,7 +149,9 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 			for(String beanName:names){
 				HedwigHessianExporter hhe = (HedwigHessianExporter)springContext.getBean(beanName);
 				if(hhe.getServiceInterface().equals(getServiceInterface())){
-					return beanName;
+					if(beanName.startsWith("/")){
+						name = beanName.replaceFirst("/", "");
+					}
 				}
 			}
 		}
@@ -175,6 +177,13 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.springContext = applicationContext;
 	}
+	public AppProfile getAppProfile() {
+		return appProfile;
+	}
+	public void setAppProfile(AppProfile appProfile) {
+		this.appProfile = appProfile;
+	}
+
 
 
 }
