@@ -149,8 +149,8 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 		StringBuilder sb = new StringBuilder();
 		try {
 			String pPath = ZkUtil.createParentPath(this);
-			sb.append(pPath);
-			sb.append(ZkUtil.createChildPath(this)).append(" port:").append(port).append(" revision:").append(revision);
+			sb.append("parentPath:").append(pPath);
+			sb.append(" url:").append(getServiceUrl() + ":").append(port);
 		} catch (InvalidParamException e) {
 		}
 		return sb.toString();

@@ -6,10 +6,7 @@ package com.yihaodian.architecture.hedwig.client.event.handle;
 import java.util.Date;
 
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
-import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
-import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
-import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
-import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
+import com.yihaodian.architecture.hedwig.client.util.HedwigMonitorClientUtil;
 import com.yihaodian.architecture.hedwig.engine.event.EventState;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
@@ -27,14 +24,7 @@ public abstract class BaseHandler implements IEventHandler<HedwigContext, Object
 	protected ClientBizLog cbLog;
 	@Override
 	public Object handle(HedwigContext context, IEvent<Object> event) throws HandlerException {
-		cbLog = new ClientBizLog();
-		cbLog.setCallApp(context.getClientProfile().getClientAppName());
-		cbLog.setCallHost(ProperitesContainer.client().getProperty(PropKeyConstants.HOST_IP));
-		cbLog.setUniqReqId(HedwigContextUtil.getGlobalId());
-		cbLog.setReqId(event.getReqestId());
-		cbLog.setReqTime(new Date(event.getStart()));
-		cbLog.setServiceName(context.getClientProfile().getServiceName());
-		cbLog.setProviderApp(context.getClientProfile().getServiceAppName());
+		ClientBizLog cbLog = HedwigMonitorClientUtil.createClientBizLog(context, event.getReqestId(), new Date());
 		Object r = null;
 		Object[] params = event.getInvocation().getArguments();
 		event.increaseExecCount();
@@ -47,11 +37,8 @@ public abstract class BaseHandler implements IEventHandler<HedwigContext, Object
 		} catch (Throwable e) {
 			event.setState(EventState.failed);
 			event.setErrorMessage(e.getMessage());
-			cbLog.setRespTime(new Date());
 			cbLog.setInParamObjects(params);
-			cbLog.setSuccessed(MonitorConstants.FAIL);
-			cbLog.setExceptionClassname(HedwigUtil.getExceptionClassName(e));
-			cbLog.setExceptionDesc(HedwigUtil.getExceptionMsg(e));
+			HedwigMonitorClientUtil.setException(cbLog, e);
 			if (e instanceof HandlerException) {
 				throw (HandlerException) e;
 			} else {
@@ -59,6 +46,7 @@ public abstract class BaseHandler implements IEventHandler<HedwigContext, Object
 			}
 		} finally {
 			try {
+				cbLog.setLayerType(MonitorConstants.LAYER_TYPE_HANDLER);
 				MonitorJmsSendUtil.asyncSendClientBizLog(cbLog);
 			} catch (Exception e2) {
 			}

@@ -47,7 +47,7 @@ public class SyncRequestHandler extends BaseHandler {
 			cbLog.setProviderHost(sp.getHostIp());
 			result = invocation.getMethod().invoke(hessianProxy, params);
 		} catch (Throwable e) {
-			throw new HandlerException(reqId, sp.toString(), e.getCause());
+			throw new HandlerException(reqId, sp.toString(), e);
 		}
 		return result;
 	}

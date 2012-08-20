@@ -30,6 +30,7 @@ import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
+import com.yihaodian.architecture.hedwig.common.util.HedwigMonitorUtil;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.hessian.HedwigHessianExporter;
 import com.yihaodian.architecture.hedwig.register.IServiceProviderRegister;
@@ -72,10 +73,11 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 			sbLog.setRespResultTime(new Date());
 			sbLog.setSuccessed(MonitorConstants.SUCCESS);
 		} catch (Throwable ex) {
+			sbLog.setRespResultTime(new Date());
 			sbLog.setInParamObjects(HedwigContextUtil.getArguments());
 			sbLog.setSuccessed(MonitorConstants.FAIL);
-			sbLog.setExceptionClassname(HedwigUtil.getExceptionClassName(ex));
-			sbLog.setExceptionDesc(HedwigUtil.getExceptionMsg(ex));
+			sbLog.setExceptionClassname(HedwigMonitorUtil.getExceptionClassName(ex));
+			sbLog.setExceptionDesc(HedwigMonitorUtil.getExceptionMsg(ex));
 			throw new NestedServletException("Hessian skeleton invocation failed", ex);
 		} finally {
 			sbLog.setReqId(HedwigContextUtil.getRequestId());
