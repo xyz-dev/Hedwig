@@ -14,7 +14,7 @@ public class AppProfile {
 	private String domainName = InternalConstants.UNKONW_DOMAIN;
 	private String serviceAppName = "defaultAppName";
 	private String urlPattern = InternalConstants.HEDWIG_URL_PATTERN;
-	private int port = 8080;
+	private int port = -1;
 
 	public String getDomainName() {
 		return domainName;
