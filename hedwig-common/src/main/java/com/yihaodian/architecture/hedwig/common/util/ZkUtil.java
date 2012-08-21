@@ -24,10 +24,10 @@ public class ZkUtil {
 	public static Lock lock = new ReentrantLock();
 
 	public static ZkClient getZkClientInstance() throws HedwigException {
-		String serverList = ProperitesContainer.provider().getProperty(PropKeyConstants.ZK_SERVER_LIST);
 		lock.lock();
 		try {
 			if (_zkClient == null) {
+				String serverList = ProperitesContainer.provider().getProperty(PropKeyConstants.ZK_SERVER_LIST);
 				if (!HedwigUtil.isBlankString(serverList)) {
 					_zkClient = new ZkClient(serverList);
 				} else {

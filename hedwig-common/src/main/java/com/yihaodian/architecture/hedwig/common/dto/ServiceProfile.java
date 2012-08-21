@@ -150,7 +150,7 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 		try {
 			String pPath = ZkUtil.createParentPath(this);
 			sb.append("parentPath:").append(pPath);
-			sb.append(" url:").append(getServiceUrl() + ":").append(port);
+			sb.append("; serviceUrl:").append(getServiceUrl());
 		} catch (InvalidParamException e) {
 		}
 		return sb.toString();

@@ -24,7 +24,7 @@ public abstract class BaseHandler implements IEventHandler<HedwigContext, Object
 	protected ClientBizLog cbLog;
 	@Override
 	public Object handle(HedwigContext context, IEvent<Object> event) throws HandlerException {
-		ClientBizLog cbLog = HedwigMonitorClientUtil.createClientBizLog(context, event.getReqestId(), new Date());
+		cbLog = HedwigMonitorClientUtil.createClientBizLog(context, event.getReqestId(), new Date());
 		Object r = null;
 		Object[] params = event.getInvocation().getArguments();
 		event.increaseExecCount();
