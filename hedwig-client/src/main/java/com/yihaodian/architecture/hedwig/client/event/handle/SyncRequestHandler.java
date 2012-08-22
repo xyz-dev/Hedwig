@@ -7,7 +7,9 @@ import org.aopalliance.intercept.MethodInvocation;
 
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
+import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
+import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
 import com.yihaodian.architecture.hedwig.engine.exception.HessianProxyException;
@@ -45,6 +47,7 @@ public class SyncRequestHandler extends BaseHandler {
 		Object[] params = invocation.getArguments();
 		try {
 			cbLog.setProviderHost(sp.getHostIp());
+			HedwigContextUtil.setAttribute(InternalConstants.HEDWIG_SERVICE_IP, sp.getHostIp());
 			result = invocation.getMethod().invoke(hessianProxy, params);
 		} catch (Throwable e) {
 			throw new HandlerException(reqId, sp.toString(), e);

@@ -88,7 +88,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		Future<Object> f = null;
 		final String globalId = getGlobalId();
 		final String reqId = event.getReqestId();
-		ClientBizLog cbLog = HedwigMonitorClientUtil.createClientBizLog(context, reqId,
+		final ClientBizLog cbLog = HedwigMonitorClientUtil.createClientBizLog(context, reqId, globalId,
 				new Date(event.getStart()));
 		Object[] params = event.getInvocation().getArguments();
 		try {
@@ -104,8 +104,9 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 						HedwigContextUtil.setRequestId(reqId);
 						event.setState(EventState.processing);
 						r = handler.handle(context, event);
+						cbLog.setProviderHost(HedwigContextUtil.getString(InternalConstants.HEDWIG_SERVICE_IP, ""));
 					} catch (Throwable e) {
-						logger.debug(e.getMessage(), e);
+						logger.debug(e.getMessage());
 						EventUtil.retry(handler, event, context);
 					} finally {
 						HedwigContextUtil.clean();

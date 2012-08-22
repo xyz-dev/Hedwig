@@ -73,6 +73,10 @@ public class HedwigContextUtil {
 		return value;
 	}
 
+	public static String getString(String key, String defValue) {
+		return (String) getAttribute(key, "");
+	}
+
 	public static void clean() {
 		tl.remove();
 	}

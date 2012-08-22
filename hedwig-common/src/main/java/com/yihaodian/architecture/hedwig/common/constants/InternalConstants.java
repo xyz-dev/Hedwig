@@ -6,6 +6,7 @@ public interface InternalConstants {
 	public static final String CONFIG_FILE_CLIENT = "hedwigClient.properties";
 	public static final String CONFIG_FILE_PROVIDER = "hedwigProvider.properties";
 	public static final String BASE_ROOT = "/TheStore";
+	public static final char SEPARATOR = '/';
 	public static final String UNKONW_DOMAIN = "UnknowDomain";
 	public static final String PROPERITIES_FILE_NAME = "hedwig.properties";
 	public static final String PROPERITIES_PATH_KEY = "hedwig_config";
@@ -40,7 +41,14 @@ public interface InternalConstants {
 
 	public static final String HEDWIG_REQUEST_ID = "reqId";
 	public static final String HEDWIG_GLOBAL_ID = "globalId";
+	public static final String HEDWIG_SERVICE_IP = "providerId";
 
 	public static final int HEDWIG_CLIENT = -1;
 	public static final int HEDWIG_PROVIDER = 1;
+	
+
+	/**
+	 * 通讯平台domain name
+	 */
+	public static final String HEDWIG_DOMAIN_NAME = "hedwig";
 }

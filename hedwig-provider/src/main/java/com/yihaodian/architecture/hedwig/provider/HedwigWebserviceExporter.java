@@ -59,13 +59,13 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Date start =new Date();
 		sbLog = new ServerBizLog();
+		sbLog.setGetReqTime(start);
 		if (!"POST".equals(request.getMethod())) {
 			throw new HttpRequestMethodNotSupportedException(request.getMethod(), new String[] { "POST" },
 					"HessianServiceExporter only supports POST requests");
 		}
 		try {
 			ServiceContext.begin(request, profile.getServiceName(), profile.getServicePath());
-			sbLog.setGetReqTime(start);
 			sbLog.setProviderApp(profile.getServiceAppName());
 			sbLog.setProviderHost(ProperitesContainer.provider().getProperty(PropKeyConstants.HOST_IP));
 			sbLog.setServiceName(profile.getServiceName());

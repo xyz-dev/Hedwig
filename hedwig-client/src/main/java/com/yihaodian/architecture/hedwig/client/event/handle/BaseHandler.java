@@ -7,6 +7,7 @@ import java.util.Date;
 
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.client.util.HedwigMonitorClientUtil;
+import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
 import com.yihaodian.architecture.hedwig.engine.event.EventState;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
@@ -24,7 +25,8 @@ public abstract class BaseHandler implements IEventHandler<HedwigContext, Object
 	protected ClientBizLog cbLog;
 	@Override
 	public Object handle(HedwigContext context, IEvent<Object> event) throws HandlerException {
-		cbLog = HedwigMonitorClientUtil.createClientBizLog(context, event.getReqestId(), new Date());
+		String globalId = HedwigContextUtil.getGlobalId();
+		cbLog = HedwigMonitorClientUtil.createClientBizLog(context, event.getReqestId(), globalId, new Date());
 		Object r = null;
 		Object[] params = event.getInvocation().getArguments();
 		event.increaseExecCount();

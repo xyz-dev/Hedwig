@@ -8,7 +8,6 @@ import java.util.Date;
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
-import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
 import com.yihaodian.architecture.hedwig.common.util.HedwigMonitorUtil;
 import com.yihaodian.monitor.dto.ClientBizLog;
 import com.yihaodian.monitor.util.MonitorConstants;
@@ -19,11 +18,11 @@ import com.yihaodian.monitor.util.MonitorConstants;
  */
 public class HedwigMonitorClientUtil {
 
-	public static ClientBizLog createClientBizLog(HedwigContext context, String reqId, Date reqTime) {
+	public static ClientBizLog createClientBizLog(HedwigContext context, String reqId, String globalId, Date reqTime) {
 		ClientBizLog cbLog = new ClientBizLog();
 		cbLog.setCallApp(context.getClientProfile().getClientAppName());
 		cbLog.setCallHost(ProperitesContainer.client().getProperty(PropKeyConstants.HOST_IP));
-		cbLog.setUniqReqId(HedwigContextUtil.getGlobalId());
+		cbLog.setUniqReqId(globalId);
 		cbLog.setServiceName(context.getClientProfile().getServiceName());
 		cbLog.setProviderApp(context.getClientProfile().getServiceAppName());
 		cbLog.setReqId(reqId);
