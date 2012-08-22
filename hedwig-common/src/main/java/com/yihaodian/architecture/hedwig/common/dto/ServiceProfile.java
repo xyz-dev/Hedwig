@@ -37,10 +37,10 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	private double loadThreshold = 0.9d;
 	private AtomicInteger curWeight = new AtomicInteger(weighted);
 	private AtomicBoolean available = new AtomicBoolean(true);
-	private ProperitesContainer container = ProperitesContainer.provider();
+
 	public ServiceProfile() {
 		super();
-
+		ProperitesContainer container = ProperitesContainer.provider();
 		hostIp = container.getProperty(PropKeyConstants.HOST_IP);
 		jvmPid = container.getProperty(PropKeyConstants.JVM_PID);
 		parentPath = container.getProperty(PropKeyConstants.ZK_ROOT_PATH, parentPath);
@@ -136,7 +136,7 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	}
 
 	public void setPort(int port) {
-		this.port = container.getIntProperty(PropKeyConstants.HOST_PORT, port);
+		this.port = ProperitesContainer.provider().getIntProperty(PropKeyConstants.HOST_PORT, port);
 	}
 
 	public int getCurWeighted() {
