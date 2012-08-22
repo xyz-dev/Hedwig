@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.yihaodian.architecture.hedwig.client.hessian;
+package com.yihaodian.architecture.hedwig.common.hessian;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,7 +18,6 @@ import java.util.WeakHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.caucho.hessian.client.HessianProxy;
 import com.caucho.hessian.client.HessianRuntimeException;
 import com.caucho.hessian.io.AbstractHessianInput;
 import com.caucho.hessian.io.AbstractHessianOutput;
@@ -31,7 +30,7 @@ import com.caucho.services.server.AbstractSkeleton;
  */
 public class HedwigHessianProxy implements InvocationHandler {
 
-	private static final Logger log = LoggerFactory.getLogger(HessianProxy.class);
+	private static final Logger log = LoggerFactory.getLogger(HedwigHessianProxy.class);
 
 	private HedwigHessianProxyFactory _factory;
 	private WeakHashMap<Method, String> _mangleMap = new WeakHashMap<Method, String>();
@@ -76,7 +75,7 @@ public class HedwigHessianProxy implements InvocationHandler {
 				if (value == null || !Proxy.isProxyClass(value.getClass()))
 					return new Boolean(false);
 
-				HessianProxy handler = (HessianProxy) Proxy.getInvocationHandler(value);
+				HedwigHessianProxy handler = (HedwigHessianProxy) Proxy.getInvocationHandler(value);
 
 				return new Boolean(_url.equals(handler.getURL()));
 			} else if (methodName.equals("hashCode") && params.length == 0)

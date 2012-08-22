@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.yihaodian.architecture.hedwig.hessian;
+package com.yihaodian.architecture.hedwig.common.hessian;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

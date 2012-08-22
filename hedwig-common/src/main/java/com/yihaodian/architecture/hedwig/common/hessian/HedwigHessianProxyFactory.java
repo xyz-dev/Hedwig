@@ -1,9 +1,10 @@
 /**
  * 
  */
-package com.yihaodian.architecture.hedwig.client.hessian;
+package com.yihaodian.architecture.hedwig.common.hessian;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -12,6 +13,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import com.caucho.hessian.client.HessianProxyFactory;
+import com.caucho.hessian.io.AbstractHessianInput;
 import com.caucho.hessian.io.AbstractHessianOutput;
 import com.caucho.hessian.io.HessianRemoteObject;
 
@@ -43,6 +45,13 @@ public class HedwigHessianProxyFactory extends HessianProxyFactory {
 		out.setSerializerFactory(getSerializerFactory());
 
 		return out;
+	}
+
+	@Override
+	public AbstractHessianInput getHessianInput(InputStream is) {
+		AbstractHessianInput in = new HedwigHessianInput(is);
+		in.setSerializerFactory(getSerializerFactory());
+		return in;
 	}
 
 }

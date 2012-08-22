@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.yihaodian.architecture.hedwig.hessian;
+package com.yihaodian.architecture.hedwig.common.hessian;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,25 +13,23 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.CommonsLogWriter;
 
 import com.caucho.hessian.io.AbstractHessianOutput;
-import com.caucho.hessian.io.Hessian2Input;
-import com.caucho.hessian.io.Hessian2Output;
 import com.caucho.hessian.io.HessianDebugInputStream;
 import com.caucho.hessian.io.HessianDebugOutputStream;
-import com.caucho.hessian.io.HessianOutput;
 import com.caucho.hessian.io.SerializerFactory;
 
 /**
  * @author Archer
- *
+ * 
  */
 public class HedwigHessian2SkeletonInvoker extends HedwigHessianSkeletonInvoker {
 
-	private static final boolean debugOutputStreamAvailable = ClassUtils.isPresent("com.caucho.hessian.io.HessianDebugOutputStream",
-			HedwigHessian2SkeletonInvoker.class.getClassLoader());
+	private static final boolean debugOutputStreamAvailable = ClassUtils.isPresent(
+			"com.caucho.hessian.io.HessianDebugOutputStream", HedwigHessian2SkeletonInvoker.class.getClassLoader());
 
 	private final Log debugLogger;
 
-	public HedwigHessian2SkeletonInvoker(HedwigHessianSkeleton skeleton, SerializerFactory serializerFactory, Log debugLog) {
+	public HedwigHessian2SkeletonInvoker(HedwigHessianSkeleton skeleton, SerializerFactory serializerFactory,
+			Log debugLog) {
 		super(skeleton, serializerFactory);
 		this.debugLogger = debugLog;
 	}
@@ -48,7 +46,7 @@ public class HedwigHessian2SkeletonInvoker extends HedwigHessianSkeletonInvoker 
 			}
 		}
 
-		Hessian2Input in = new Hessian2Input(isToUse);
+		HedwigHessianInput in = new HedwigHessianInput(isToUse);
 		if (this.serializerFactory != null) {
 			in.setSerializerFactory(this.serializerFactory);
 		}
@@ -61,11 +59,7 @@ public class HedwigHessian2SkeletonInvoker extends HedwigHessianSkeletonInvoker 
 		AbstractHessianOutput out = null;
 		int major = in.read();
 		int minor = in.read();
-		if (major >= 2) {
-			out = new Hessian2Output(osToUse);
-		} else {
-			out = new HessianOutput(osToUse);
-		}
+		out = new HedwigHessianOutput(osToUse);
 		if (this.serializerFactory != null) {
 			out.setSerializerFactory(this.serializerFactory);
 		}

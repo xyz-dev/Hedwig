@@ -17,7 +17,6 @@ import org.springframework.remoting.support.RemotingSupport;
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.client.event.HedwigEventBuilder;
 import com.yihaodian.architecture.hedwig.client.event.engine.HedwigEventEngine;
-import com.yihaodian.architecture.hedwig.client.hessian.HedwigHessianProxyFactory;
 import com.yihaodian.architecture.hedwig.client.locator.IServiceLocator;
 import com.yihaodian.architecture.hedwig.client.locator.ZkServiceLocator;
 import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
@@ -25,6 +24,7 @@ import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
+import com.yihaodian.architecture.hedwig.common.hessian.HedwigHessianProxyFactory;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 
