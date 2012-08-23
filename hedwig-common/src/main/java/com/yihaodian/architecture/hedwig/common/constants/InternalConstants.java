@@ -42,6 +42,7 @@ public interface InternalConstants {
 	public static final String HEDWIG_REQUEST_ID = "reqId";
 	public static final String HEDWIG_GLOBAL_ID = "globalId";
 	public static final String HEDWIG_SERVICE_IP = "providerId";
+	public static final String HEDWIG_MONITORLOG = "monitorLog";
 
 	public static final int HEDWIG_CLIENT = -1;
 	public static final int HEDWIG_PROVIDER = 1;

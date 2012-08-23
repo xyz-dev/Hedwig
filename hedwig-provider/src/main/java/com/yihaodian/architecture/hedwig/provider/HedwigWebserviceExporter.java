@@ -29,10 +29,10 @@ import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
-import com.yihaodian.architecture.hedwig.common.hessian.HedwigHessianExporter;
 import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
 import com.yihaodian.architecture.hedwig.common.util.HedwigMonitorUtil;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
+import com.yihaodian.architecture.hedwig.hessian.HedwigHessianExporter;
 import com.yihaodian.architecture.hedwig.register.IServiceProviderRegister;
 import com.yihaodian.architecture.hedwig.register.RegisterFactory;
 import com.yihaodian.monitor.dto.ServerBizLog;
@@ -60,6 +60,7 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 		Date start =new Date();
 		sbLog = new ServerBizLog();
 		sbLog.setGetReqTime(start);
+		HedwigContextUtil.setAttribute(InternalConstants.HEDWIG_MONITORLOG, sbLog);
 		if (!"POST".equals(request.getMethod())) {
 			throw new HttpRequestMethodNotSupportedException(request.getMethod(), new String[] { "POST" },
 					"HessianServiceExporter only supports POST requests");
@@ -70,10 +71,8 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 			sbLog.setProviderHost(ProperitesContainer.provider().getProperty(PropKeyConstants.HOST_IP));
 			sbLog.setServiceName(profile.getServiceName());
 			invoke(request.getInputStream(), response.getOutputStream());
-			sbLog.setRespResultTime(new Date());
 			sbLog.setSuccessed(MonitorConstants.SUCCESS);
 		} catch (Throwable ex) {
-			sbLog.setRespResultTime(new Date());
 			sbLog.setInParamObjects(HedwigContextUtil.getArguments());
 			sbLog.setSuccessed(MonitorConstants.FAIL);
 			sbLog.setExceptionClassname(HedwigMonitorUtil.getExceptionClassName(ex));

@@ -1,10 +1,11 @@
 /**
  * 
  */
-package com.yihaodian.architecture.hedwig.common.hessian;
+package com.yihaodian.architecture.hedwig.hessian;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 
 import org.slf4j.Logger;
@@ -17,6 +18,7 @@ import com.caucho.services.server.ServiceContext;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
 import com.yihaodian.architecture.hedwig.common.util.HedwigExecutors;
+import com.yihaodian.monitor.dto.ServerBizLog;
 
 /**
  * @author Archer
@@ -100,6 +102,11 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 			out.writeObject(value);
 
 			out.completeReply();
+			Object obj = HedwigContextUtil.getAttribute(InternalConstants.HEDWIG_MONITORLOG, null);
+			if (obj != null) {
+				ServerBizLog sbLog = (ServerBizLog) obj;
+				sbLog.setRespResultTime(new Date());
+			}
 			return;
 		} else if (method == null) {
 			out.startReply();

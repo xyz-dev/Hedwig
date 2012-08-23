@@ -1,4 +1,4 @@
-package com.yihaodian.architecture.hedwig.common.hessian;
+package com.yihaodian.architecture.hedwig.hessian;
 
 import java.io.InputStream;
 import java.io.OutputStream;

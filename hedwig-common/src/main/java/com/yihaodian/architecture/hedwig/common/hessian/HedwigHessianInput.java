@@ -1521,7 +1521,7 @@ public class HedwigHessianInput extends AbstractHessianInput {
 		return readLength;
 	}
 
-	final int read() throws IOException {
+	public final int read() throws IOException {
 		if (_peek >= 0) {
 			int value = _peek;
 			_peek = -1;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.yihaodian.architecture.hedwig.common.hessian;
+package com.yihaodian.architecture.hedwig.hessian;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +16,8 @@ import com.caucho.hessian.io.AbstractHessianOutput;
 import com.caucho.hessian.io.HessianDebugInputStream;
 import com.caucho.hessian.io.HessianDebugOutputStream;
 import com.caucho.hessian.io.SerializerFactory;
+import com.yihaodian.architecture.hedwig.common.hessian.HedwigHessianInput;
+import com.yihaodian.architecture.hedwig.common.hessian.HedwigHessianOutput;
 
 /**
  * @author Archer
