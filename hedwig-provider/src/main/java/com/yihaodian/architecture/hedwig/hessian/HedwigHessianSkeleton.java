@@ -102,11 +102,7 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 			out.writeObject(value);
 
 			out.completeReply();
-			Object obj = HedwigContextUtil.getAttribute(InternalConstants.HEDWIG_MONITORLOG, null);
-			if (obj != null) {
-				ServerBizLog sbLog = (ServerBizLog) obj;
-				sbLog.setRespResultTime(new Date());
-			}
+
 			return;
 		} else if (method == null) {
 			out.startReply();
@@ -165,5 +161,10 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 
 		out.completeReply();
 		out.close();
+		Object obj = HedwigContextUtil.getAttribute(InternalConstants.HEDWIG_MONITORLOG, null);
+		if (obj != null) {
+			ServerBizLog sbLog = (ServerBizLog) obj;
+			sbLog.setRespResultTime(new Date());
+		}
 	}
 }
