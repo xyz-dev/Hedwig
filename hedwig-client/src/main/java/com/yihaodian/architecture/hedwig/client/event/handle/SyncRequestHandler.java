@@ -33,7 +33,7 @@ public class SyncRequestHandler extends BaseHandler {
 			throw new ProviderNotFindException(reqId, " Can't find service provider for :"
 					+ context.getClientProfile().toString());
 		String sUrl = sp.getServiceUrl();
-		String host = sp.getHostIp();
+		String host = sp.getHostIp() + ":" + sp.getPort();
 		cbLog.setProviderHost(host);
 		HedwigContextUtil.setAttribute(InternalConstants.HEDWIG_SERVICE_IP, host);
 

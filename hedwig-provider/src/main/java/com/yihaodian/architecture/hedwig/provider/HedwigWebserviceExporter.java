@@ -23,9 +23,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.util.NestedServletException;
 
 import com.caucho.services.server.ServiceContext;
-import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
-import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
@@ -68,7 +66,7 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 		try {
 			ServiceContext.begin(request, profile.getServiceName(), profile.getServicePath());
 			sbLog.setProviderApp(profile.getServiceAppName());
-			sbLog.setProviderHost(ProperitesContainer.provider().getProperty(PropKeyConstants.HOST_IP));
+			sbLog.setProviderHost(profile.getHostIp() + ":" + profile.getPort());
 			sbLog.setServiceName(profile.getServiceName());
 			invoke(request.getInputStream(), response.getOutputStream());
 			sbLog.setSuccessed(MonitorConstants.SUCCESS);
