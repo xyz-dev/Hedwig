@@ -81,6 +81,7 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 		} finally {
 			sbLog.setReqId(HedwigContextUtil.getRequestId());
 			sbLog.setUniqReqId(HedwigContextUtil.getGlobalId());
+			sbLog.setCommId(HedwigContextUtil.getTransactionId());
 			try {
 				MonitorJmsSendUtil.asyncSendServerBizLog(sbLog);
 			} catch (Exception e) {

@@ -6,7 +6,6 @@ package com.yihaodian.architecture.hedwig.hessian;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
-import java.util.concurrent.ExecutorService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,16 +16,14 @@ import com.caucho.services.server.AbstractSkeleton;
 import com.caucho.services.server.ServiceContext;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
-import com.yihaodian.architecture.hedwig.common.util.HedwigExecutors;
 import com.yihaodian.monitor.dto.ServerBizLog;
 
 /**
  * @author Archer
- *
+ * 
  */
 public class HedwigHessianSkeleton extends AbstractSkeleton {
 	private static final Logger log = LoggerFactory.getLogger(HedwigHessianSkeleton.class);
-	ExecutorService es = HedwigExecutors.newCachedThreadPool(InternalConstants.HEDWIG_PROVIDER);
 
 	private Object _service;
 
@@ -70,11 +67,13 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 			Object value = in.readObject();
 
 			context.addHeader(header, value);
-			if(value!=null){
-				if(InternalConstants.HEDWIG_REQUEST_ID.equals(header)){
-					HedwigContextUtil.setRequestId((String)value);
-				}else if(InternalConstants.HEDWIG_GLOBAL_ID.equals(header)){
-					HedwigContextUtil.setGlobalId((String)value);
+			if (value != null) {
+				if (InternalConstants.HEDWIG_REQUEST_ID.equals(header)) {
+					HedwigContextUtil.setRequestId((String) value);
+				} else if (InternalConstants.HEDWIG_GLOBAL_ID.equals(header)) {
+					HedwigContextUtil.setGlobalId((String) value);
+				} else if (InternalConstants.HEDWIG_TXN_ID.equals(header)) {
+					HedwigContextUtil.setTransactionId((String) value);
 				}
 				HedwigContextUtil.setAttribute(header, value);
 			}
@@ -121,24 +120,7 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 
 		try {
 			HedwigContextUtil.setArguments(values);
-			String rt = method.getReturnType().getName();
-			boolean isVoid = "void".equalsIgnoreCase(rt);
-			HedwigContextUtil.setVoidMethod(isVoid);
-			if (isVoid) {
-				es.execute(new Runnable() {
-
-					@Override
-					public void run() {
-						try {
-							method.invoke(_service, values);
-						} catch (Throwable e) {
-							log.debug(e.getMessage(), e);
-						}
-					}
-				});
-			} else {
-				result = method.invoke(_service, values);
-			}
+			result = method.invoke(_service, values);
 		} catch (Throwable e) {
 			if (e instanceof InvocationTargetException)
 				e = ((InvocationTargetException) e).getTargetException();

@@ -45,9 +45,9 @@ public class HedwigContextUtil {
 	}
 
 	public static void setRequestId(String requestId) {
-		if (requestId == null)
-			return;
-		getInvocationContext().setRequestId(requestId);
+		if (HedwigUtil.isBlankString(requestId)) {
+			getInvocationContext().setRequestId(requestId);
+		}
 	}
 
 	public static String getGlobalId() {
@@ -55,9 +55,19 @@ public class HedwigContextUtil {
 	}
 
 	public static void setGlobalId(String globalId) {
-		if (globalId == null)
-			return;
-		getInvocationContext().setGlobalId(globalId);
+		if (HedwigUtil.isBlankString(globalId)) {
+			getInvocationContext().setGlobalId(globalId);
+		}
+	}
+
+	public static void setTransactionId(String txnId) {
+		if (!HedwigUtil.isBlankString(txnId)) {
+			getInvocationContext().setTransactionId(txnId);
+		}
+	}
+
+	public static String getTransactionId() {
+		return getInvocationContext().getTransactionId();
 	}
 
 	public static void setAttribute(String key, Object value) {

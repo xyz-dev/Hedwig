@@ -28,7 +28,7 @@ public class HedwigExecutors {
 		int capacity = pc.getIntProperty(PropKeyConstants.HEDWIG_POOL_QUEUESIZE,InternalConstants.DEFAULT_POOL_QUEUESIZE);
 		BlockingQueue<Runnable> eventQueue = new ArrayBlockingQueue<Runnable>(capacity);
 		ThreadPoolExecutor tpe = new ThreadPoolExecutor(coreSize, maxSize, idleTime, TimeUnit.SECONDS, eventQueue,
-				new HedwigThreadFactory(), new HedwigCallerRunPolicy());
+				new HedwigThreadFactory(), new HedwigAbortPolicy());
 		return tpe;
 	}
 
@@ -41,7 +41,7 @@ public class HedwigExecutors {
 		long idleTime = pc.getIntProperty(PropKeyConstants.HEDWIG_SCHEDULER_POOL_IDLETIME,
 				InternalConstants.DEFAULT_SCHEDULER_POOL_IDLETIME);
 		ScheduledThreadPoolExecutor tpe = new ScheduledThreadPoolExecutor(coreSize, new HedwigThreadFactory(),
-				new HedwigCallerRunPolicy());
+				new HedwigAbortPolicy());
 		tpe.setMaximumPoolSize(maxSize);
 		tpe.setKeepAliveTime(idleTime, TimeUnit.SECONDS);
 

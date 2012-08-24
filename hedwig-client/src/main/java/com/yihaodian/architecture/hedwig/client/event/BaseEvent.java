@@ -64,7 +64,7 @@ public class BaseEvent implements IEvent<Object> {
 
 	@Override
 	public boolean isRetryable() {
-		return retryable && isExpire() && isReachMaxRedoCount();
+		return retryable && !isExpire() && !isReachMaxRedoCount();
 	}
 
 	protected boolean isExpire() {
@@ -72,7 +72,7 @@ public class BaseEvent implements IEvent<Object> {
 	}
 
 	protected boolean isReachMaxRedoCount() {
-		return execCount <= maxRedoCount;
+		return execCount > maxRedoCount;
 	}
 
 	@Override
@@ -129,8 +129,6 @@ public class BaseEvent implements IEvent<Object> {
 	public int getExecCount() {
 		return execCount;
 	}
-
-
 
 	@Override
 	public String toString() {

@@ -154,6 +154,8 @@ public class HedwigHessianOutput extends AbstractHessianOutput {
 		writeString(HedwigContextUtil.getRequestId());
 		writeHeader(InternalConstants.HEDWIG_GLOBAL_ID);
 		writeString(HedwigContextUtil.getGlobalId());
+		writeHeader(InternalConstants.HEDWIG_TXN_ID);
+		writeString(HedwigContextUtil.getTransactionId());
 		// add requestId end
 		os.write('m');
 		int len = method.length();

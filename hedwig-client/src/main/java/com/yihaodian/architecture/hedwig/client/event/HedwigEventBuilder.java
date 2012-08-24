@@ -37,7 +37,7 @@ public class HedwigEventBuilder {
 			event = SyncRequestEvent(invocation);
 		}
 		if (expire < InternalConstants.DEFAULT_REQUEST_TIMEOUT) {
-			expire = expire << 2;
+			expire = expire << 1;
 		}
 		event.setExpireTime(expire);
 		event.setReqestId(reqId);
@@ -46,7 +46,7 @@ public class HedwigEventBuilder {
 
 	private SyncRequestEvent SyncRequestEvent(MethodInvocation invocation) {
 		SyncRequestEvent event = new SyncRequestEvent(invocation);
-		event.setMaxRedoCount(context.getLocator().getAllService().size());
+		event.setMaxRedoCount(HedwigClientUtil.getRedoCount(context));
 		event.setRetryable(true);
 		event.setState(EventState.init);
 		return event;

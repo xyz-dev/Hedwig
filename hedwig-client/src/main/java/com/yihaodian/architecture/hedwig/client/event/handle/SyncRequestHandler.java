@@ -10,6 +10,7 @@ import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
+import com.yihaodian.architecture.hedwig.common.util.HedwigMonitorUtil;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
 import com.yihaodian.architecture.hedwig.engine.exception.HessianProxyException;
@@ -32,6 +33,10 @@ public class SyncRequestHandler extends BaseHandler {
 			throw new ProviderNotFindException(reqId, " Can't find service provider for :"
 					+ context.getClientProfile().toString());
 		String sUrl = sp.getServiceUrl();
+		String host = sp.getHostIp();
+		cbLog.setProviderHost(host);
+		HedwigContextUtil.setAttribute(InternalConstants.HEDWIG_SERVICE_IP, host);
+
 		try {
 			hessianProxy = HedwigClientUtil.getHessianProxy(context, sUrl);
 		} catch (Exception e) {
@@ -40,20 +45,22 @@ public class SyncRequestHandler extends BaseHandler {
 
 		if (hessianProxy == null) {
 			sp.setAvailable(false);
-			context.getHessianProxyMap().remove(sUrl);
-			throw new HessianProxyException(reqId, "Server is not avaliable" + sp.toString());
+			throw new HessianProxyException(reqId, "Service provider is not avaliable!!! " + sp.toString());
 		}
 		MethodInvocation invocation = event.getInvocation();
 		Object[] params = invocation.getArguments();
-		try {
-			cbLog.setProviderHost(sp.getHostIp());
-			HedwigContextUtil.setAttribute(InternalConstants.HEDWIG_SERVICE_IP, sp.getHostIp());
-			result = invocation.getMethod().invoke(hessianProxy, params);
-		} catch (Throwable e) {
-			throw new HandlerException(reqId, sp.toString(), e);
+		if (sp.isAvailable()) {
+			try {
+				result = invocation.getMethod().invoke(hessianProxy, params);
+			} catch (Throwable e) {
+				sp.setAvailable(checkSPAvaliable(e));
+				throw new HandlerException(reqId, HedwigMonitorUtil.getExceptionMsg(e), e);
+			}
+		} else {
+			throw new HandlerException(reqId, "Service provider is not avaliable!!! " + sp.toString());
 		}
+
 		return result;
 	}
-
 
 }

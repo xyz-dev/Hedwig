@@ -15,6 +15,7 @@ public class InvocationContext {
 	private Map<String, Object> context = new HashMap<String, Object>();
 	private String requestId;
 	private String globalId;
+	private String transactionId;
 	private Object[] args;
 	private boolean voidMethod;
 
@@ -73,6 +74,14 @@ public class InvocationContext {
 
 	public void setVoidMethod(boolean voidMethod) {
 		this.voidMethod = voidMethod;
+	}
+
+	public String getTransactionId() {
+		return transactionId;
+	}
+
+	public void setTransactionId(String transactionId) {
+		this.transactionId = transactionId;
 	}
 
 }

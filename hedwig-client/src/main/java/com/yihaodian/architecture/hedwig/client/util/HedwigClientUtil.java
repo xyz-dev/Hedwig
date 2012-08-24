@@ -45,7 +45,7 @@ public class HedwigClientUtil {
 		String hostIp = ProperitesContainer.client().getProperty(PropKeyConstants.HOST_IP);
 		lock.lock();
 		try {
-			reqId = hostIp + "." + HedwigUtil.getCurrentNanoTime();
+			reqId = "req." + hostIp + "." + HedwigUtil.getCurrentNanoTime();
 		} finally {
 			lock.unlock();
 		}
@@ -57,10 +57,27 @@ public class HedwigClientUtil {
 		String hostIp = ProperitesContainer.client().getProperty(PropKeyConstants.HOST_IP);
 		lock.lock();
 		try {
-			reqId = "global." + hostIp + "." + HedwigUtil.getCurrentNanoTime();
+			reqId = "glb." + hostIp + "." + HedwigUtil.getCurrentNanoTime();
 		} finally {
 			lock.unlock();
 		}
 		return reqId;
+	}
+
+	public static String generateTransactionId() {
+		String reqId = "";
+		String hostIp = ProperitesContainer.client().getProperty(PropKeyConstants.HOST_IP);
+		lock.lock();
+		try {
+			reqId = "txn." + hostIp + "." + HedwigUtil.getCurrentNanoTime();
+		} finally {
+			lock.unlock();
+		}
+		return reqId;
+	}
+	public static int getRedoCount(HedwigContext context) {
+		int nodeCount = context.getLocator().getAllService().size();
+		int redoCount = nodeCount >= 1 ? (nodeCount - 1) : 0;
+		return redoCount;
 	}
 }

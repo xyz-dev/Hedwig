@@ -23,11 +23,12 @@ public class HedwigMonitorUtil {
 	}
 
 	public static String getExceptionMsg(Throwable throwable) {
-		StringBuilder msg = new StringBuilder();
+		StringBuilder msg = new StringBuilder(throwable.getClass().getName());
+		msg.append(": ");
 		if (throwable != null) {
 			Throwable cause = throwable;
 			while (cause != null) {
-				msg.append(cause.getMessage());
+				msg.append(cause.getMessage()).append(" ");
 				cause = cause.getCause();
 			}
 		}
