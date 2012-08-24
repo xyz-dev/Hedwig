@@ -16,8 +16,8 @@ public class RoundRobinBalancer extends AbstractRRBalancer {
 			if (profileQueue != null) {
 				for (int i = 0; i < profileQueue.size(); i++) {
 					sp = profileQueue.poll();
+					profileQueue.add(sp);
 					if (sp.isAvailable()) {
-						profileQueue.add(sp);
 						break;
 					} else {
 						sp = null;
