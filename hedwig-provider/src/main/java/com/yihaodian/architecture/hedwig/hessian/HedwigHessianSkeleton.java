@@ -68,13 +68,6 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 
 			context.addHeader(header, value);
 			if (value != null) {
-				if (InternalConstants.HEDWIG_REQUEST_ID.equals(header)) {
-					HedwigContextUtil.setRequestId((String) value);
-				} else if (InternalConstants.HEDWIG_GLOBAL_ID.equals(header)) {
-					HedwigContextUtil.setGlobalId((String) value);
-				} else if (InternalConstants.HEDWIG_TXN_ID.equals(header)) {
-					HedwigContextUtil.setTransactionId((String) value);
-				}
 				HedwigContextUtil.setAttribute(header, value);
 			}
 		}

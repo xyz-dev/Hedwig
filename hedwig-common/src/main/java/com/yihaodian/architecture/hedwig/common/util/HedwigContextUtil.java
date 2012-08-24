@@ -3,6 +3,8 @@
  */
 package com.yihaodian.architecture.hedwig.common.util;
 
+import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
+
 
 /**
  * @author Archer
@@ -45,7 +47,7 @@ public class HedwigContextUtil {
 	}
 
 	public static void setRequestId(String requestId) {
-		if (HedwigUtil.isBlankString(requestId)) {
+		if (!HedwigUtil.isBlankString(requestId)) {
 			getInvocationContext().setRequestId(requestId);
 		}
 	}
@@ -55,7 +57,7 @@ public class HedwigContextUtil {
 	}
 
 	public static void setGlobalId(String globalId) {
-		if (HedwigUtil.isBlankString(globalId)) {
+		if (!HedwigUtil.isBlankString(globalId)) {
 			getInvocationContext().setGlobalId(globalId);
 		}
 	}
@@ -71,6 +73,13 @@ public class HedwigContextUtil {
 	}
 
 	public static void setAttribute(String key, Object value) {
+		if (InternalConstants.HEDWIG_REQUEST_ID.equals(key)) {
+			setRequestId((String) value);
+		} else if (InternalConstants.HEDWIG_GLOBAL_ID.equals(key)) {
+			setGlobalId((String) value);
+		} else if (InternalConstants.HEDWIG_TXN_ID.equals(key)) {
+			setTransactionId((String) value);
+		}
 		getInvocationContext().put(key, value);
 	}
 

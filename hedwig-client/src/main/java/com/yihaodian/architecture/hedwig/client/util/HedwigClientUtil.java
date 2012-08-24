@@ -53,27 +53,27 @@ public class HedwigClientUtil {
 	}
 
 	public static String generateGlobalId() {
-		String reqId = "";
+		String glbId = "";
 		String hostIp = ProperitesContainer.client().getProperty(PropKeyConstants.HOST_IP);
 		lock.lock();
 		try {
-			reqId = "glb." + hostIp + "." + HedwigUtil.getCurrentNanoTime();
+			glbId = "glb." + hostIp + "." + HedwigUtil.getCurrentNanoTime();
 		} finally {
 			lock.unlock();
 		}
-		return reqId;
+		return glbId;
 	}
 
 	public static String generateTransactionId() {
-		String reqId = "";
+		String txnId = "";
 		String hostIp = ProperitesContainer.client().getProperty(PropKeyConstants.HOST_IP);
 		lock.lock();
 		try {
-			reqId = "txn." + hostIp + "." + HedwigUtil.getCurrentNanoTime();
+			txnId = "txn." + hostIp + "." + HedwigUtil.getCurrentNanoTime();
 		} finally {
 			lock.unlock();
 		}
-		return reqId;
+		return txnId;
 	}
 	public static int getRedoCount(HedwigContext context) {
 		int nodeCount = context.getLocator().getAllService().size();
