@@ -89,6 +89,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 			try {
 				cbLog.setLayerType(MonitorConstants.LAYER_TYPE_ENGINE);
 				MonitorJmsSendUtil.asyncSendClientBizLog(cbLog);
+				HedwigContextUtil.clean();
 			} catch (Exception e2) {
 				logger.debug("Hedwig Monitor send request info failed!!!", e2.getMessage());
 			}

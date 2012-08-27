@@ -51,15 +51,19 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 
 	private ClientProfile createClientProfile() throws InvalidParamException {
 		ClientProfile p = new ClientProfile();
+		if (timeout != null && (timeout.longValue() > InternalConstants.DEFAULT_REQUEST_TIMEOUT)) {
+			p.setTimeout(timeout);
+		}
+		if (HedwigUtil.isBlankString(clientAppName)) {
+			throw new InvalidParamException("clientAppName must not blank!!!");
+		}
+		p.setClientAppName(clientAppName);
 		if (HedwigUtil.isBlankString(target)) {
 			if (HedwigUtil.isBlankString(serviceAppName)) {
 				throw new InvalidParamException("serviceAppName must not blank!!!");
 			}
 			p.setServiceAppName(serviceAppName);
-			if (HedwigUtil.isBlankString(clientAppName)) {
-				throw new InvalidParamException("clientAppName must not blank!!!");
-			}
-			p.setClientAppName(clientAppName);
+
 			if (!HedwigUtil.isBlankString(domainName)) {
 				p.setDomainName(domainName);
 			}
@@ -74,9 +78,7 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 		} else {
 			p.setTarget(target);
 		}
-		if (timeout != null && (timeout.longValue() > InternalConstants.DEFAULT_REQUEST_TIMEOUT)) {
-			p.setTimeout(timeout);
-		}
+
 		return p;
 	}
 

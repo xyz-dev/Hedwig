@@ -7,6 +7,8 @@ import org.aopalliance.intercept.MethodInvocation;
 
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
+import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
+import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
@@ -23,8 +25,12 @@ public class DirectRequestHandler extends BaseHandler {
 		Object result = null;
 		String sUrl = context.getClientProfile().getTarget();
 		String reqId = event.getReqestId();
-		if (HedwigUtil.isBlankString(sUrl))
+		if (HedwigUtil.isBlankString(sUrl)) {
 			throw new HandlerException(reqId, "Target url must not null!!!");
+		}
+		String host = HedwigUtil.getHostFromUrl(sUrl);
+		cbLog.setProviderHost(host);
+		HedwigContextUtil.setAttribute(InternalConstants.HEDWIG_SERVICE_IP, host);
 		try {
 			hessianProxy = HedwigClientUtil.getHessianProxy(context, sUrl);
 		} catch (Exception e) {
@@ -36,7 +42,6 @@ public class DirectRequestHandler extends BaseHandler {
 			throw new HandlerException(reqId, "HedwigHessianInterceptor is not properly initialized");
 		}
 		try {
-			cbLog.setProviderHost(sUrl);
 			MethodInvocation invocation = event.getInvocation();
 			result = invocation.getMethod().invoke(hessianProxy, invocation.getArguments());
 		} catch (Exception e) {

@@ -38,7 +38,12 @@ public class ClientProfile extends BaseProfile implements Serializable {
 	}
 
 	public void setTarget(String target) {
-		this.target = target;
+		if (target != null) {
+			this.target = target;
+			String[] arr = target.split("/", 6);
+			this.serviceAppName = arr[3];
+			this.serviceName = arr[5];
+		}
 	}
 
 	public String getBalanceAlgo() {

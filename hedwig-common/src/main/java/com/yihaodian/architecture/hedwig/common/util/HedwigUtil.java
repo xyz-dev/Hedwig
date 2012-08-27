@@ -70,4 +70,14 @@ public class HedwigUtil {
 		return System.nanoTime();
 	}
 
+	public static String getHostFromUrl(String url) {
+		String value = "";
+		if (!isBlankString(url)) {
+			String[] arr = url.split("/", 6);
+			value = arr[2];
+		}
+		return value;
+	}
+
+
 }
