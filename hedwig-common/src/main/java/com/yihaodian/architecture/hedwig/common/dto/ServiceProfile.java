@@ -13,7 +13,6 @@ import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
 import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.common.util.RelivePolicy;
-import com.yihaodian.architecture.hedwig.common.util.ServiceRelivePolicy;
 import com.yihaodian.architecture.hedwig.common.util.ZkUtil;
 
 /**
@@ -39,7 +38,7 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	private double loadThreshold = 0.9d;
 	private AtomicInteger curWeight = new AtomicInteger(weighted);
 	private AtomicBoolean available = new AtomicBoolean(true);
-	private RelivePolicy relivePolicy = new ServiceRelivePolicy();
+	private RelivePolicy relivePolicy;;
 
 	public ServiceProfile() {
 		super();
@@ -188,6 +187,9 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	public void setAvailable(boolean available) {
 		this.available.set(available);
 	}
-	
+
+	public void setRelivePolicy(RelivePolicy relivePolicy) {
+		this.relivePolicy = relivePolicy;
+	}
 	
 }

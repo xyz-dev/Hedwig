@@ -16,6 +16,7 @@ import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
+import com.yihaodian.architecture.hedwig.common.util.ServiceRelivePolicy;
 import com.yihaodian.architecture.hedwig.common.util.ZkUtil;
 import com.yihaodian.architecture.zkclient.IZkChildListener;
 import com.yihaodian.architecture.zkclient.IZkDataListener;
@@ -40,8 +41,7 @@ public class ZkServiceLocator implements IServiceLocator<ServiceProfile> {
 		super();
 		isProfileSensitive = clientProfile.isProfileSensitive();
 		_zkClient = ZkUtil.getZkClientInstance();
-		balancer = BalancerFactory.getInstance().getBalancer(
-				clientProfile.getBalanceAlgo());
+		balancer = BalancerFactory.getInstance().getBalancer(clientProfile.getBalanceAlgo());
 		loadServiceProfile(clientProfile);
 		balancer.updateProfiles(profileContainer.values());
 
@@ -64,21 +64,26 @@ public class ZkServiceLocator implements IServiceLocator<ServiceProfile> {
 		initialized = true;
 	}
 
-	private void observeChildData(final String parentPath,
-			List<String> childList) {
+	private void observeChildData(final String parentPath, List<String> childList) {
 		if (childList != null && childList.size() > 0) {
 			for (String child : childList) {
-				String childPath = HedwigUtil.getChildFullPath(parentPath,
-						child);
+				String childPath = HedwigUtil.getChildFullPath(parentPath, child);
 				if (_zkClient.exists(childPath)) {
 					Object obj = _zkClient.readData(childPath, true);
-					if (obj != null) {
-						profileContainer.put(child, (ServiceProfile) obj);
-					}
+					addServiceProfile(child, obj);
 					observeSpecifyChildData(childPath);
 				}
 			}
 		}
+	}
+
+	private void addServiceProfile(String child, Object obj) {
+		if (obj != null) {
+			ServiceProfile sp = (ServiceProfile) obj;
+			sp.setRelivePolicy(new ServiceRelivePolicy());
+			profileContainer.put(child, sp);
+		}
+
 	}
 
 	/**
@@ -102,13 +107,10 @@ public class ZkServiceLocator implements IServiceLocator<ServiceProfile> {
 				}
 
 				@Override
-				public void handleDataChange(String dataPath, Object data)
-						throws Exception {
+				public void handleDataChange(String dataPath, Object data) throws Exception {
 					if (!HedwigUtil.isBlankString(dataPath)) {
 						String child = HedwigUtil.getChildShortPath(dataPath);
-						if (data != null && profileContainer.containsKey(child)) {
-							profileContainer.put(child, (ServiceProfile) data);
-						}
+						addServiceProfile(child, data);
 						balancer.updateProfiles(profileContainer.values());
 					}
 				}
@@ -126,15 +128,13 @@ public class ZkServiceLocator implements IServiceLocator<ServiceProfile> {
 			_zkClient.subscribeChildChanges(basePath, new IZkChildListener() {
 
 				@Override
-				public void handleChildChange(String parentPath,
-						List<String> currentChilds) throws Exception {
+				public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
 					if (parentPath != null) {
 						Map<String, ServiceProfile> newProfileMap = new HashMap<String, ServiceProfile>();
 						ServiceProfile profile = null;
 						String childPath;
 						for (String child : currentChilds) {
-							childPath = HedwigUtil.getChildFullPath(
-									parentPath, child);
+							childPath = HedwigUtil.getChildFullPath(parentPath, child);
 							if (!profileContainer.containsKey(child)) {
 								profile = _zkClient.readData(childPath, true);
 								observeSpecifyChildData(childPath);
