@@ -25,7 +25,7 @@ public class ClientProfile extends BaseProfile implements Serializable {
 	private long timeout = ProperitesContainer.client().getLongProperty(PropKeyConstants.HEDWIG_READ_TIMEOUT,
 			InternalConstants.DEFAULT_READ_TIMEOUT);
 	private boolean profileSensitive = false;
-	private String requestType = RequestType.SyncInner.getName();
+	private String requestType = RequestType.SyncPool.getName();
 	private String clientAppName;
 
 	public ClientProfile() {
