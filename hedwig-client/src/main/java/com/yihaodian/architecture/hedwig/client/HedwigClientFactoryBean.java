@@ -71,13 +71,12 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 				throw new InvalidParamException("serviceVersion must not blank!!!");
 			}
 			p.setServiceVersion(serviceVersion);
-			if (timeout != null && (timeout.longValue() > InternalConstants.DEFAULT_REQUEST_TIMEOUT)) {
-				p.setTimeout(timeout);
-			}
 		} else {
 			p.setTarget(target);
 		}
-
+		if (timeout != null && (timeout.longValue() > InternalConstants.DEFAULT_REQUEST_TIMEOUT)) {
+			p.setTimeout(timeout);
+		}
 		return p;
 	}
 

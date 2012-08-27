@@ -36,6 +36,7 @@ public class DirectRequestHandler extends BaseHandler {
 			throw new HandlerException(reqId, "HedwigHessianInterceptor is not properly initialized");
 		}
 		try {
+			cbLog.setProviderHost(sUrl);
 			MethodInvocation invocation = event.getInvocation();
 			result = invocation.getMethod().invoke(hessianProxy, invocation.getArguments());
 		} catch (Exception e) {

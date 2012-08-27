@@ -13,12 +13,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.yihaodian.architecture.hedwig.client.event.BaseEvent;
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.client.event.handle.HedwigHandlerFactory;
 import com.yihaodian.architecture.hedwig.client.event.util.EventUtil;
 import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
 import com.yihaodian.architecture.hedwig.client.util.HedwigMonitorClientUtil;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
+import com.yihaodian.architecture.hedwig.common.constants.RequestType;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigAssert;
 import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
@@ -65,17 +67,31 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 	public Object syncInnerThreadExec(HedwigContext context, final IEvent<Object> event) throws HedwigException {
 		HedwigAssert.isNull(event, "Execute event must not null!!!");
 		Object result = null;
-		String globalId = getGlobalId();
+		final String globalId = getGlobalId();
+		final String reqId = event.getReqestId();
+		final ClientBizLog cbLog = HedwigMonitorClientUtil.createClientBizLog(context, reqId, globalId,
+				new Date(event.getStart()));
 		HedwigContextUtil.setGlobalId(globalId);
-		HedwigContextUtil.setRequestId(event.getReqestId());
+		HedwigContextUtil.setRequestId(reqId);
+		Object[] params = event.getInvocation().getArguments();
 		IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
 		event.setState(EventState.processing);
 		try {
 			result = handler.handle(context, event);
+			cbLog.setProviderHost(HedwigContextUtil.getString(InternalConstants.HEDWIG_SERVICE_IP, ""));
+			cbLog.setRespTime(new Date());
+			cbLog.setSuccessed(MonitorConstants.SUCCESS);
 		} catch (Exception e) {
-			logger.debug(e.getMessage(), e);
+			cbLog.setInParamObjects(params);
+			HedwigMonitorClientUtil.setException(cbLog, e);
+			throw new EngineException(e.getMessage(), e.getCause());
 		} finally {
-			HedwigContextUtil.clean();
+			try {
+				cbLog.setLayerType(MonitorConstants.LAYER_TYPE_ENGINE);
+				MonitorJmsSendUtil.asyncSendClientBizLog(cbLog);
+			} catch (Exception e2) {
+				logger.debug("Hedwig Monitor send request info failed!!!", e2.getMessage());
+			}
 		}
 
 		return result;
@@ -178,12 +194,12 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 
 	@Override
 	public void asyncReliableExec(final HedwigContext context, final IEvent<Object> event) throws HedwigException {
-		throw new HedwigException("Not supported!!!");
+		throw new HedwigException("Not supported yet!!!");
 	}
 
 	@Override
 	public Object oneWayExec(final HedwigContext context, final IEvent<Object> event) throws HedwigException {
-		throw new HedwigException("Not supported!!!");
+		throw new HedwigException("Not supported yet!!!");
 	}
 
 	@Override
@@ -206,5 +222,17 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 				}
 			}
 		}, event.getDelay(), event.getDelayUnit());
+	}
+
+	public Object exec(HedwigContext eventContext, IEvent<Object> event) throws HedwigException {
+		BaseEvent bevent = (BaseEvent) event;
+		int type = bevent.getRequestType().getIndex();
+		Object result = null;
+		if (RequestType.SyncInner.getIndex() == type) {
+			result = syncInnerThreadExec(eventContext, event);
+		} else {
+			result = syncPoolExec(eventContext, event);
+		}
+		return result;
 	}
 }

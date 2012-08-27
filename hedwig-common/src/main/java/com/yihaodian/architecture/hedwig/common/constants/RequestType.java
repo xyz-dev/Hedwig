@@ -25,7 +25,7 @@ public enum RequestType {
 		return name;
 	}
 
-	public RequestType getByIndex(int index) {
+	public static RequestType getByIndex(int index) {
 		if (index < 0)
 			return RequestType.SyncPool;
 		for (RequestType type : RequestType.values()) {
@@ -36,7 +36,7 @@ public enum RequestType {
 		return RequestType.SyncPool;
 	}
 
-	public RequestType getByName(String name) {
+	public static RequestType getByName(String name) {
 		if (name == null)
 			return RequestType.SyncPool;
 		for (RequestType type : RequestType.values()) {

@@ -45,7 +45,6 @@ public class SyncRequestHandler extends BaseHandler {
 
 		if (hessianProxy == null) {
 			sp.setAvailable(false);
-			context.getHessianProxyMap().remove(sUrl);
 			throw new HessianProxyException(reqId, "Service provider is not avaliable!!! " + sp.toString());
 		}
 		MethodInvocation invocation = event.getInvocation();

@@ -10,14 +10,12 @@ public class HandlerException extends HedwigException {
 	 */
 	private static final long serialVersionUID = 1664923907531909180L;
 	protected String reqId;
-	protected Throwable cause;
 	public HandlerException() {
 		super();
 	}
 
 	public HandlerException(String reqId, String message, Throwable cause) {
 		super(createMessage(reqId, message), cause);
-		this.cause = cause;
 	}
 
 	public HandlerException(String reqId, String message) {
@@ -30,7 +28,6 @@ public class HandlerException extends HedwigException {
 
 	public HandlerException(String reqId, Throwable cause) {
 		super(createMessage(reqId, cause.getMessage()), cause);
-		this.cause = cause;
 	}
 
 	public static String createMessage(String reqId, String message) {

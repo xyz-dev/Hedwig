@@ -8,6 +8,7 @@ import java.io.Serializable;
 import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
+import com.yihaodian.architecture.hedwig.common.constants.RequestType;
 
 /**
  * @author Archer Jiang
@@ -24,7 +25,7 @@ public class ClientProfile extends BaseProfile implements Serializable {
 	private long timeout = ProperitesContainer.client().getLongProperty(PropKeyConstants.HEDWIG_READ_TIMEOUT,
 			InternalConstants.DEFAULT_READ_TIMEOUT);
 	private boolean profileSensitive = false;
-	private String requestType;
+	private String requestType = RequestType.SyncInner.getName();
 	private String clientAppName;
 
 	public ClientProfile() {

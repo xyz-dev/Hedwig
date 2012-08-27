@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import org.aopalliance.intercept.MethodInvocation;
 
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
+import com.yihaodian.architecture.hedwig.common.constants.RequestType;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.engine.event.EventState;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
@@ -34,6 +35,7 @@ public class BaseEvent implements IEvent<Object> {
 	protected MethodInvocation invocation;
 	protected List<EventState> states = new ArrayList<EventState>();
 	protected List<String> errorMessages = new ArrayList<String>();
+	protected RequestType requestType;
 
 	public BaseEvent() {
 		super();
@@ -164,5 +166,12 @@ public class BaseEvent implements IEvent<Object> {
 		this.errorMessages.add(errorMessage);
 	}
 
+	public RequestType getRequestType() {
+		return requestType;
+	}
+
+	public void setRequestType(RequestType requestType) {
+		this.requestType = requestType;
+	}
 
 }
