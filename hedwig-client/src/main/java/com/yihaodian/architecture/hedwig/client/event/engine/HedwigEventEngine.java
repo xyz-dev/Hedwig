@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.yihaodian.architecture.hedwig.client.event.BaseEvent;
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.client.event.handle.HedwigHandlerFactory;
-import com.yihaodian.architecture.hedwig.client.event.util.EventUtil;
+import com.yihaodian.architecture.hedwig.client.event.util.EngineUtil;
 import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
 import com.yihaodian.architecture.hedwig.client.util.HedwigMonitorClientUtil;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
@@ -88,13 +88,9 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 			HedwigMonitorClientUtil.setException(cbLog, e);
 			throw new EngineException(e.getMessage(), e.getCause());
 		} finally {
-			try {
-				cbLog.setLayerType(MonitorConstants.LAYER_TYPE_ENGINE);
-				MonitorJmsSendUtil.asyncSendClientBizLog(cbLog);
-				HedwigContextUtil.clean();
-			} catch (Exception e2) {
-				logger.debug("Hedwig Monitor send request info failed!!!", e2.getMessage());
-			}
+			cbLog.setLayerType(MonitorConstants.LAYER_TYPE_ENGINE);
+			MonitorJmsSendUtil.asyncSendClientBizLog(cbLog);
+			HedwigContextUtil.clean();
 		}
 
 		return result;
@@ -124,11 +120,11 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 						HedwigContextUtil.setRequestId(reqId);
 						event.setState(EventState.processing);
 						r = handler.handle(context, event);
-						cbLog.setProviderHost(HedwigContextUtil.getString(InternalConstants.HEDWIG_SERVICE_IP, ""));
 					} catch (Throwable e) {
 						logger.debug(e.getMessage());
-						EventUtil.retry(handler, event, context);
+						EngineUtil.retry(handler, event, context);
 					} finally {
+						cbLog.setProviderHost(HedwigContextUtil.getString(InternalConstants.HEDWIG_SERVICE_IP, ""));
 						HedwigContextUtil.clean();
 					}
 					return r;
@@ -141,10 +137,10 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 			} else {
 				throw new EngineException("Future is null");
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			cbLog.setInParamObjects(params);
 			HedwigMonitorClientUtil.setException(cbLog, e);
-			throw new EngineException(e.getCause());
+			throw new EngineException(e);
 		} finally {
 			cbLog.setLayerType(MonitorConstants.LAYER_TYPE_ENGINE);
 			MonitorJmsSendUtil.asyncSendClientBizLog(cbLog);
@@ -180,7 +176,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 						r = handler.handle(context, event);
 					} catch (Throwable e) {
 						logger.debug(e.getMessage());
-						EventUtil.retry(handler, event, context);
+						EngineUtil.retry(handler, event, context);
 					} finally {
 						HedwigContextUtil.clean();
 					}

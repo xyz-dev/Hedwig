@@ -178,7 +178,7 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 
 	public boolean isAvailable() {
 		boolean value = available.get();
-		if (!value) {
+		if (!value && relivePolicy != null) {
 			value = relivePolicy.tryRelive();
 		}
 		return value;

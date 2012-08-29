@@ -9,15 +9,16 @@ import org.slf4j.LoggerFactory;
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
+import com.yihaodian.architecture.hedwig.engine.exception.EngineException;
 import com.yihaodian.architecture.hedwig.engine.handler.IEventHandler;
 
 /**
  * @author Archer
  *
  */
-public class EventUtil {
+public class EngineUtil {
 
-	public static Logger logger = LoggerFactory.getLogger(EventUtil.class);
+	public static Logger logger = LoggerFactory.getLogger(EngineUtil.class);
 
 	public static Object retry(IEventHandler<HedwigContext, Object> handler, IEvent<Object> event, HedwigContext context)
 			throws HedwigException {
@@ -28,6 +29,7 @@ public class EventUtil {
 				logger.debug(e.getMessage());
 			}
 		}
-		throw new HedwigException("Exec " + event.getExecCount() + " times,event " + event.toString() + " had been retry enough!!!");
+		throw new EngineException("Exec " + event.getExecCount() + " times,event " + event.toString()
+				+ " had been retry enough!!!");
 	}
 }

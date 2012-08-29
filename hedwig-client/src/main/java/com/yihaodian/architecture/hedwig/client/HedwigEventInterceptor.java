@@ -46,14 +46,11 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 	@Override
 	public Object invoke(MethodInvocation invocation) throws HedwigException {
 		Object result = null;
-		long start = HedwigUtil.getCurrentTime();
 		IEvent<Object> event = eventBuilder.buildRequestEvent(invocation);
 		try {
 			result = eventEngine.exec(eventContext, event);
 		} catch (Throwable e) {
 			logger.error(InternalConstants.LOG_PROFIX + e.getMessage());
-		}finally{
-			System.out.println("Event execute total time:" + (HedwigUtil.getCurrentTime() - start));
 		}
 		event = null;
 		return result;
