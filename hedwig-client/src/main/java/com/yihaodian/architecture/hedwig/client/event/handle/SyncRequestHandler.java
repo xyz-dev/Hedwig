@@ -15,6 +15,7 @@ import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
 import com.yihaodian.architecture.hedwig.engine.exception.HessianProxyException;
 import com.yihaodian.architecture.hedwig.engine.exception.ProviderNotFindException;
+import com.yihaodian.monitor.dto.ClientBizLog;
 
 /**
  * @author Archer
@@ -23,7 +24,7 @@ import com.yihaodian.architecture.hedwig.engine.exception.ProviderNotFindExcepti
 public class SyncRequestHandler extends BaseHandler {
 
 	@Override
-	public Object doHandle(HedwigContext context, IEvent<Object> event) throws HandlerException {
+	public Object doHandle(HedwigContext context, IEvent<Object> event, ClientBizLog cbLog) throws HandlerException {
 
 		Object result = null;
 		ServiceProfile sp = context.getLocator().getService();

@@ -12,6 +12,7 @@ import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
+import com.yihaodian.monitor.dto.ClientBizLog;
 
 /**
  * @author Archer
@@ -20,7 +21,7 @@ import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
 public class DirectRequestHandler extends BaseHandler {
 
 	@Override
-	protected Object doHandle(HedwigContext context, IEvent<Object> event) throws HandlerException {
+	protected Object doHandle(HedwigContext context, IEvent<Object> event, ClientBizLog cbLog) throws HandlerException {
 		Object hessianProxy = null;
 		Object result = null;
 		String sUrl = context.getClientProfile().getTarget();

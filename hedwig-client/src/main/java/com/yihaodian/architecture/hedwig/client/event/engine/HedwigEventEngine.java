@@ -25,6 +25,7 @@ import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigAssert;
 import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
 import com.yihaodian.architecture.hedwig.common.util.HedwigExecutors;
+import com.yihaodian.architecture.hedwig.common.util.HedwigMonitorUtil;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.engine.IEventEngine;
 import com.yihaodian.architecture.hedwig.engine.event.EventState;
@@ -77,6 +78,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
 		event.setState(EventState.processing);
 		try {
+			cbLog.setMemo(HedwigMonitorUtil.getThreadPoolInfo(tpes));
 			result = handler.handle(context, event);
 			cbLog.setProviderHost(HedwigContextUtil.getString(InternalConstants.HEDWIG_SERVICE_IP, ""));
 			cbLog.setRespTime(new Date());
@@ -111,6 +113,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		try {
 			final IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
 			logger.debug("Pool size:" + tpes.getPoolSize());
+			cbLog.setMemo(HedwigMonitorUtil.getThreadPoolInfo(tpes));
 			f = tpes.submit(new Callable<Object>() {
 
 				@Override
@@ -143,12 +146,9 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 			HedwigMonitorClientUtil.setException(cbLog, e);
 			throw new EngineException(e.getCause());
 		} finally {
-			try {
-				cbLog.setLayerType(MonitorConstants.LAYER_TYPE_ENGINE);
-				MonitorJmsSendUtil.asyncSendClientBizLog(cbLog);
-			} catch (Exception e2) {
-				logger.debug("Hedwig Monitor send request info failed!!!", e2.getMessage());
-			}
+			cbLog.setLayerType(MonitorConstants.LAYER_TYPE_ENGINE);
+			MonitorJmsSendUtil.asyncSendClientBizLog(cbLog);
+
 		}
 		return result;
 	}
@@ -208,7 +208,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		final IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
 		final String globalId = getGlobalId();
 		stpes.schedule(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				try {

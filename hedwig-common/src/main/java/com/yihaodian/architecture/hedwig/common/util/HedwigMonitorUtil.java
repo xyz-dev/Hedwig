@@ -3,11 +3,18 @@
  */
 package com.yihaodian.architecture.hedwig.common.util;
 
+import java.util.concurrent.ThreadPoolExecutor;
+
+import com.google.gson.Gson;
+import com.yihaodian.architecture.hedwig.common.bean.ExecutorInfo;
+
 /**
  * @author Archer
  *
  */
 public class HedwigMonitorUtil {
+	public static Gson gson = new Gson();
+
 	public static String getExceptionClassName(Throwable throwable) {
 		String name = "";
 		if (throwable != null) {
@@ -33,6 +40,10 @@ public class HedwigMonitorUtil {
 			}
 		}
 		return msg.toString();
+	}
+
+	public static String getThreadPoolInfo(ThreadPoolExecutor tpes) {
+		return gson.toJson(new ExecutorInfo(tpes));
 	}
 
 }

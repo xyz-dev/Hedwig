@@ -24,12 +24,13 @@ import com.yihaodian.monitor.util.MonitorJmsSendUtil;
 /**
  * @author Archer
  * @param <C>
- *
+ * 
  */
 public abstract class BaseHandler implements IEventHandler<HedwigContext, Object> {
-	protected ClientBizLog cbLog;
+
 	@Override
 	public Object handle(HedwigContext context, IEvent<Object> event) throws HandlerException {
+		ClientBizLog cbLog = null;
 		String globalId = HedwigContextUtil.getGlobalId();
 		String txnId = HedwigClientUtil.generateTransactionId();
 		String reqId = event.getReqestId();
@@ -40,7 +41,7 @@ public abstract class BaseHandler implements IEventHandler<HedwigContext, Object
 		Object[] params = event.getInvocation().getArguments();
 		event.increaseExecCount();
 		try {
-			r = doHandle(context, event);
+			r = doHandle(context, event, cbLog);
 			event.setState(EventState.sucess);
 			event.setResult(r);
 			cbLog.setRespTime(new Date());
@@ -56,17 +57,15 @@ public abstract class BaseHandler implements IEventHandler<HedwigContext, Object
 				throw new HandlerException(event.getReqestId(), e.getMessage());
 			}
 		} finally {
-			try {
-				cbLog.setLayerType(MonitorConstants.LAYER_TYPE_HANDLER);
-				MonitorJmsSendUtil.asyncSendClientBizLog(cbLog);
-			} catch (Exception e2) {
-			}
+			cbLog.setLayerType(MonitorConstants.LAYER_TYPE_HANDLER);
+			MonitorJmsSendUtil.asyncSendClientBizLog(cbLog);
 		}
-		
+
 		return r;
 	}
 
-	abstract protected Object doHandle(HedwigContext context, IEvent<Object> event) throws HandlerException;
+	abstract protected Object doHandle(HedwigContext context, IEvent<Object> event, ClientBizLog cbLog)
+			throws HandlerException;
 
 	protected boolean checkSPAvaliable(Throwable ex) {
 		boolean bv = true;

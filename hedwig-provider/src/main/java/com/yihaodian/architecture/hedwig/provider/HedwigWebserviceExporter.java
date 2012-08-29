@@ -22,7 +22,6 @@ import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.util.NestedServletException;
 
-import com.caucho.services.server.ServiceContext;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
@@ -41,8 +40,8 @@ import com.yihaodian.monitor.util.MonitorJmsSendUtil;
  * @author Archer Jiang
  * 
  */
-public class HedwigWebserviceExporter extends HedwigHessianExporter implements HttpRequestHandler, InitializingBean, DisposableBean,
-		ApplicationContextAware {
+public class HedwigWebserviceExporter extends HedwigHessianExporter implements HttpRequestHandler, InitializingBean,
+		DisposableBean, ApplicationContextAware {
 
 	private Logger logger = LoggerFactory.getLogger(HedwigWebserviceExporter.class);
 	private IServiceProviderRegister register;
@@ -51,12 +50,12 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 	private String serviceName;
 	private String serviceVersion;
 	private ApplicationContext springContext;
-	private ServerBizLog sbLog;
 
 	@Override
-	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Date start =new Date();
-		sbLog = new ServerBizLog();
+	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+			IOException {
+		Date start = new Date();
+		ServerBizLog sbLog = new ServerBizLog();
 		sbLog.setGetReqTime(start);
 		HedwigContextUtil.setAttribute(InternalConstants.HEDWIG_MONITORLOG, sbLog);
 		if (!"POST".equals(request.getMethod())) {
@@ -64,7 +63,6 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 					"HessianServiceExporter only supports POST requests");
 		}
 		try {
-			ServiceContext.begin(request, profile.getServiceName(), profile.getServicePath());
 			sbLog.setProviderApp(profile.getServiceAppName());
 			sbLog.setProviderHost(profile.getHostIp() + ":" + profile.getPort());
 			sbLog.setServiceName(profile.getServiceName());
@@ -80,15 +78,12 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 			sbLog.setReqId(HedwigContextUtil.getRequestId());
 			sbLog.setUniqReqId(HedwigContextUtil.getGlobalId());
 			sbLog.setCommId(HedwigContextUtil.getTransactionId());
-			try {
-				MonitorJmsSendUtil.asyncSendServerBizLog(sbLog);
-			} catch (Exception e) {
-			}
+			MonitorJmsSendUtil.asyncSendServerBizLog(sbLog);
 			HedwigContextUtil.clean();
-
 		}
 
 	}
+
 	@Override
 	public void destroy() throws Exception {
 		register.unRegist(profile);
@@ -145,15 +140,14 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 		return p;
 	}
 
-
 	private String lookupServiceName() throws InvalidParamException {
 		String name = null;
 		String[] names = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(springContext, this.getClass());
 		if (names != null && names.length >= 1) {
-			for(String beanName:names){
-				HedwigHessianExporter hhe = (HedwigHessianExporter)springContext.getBean(beanName);
-				if(hhe.getServiceInterface().equals(getServiceInterface())){
-					if(beanName.startsWith("/")){
+			for (String beanName : names) {
+				HedwigHessianExporter hhe = (HedwigHessianExporter) springContext.getBean(beanName);
+				if (hhe.getServiceInterface().equals(getServiceInterface())) {
+					if (beanName.startsWith("/")) {
 						name = beanName.replaceFirst("/", "");
 					}
 				}
@@ -181,13 +175,13 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.springContext = applicationContext;
 	}
+
 	public AppProfile getAppProfile() {
 		return appProfile;
 	}
+
 	public void setAppProfile(AppProfile appProfile) {
 		this.appProfile = appProfile;
 	}
-
-
 
 }

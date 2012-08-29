@@ -65,8 +65,9 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 		String header;
 		while ((header = in.readHeader()) != null) {
 			Object value = in.readObject();
-
-			context.addHeader(header, value);
+			if (context != null) {
+				context.addHeader(header, value);
+			}
 			if (value != null) {
 				HedwigContextUtil.setAttribute(header, value);
 			}
@@ -124,6 +125,12 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 			out.writeFault("ServiceException", e.getMessage(), e);
 			out.completeReply();
 			return;
+		} finally {
+			Object obj = HedwigContextUtil.getAttribute(InternalConstants.HEDWIG_MONITORLOG, null);
+			if (obj != null) {
+				ServerBizLog sbLog = (ServerBizLog) obj;
+				sbLog.setRespResultTime(new Date());
+			}
 		}
 
 		// The complete call needs to be after the invoke to handle a
@@ -136,10 +143,5 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 
 		out.completeReply();
 		out.close();
-		Object obj = HedwigContextUtil.getAttribute(InternalConstants.HEDWIG_MONITORLOG, null);
-		if (obj != null) {
-			ServerBizLog sbLog = (ServerBizLog) obj;
-			sbLog.setRespResultTime(new Date());
-		}
 	}
 }
