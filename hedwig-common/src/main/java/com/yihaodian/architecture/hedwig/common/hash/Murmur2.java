@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.util.Random;
 
 /**
  * @author Archer Jiang
@@ -70,7 +71,7 @@ public class Murmur2 implements HashFunction {
 	public int hash(Object data, int seed) {
 		int hashCode;
 		if (data instanceof String) {
-			hashCode = hash(data, seed);
+			hashCode = hash32(((String) data).getBytes(), seed);
 		} else {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -90,5 +91,17 @@ public class Murmur2 implements HashFunction {
 	@Override
 	public int hash(Object data) {
 		return hash(data, 2 << 16);
+	}
+
+	public static void main(String[] args) {
+		Murmur2 m2 = new Murmur2();
+		Random r = new Random();
+		for (;;) {
+			String strValue = "asdahdfhsfgh" + r.nextDouble();
+			int value = m2.hash(strValue);
+			if (value < 0) {
+				System.out.println(strValue);
+			}
+		}
 	}
 }

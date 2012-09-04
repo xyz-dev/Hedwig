@@ -20,7 +20,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.util.NestedServletException;
 
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
@@ -50,19 +49,26 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 	private String serviceName;
 	private String serviceVersion;
 	private ApplicationContext springContext;
+	private int tpsThreshold = 1000;
+	private TpsThresholdChecker ttc = new TpsThresholdChecker(tpsThreshold);
+
+
 
 	@Override
 	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 			IOException {
-		Date start = new Date();
 		ServerBizLog sbLog = new ServerBizLog();
-		sbLog.setGetReqTime(start);
-		HedwigContextUtil.setAttribute(InternalConstants.HEDWIG_MONITORLOG, sbLog);
-		if (!"POST".equals(request.getMethod())) {
-			throw new HttpRequestMethodNotSupportedException(request.getMethod(), new String[] { "POST" },
-					"HessianServiceExporter only supports POST requests");
-		}
 		try {
+			if (ttc.check()) {
+				throw new HedwigException("Exceed service capacity, tpsThreshold:" + tpsThreshold);
+			}
+			Date start = new Date();
+			sbLog.setGetReqTime(start);
+			HedwigContextUtil.setAttribute(InternalConstants.HEDWIG_MONITORLOG, sbLog);
+			if (!"POST".equals(request.getMethod())) {
+				throw new HttpRequestMethodNotSupportedException(request.getMethod(), new String[] { "POST" },
+						"HessianServiceExporter only supports POST requests");
+			}
 			sbLog.setProviderApp(profile.getServiceAppName());
 			sbLog.setProviderHost(profile.getHostIp() + ":" + profile.getPort());
 			sbLog.setServiceName(profile.getServiceName());
@@ -73,7 +79,7 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 			sbLog.setSuccessed(MonitorConstants.FAIL);
 			sbLog.setExceptionClassname(HedwigMonitorUtil.getExceptionClassName(ex));
 			sbLog.setExceptionDesc(HedwigMonitorUtil.getExceptionMsg(ex));
-			throw new NestedServletException("Hessian skeleton invocation failed", ex);
+			throw new ServletException("Process request failed!!!", ex);
 		} finally {
 			sbLog.setReqId(HedwigContextUtil.getRequestId());
 			sbLog.setUniqReqId(HedwigContextUtil.getGlobalId());
@@ -118,9 +124,7 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 			}
 		} catch (Throwable e) {
 			logger.debug(e.getMessage());
-			if (e instanceof HedwigException) {
-				System.exit(1);
-			}
+			System.exit(1);
 		}
 	}
 
@@ -183,5 +187,10 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 	public void setAppProfile(AppProfile appProfile) {
 		this.appProfile = appProfile;
 	}
+
+	public void setTpsThreshold(int tpsThreshold) {
+		this.tpsThreshold = tpsThreshold;
+	}
+
 
 }

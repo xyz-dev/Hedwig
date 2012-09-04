@@ -45,7 +45,7 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 		ProperitesContainer container = ProperitesContainer.provider();
 		hostIp = container.getProperty(PropKeyConstants.HOST_IP);
 		jvmPid = container.getProperty(PropKeyConstants.JVM_PID);
-		parentPath = container.getProperty(PropKeyConstants.ZK_ROOT_PATH, parentPath);
+		rootPath = container.getProperty(PropKeyConstants.ZK_ROOT_PATH, rootPath);
 		weighted = HedwigUtil.ParseString2Int(container.getProperty(PropKeyConstants.HOST_WEIGHTED), 1);
 	}
 
