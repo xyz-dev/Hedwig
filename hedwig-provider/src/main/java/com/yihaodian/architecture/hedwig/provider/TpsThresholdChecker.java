@@ -4,6 +4,8 @@
 package com.yihaodian.architecture.hedwig.provider;
 
 import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -20,32 +22,37 @@ import com.yihaodian.architecture.hedwig.common.util.HedwigExecutors;
  */
 public class TpsThresholdChecker {
 
-	private int threshold = 1000;
+	private int threshold = 0;
 	private LinkedList<Integer> hisIvkCtList = new LinkedList<Integer>();
 	private AtomicInteger curIvkCount = new AtomicInteger(0);
 	private int efIvkCount = 0;
-	private ScheduledThreadPoolExecutor executor = HedwigExecutors
-			.newSchedulerThreadPool(InternalConstants.HEDWIG_PROVIDER);
+	private Timer timer = new Timer();
 	private Lock lock = new ReentrantLock();
 	public TpsThresholdChecker(int tpsThreshold) {
-		threshold = threshold * InternalConstants.DEFAULT_COLLECT_INTERVAL
-				* InternalConstants.DEFAULT_MAX_COLLECT_ROUND;
-		initIvkCountJob();
+		if(tpsThreshold>0){
+			threshold = tpsThreshold * InternalConstants.DEFAULT_COLLECT_INTERVAL
+					* InternalConstants.DEFAULT_MAX_COLLECT_ROUND;
+			initIvkCountJob();
+		}
 	}
 
 	public boolean check() {
-		boolean value = true;
+		boolean value = false;
 		if (threshold > 0) {
-			value = (curIvkCount.incrementAndGet() + efIvkCount) <= threshold;
+			value = (curIvkCount.get() + efIvkCount) >= threshold;
+			if(!value){
+				curIvkCount.incrementAndGet();
+			}
 		}
 		return value;
 	}
 
 	private void initIvkCountJob() {
-		executor.schedule(new Callable<Boolean>() {
-
+		final int interval = InternalConstants.DEFAULT_COLLECT_INTERVAL*InternalConstants.DEFAULT_COLLECT_INTERVAL_UNIT_SECOND;
+		timer.schedule(new TimerTask() {
+			
 			@Override
-			public Boolean call() throws Exception {
+			public void run() {
 				lock.lock();
 				try {
 					int count = curIvkCount.getAndSet(0);
@@ -58,9 +65,10 @@ public class TpsThresholdChecker {
 				} finally {
 					lock.unlock();
 				}
-				return true;
+				
 			}
-		}, InternalConstants.DEFAULT_COLLECT_INTERVAL, TimeUnit.SECONDS);
+		}, interval, interval);
+
 
 	}
 }
