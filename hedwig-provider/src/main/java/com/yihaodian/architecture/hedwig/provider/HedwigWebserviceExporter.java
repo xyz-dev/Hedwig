@@ -49,8 +49,8 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 	private String serviceName;
 	private String serviceVersion;
 	private ApplicationContext springContext;
-	private int tpsThreshold = 1000;
-	private TpsThresholdChecker ttc = new TpsThresholdChecker(tpsThreshold);
+	private int tpsThreshold;
+	private TpsThresholdChecker ttc;
 
 
 
@@ -99,7 +99,7 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 	@Override
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
-
+		ttc = new TpsThresholdChecker(tpsThreshold);
 		try {
 			if (profile == null) {
 				profile = createServiceProfile();

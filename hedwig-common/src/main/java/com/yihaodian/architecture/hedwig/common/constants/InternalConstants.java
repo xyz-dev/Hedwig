@@ -43,6 +43,7 @@ public interface InternalConstants {
 
 	public static final int DEFAULT_MAX_COLLECT_ROUND = 12;
 	public static final int DEFAULT_COLLECT_INTERVAL = 5;
+	public static final int DEFAULT_COLLECT_INTERVAL_UNIT_SECOND = 1000;
 
 	public static final String HEDWIG_REQUEST_ID = "reqId";
 	public static final String HEDWIG_GLOBAL_ID = "glbId";
