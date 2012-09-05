@@ -71,7 +71,8 @@ public abstract class BaseHandler implements IEventHandler<HedwigContext, Object
 		boolean bv = true;
 		String rootCause = HedwigMonitorUtil.getExceptionClassName(ex);
 		if (!HedwigUtil.isBlankString(rootCause)) {
-			if (rootCause.equals(ConnectException.class.getName()) || rootCause.equals(SocketException.class.getName())) {
+			if (rootCause.equals(ConnectException.class.getName()) || rootCause.equals(SocketException.class.getName())
+					|| rootCause.equals(java.io.IOException.class.getName())) {
 				bv = false;
 			}
 		}
