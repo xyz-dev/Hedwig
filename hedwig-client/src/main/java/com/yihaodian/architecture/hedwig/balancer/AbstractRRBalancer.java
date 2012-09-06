@@ -23,7 +23,8 @@ public abstract class AbstractRRBalancer implements LoadBalancer<ServiceProfile>
 		if (profileQueue == null || profileQueue.size() == 0) {
 			return null;
 		} else if (profileQueue.size() == 1) {
-			return profileQueue.peek();
+			ServiceProfile sp = profileQueue.peek();
+			return sp.isAvailable() ? sp : null;
 		} else {
 			return doSelect();
 		}

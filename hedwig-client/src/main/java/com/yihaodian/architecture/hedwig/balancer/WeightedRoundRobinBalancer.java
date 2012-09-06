@@ -34,6 +34,7 @@ public class WeightedRoundRobinBalancer extends AbstractRRBalancer{
 						break;
 					} else {
 						profileQueue.poll();
+						sp.resetCurWeight();
 						profileQueue.add(sp);
 						sp = null;
 					}

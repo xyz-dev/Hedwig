@@ -54,7 +54,7 @@ public abstract class BaseHandler implements IEventHandler<HedwigContext, Object
 			if (e instanceof HandlerException) {
 				throw (HandlerException) e;
 			} else {
-				throw new HandlerException(event.getReqestId(), e.getMessage());
+				throw new HandlerException(event.getReqestId(), e.getMessage(), e.getCause());
 			}
 		} finally {
 			cbLog.setLayerType(MonitorConstants.LAYER_TYPE_HANDLER);

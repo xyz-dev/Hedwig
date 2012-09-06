@@ -93,15 +93,4 @@ public class Murmur2 implements HashFunction {
 		return hash(data, 2 << 16);
 	}
 
-	public static void main(String[] args) {
-		Murmur2 m2 = new Murmur2();
-		Random r = new Random();
-		for (;;) {
-			String strValue = "asdahdfhsfgh" + r.nextDouble();
-			int value = m2.hash(strValue);
-			if (value < 0) {
-				System.out.println(strValue);
-			}
-		}
-	}
 }

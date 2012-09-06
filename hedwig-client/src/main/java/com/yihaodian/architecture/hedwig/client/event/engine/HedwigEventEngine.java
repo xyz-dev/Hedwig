@@ -121,7 +121,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 						event.setState(EventState.processing);
 						r = handler.handle(context, event);
 					} catch (Throwable e) {
-						logger.debug(e.getMessage());
+						logger.error("Execute " + event.getExecCount() + " times failed!!! " + e.getMessage());
 						EngineUtil.retry(handler, event, context);
 					} finally {
 						cbLog.setProviderHost(HedwigContextUtil.getString(InternalConstants.HEDWIG_SERVICE_IP, ""));

@@ -13,9 +13,9 @@ public interface InternalConstants {
 
 	public static final String HASH_FUNCTION_MUR2 = "murmur2";
 
-	public static final String LOG_PROFIX = "Hedwig said:";
-	public static final String ENGINE_LOG_PROFIX = "Event engine said:";
-	public static final String HANDLE_LOG_PROFIX = "Event handler said:";
+	public static final String LOG_PROFIX = "Hedwig said: ";
+	public static final String ENGINE_LOG_PROFIX = "Hedwig event engine said: ";
+	public static final String HANDLE_LOG_PROFIX = "Hedwig event handler said: ";
 
 	public static final String BALANCER_NAME_ROUNDROBIN = "RoundRobin";
 	public static final String BALANCER_NAME_WEIGHTED_ROUNDROBIN = "WeightedRoundRobin";

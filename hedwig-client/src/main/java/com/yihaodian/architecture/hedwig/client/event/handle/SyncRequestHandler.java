@@ -10,7 +10,6 @@ import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
-import com.yihaodian.architecture.hedwig.common.util.HedwigMonitorUtil;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
 import com.yihaodian.architecture.hedwig.engine.exception.HessianProxyException;
@@ -50,15 +49,11 @@ public class SyncRequestHandler extends BaseHandler {
 		}
 		MethodInvocation invocation = event.getInvocation();
 		Object[] params = invocation.getArguments();
-		if (sp.isAvailable()) {
-			try {
-				result = invocation.getMethod().invoke(hessianProxy, params);
-			} catch (Throwable e) {
-				sp.setAvailable(checkSPAvaliable(e));
-				throw new HandlerException(reqId, HedwigMonitorUtil.getExceptionMsg(e), e);
-			}
-		} else {
-			throw new HandlerException(reqId, "Service provider is not avaliable!!! " + sp.toString());
+		try {
+			result = invocation.getMethod().invoke(hessianProxy, params);
+		} catch (Throwable e) {
+			sp.setAvailable(checkSPAvaliable(e));
+			throw new HandlerException(reqId, e.getMessage(), e.getCause());
 		}
 
 		return result;

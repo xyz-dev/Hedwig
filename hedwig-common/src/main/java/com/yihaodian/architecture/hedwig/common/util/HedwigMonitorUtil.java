@@ -33,15 +33,12 @@ public class HedwigMonitorUtil {
 		StringBuilder msg = new StringBuilder();
 		if (throwable != null) {
 			msg.append(getErrorMsg(throwable));
-			msg.append(throwable.getClass().getName()).append(": ");
-			if (throwable != null) {
-				Throwable cause = throwable;
-				while (cause != null) {
-					msg.append(cause.getMessage()).append(" ");
-					cause = cause.getCause();
-				}
+			Throwable cause = throwable;
+			while (cause != null) {
+				msg.append(cause.getClass().getName()).append(":");
+				msg.append(cause.getLocalizedMessage()).append("\n");
+				cause = cause.getCause();
 			}
-
 		}
 		return msg.toString();
 	}
@@ -52,9 +49,10 @@ public class HedwigMonitorUtil {
 			StackTraceElement[] traces = error.getStackTrace();
 			StackTraceElement cause = traces[0];
 			if (cause != null) {
-				sb.append(error.getMessage()).append("\n").append(";ClassName:").append(cause.getClassName())
-						.append("\n").append(";MethodName:").append(cause.getMethodName()).append(";LineNumber:")
-						.append(cause.getLineNumber()).append(";");
+				sb.append("ErrorMsg:").append(error.getLocalizedMessage()).append("\n").append("ClassName:")
+						.append(cause.getClassName()).append(";").append(" MethodName:")
+						.append(cause.getMethodName()).append("; LineNumber:").append(cause.getLineNumber())
+						.append(";").append("\n");
 			}
 		}
 		return sb.toString();
