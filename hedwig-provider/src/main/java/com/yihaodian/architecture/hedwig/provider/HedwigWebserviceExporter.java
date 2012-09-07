@@ -24,7 +24,6 @@ import org.springframework.web.util.NestedServletException;
 
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
-import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
 import com.yihaodian.architecture.hedwig.common.util.HedwigMonitorUtil;
@@ -50,19 +49,12 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 	private String serviceName;
 	private String serviceVersion;
 	private ApplicationContext springContext;
-	private int tpsThreshold;
-	private TpsThresholdChecker ttc;
-
-
 
 	@Override
 	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 			IOException {
 		ServerBizLog sbLog = new ServerBizLog();
 		try {
-			if (ttc.isReached()) {
-				throw new HedwigException("Exceed service capacity, tpsThreshold:" + tpsThreshold);
-			}
 			Date start = new Date();
 			sbLog.setGetReqTime(start);
 			HedwigContextUtil.setAttribute(InternalConstants.HEDWIG_MONITORLOG, sbLog);
@@ -82,10 +74,6 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 			sbLog.setExceptionDesc(HedwigMonitorUtil.getExceptionMsg(ex));
 			throw new NestedServletException("Process request failed!!!", ex);
 		} finally {
-			Object obj = HedwigContextUtil.getAttribute(InternalConstants.HEDWIG_INVOKE_TIME, null);
-			if(obj!=null){
-				sbLog.setReqTime((Date) obj);
-			}
 			sbLog.setReqId(HedwigContextUtil.getRequestId());
 			sbLog.setUniqReqId(HedwigContextUtil.getGlobalId());
 			sbLog.setCommId(HedwigContextUtil.getTransactionId());
@@ -104,7 +92,6 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 	@Override
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
-		ttc = new TpsThresholdChecker(tpsThreshold);
 		try {
 			if (profile == null) {
 				profile = createServiceProfile();

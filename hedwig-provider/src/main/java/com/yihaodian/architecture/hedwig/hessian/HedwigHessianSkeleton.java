@@ -15,7 +15,10 @@ import com.caucho.hessian.io.AbstractHessianOutput;
 import com.caucho.services.server.AbstractSkeleton;
 import com.caucho.services.server.ServiceContext;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
+import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
+import com.yihaodian.architecture.hedwig.common.util.HedwigMonitorUtil;
+import com.yihaodian.architecture.hedwig.provider.TpsThresholdChecker;
 import com.yihaodian.monitor.dto.ServerBizLog;
 
 /**
@@ -27,6 +30,10 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 
 	private Object _service;
 
+	private TpsThresholdChecker ttc;
+
+	private int tpsThreshold;
+
 	/**
 	 * Create a new hessian skeleton.
 	 * 
@@ -35,16 +42,18 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 	 * @param apiClass
 	 *            the API interface
 	 */
-	public HedwigHessianSkeleton(Object service, Class apiClass) {
+	public HedwigHessianSkeleton(Object service, Class apiClass, int tpsThreshold) {
 		super(apiClass);
-
+		this.tpsThreshold = tpsThreshold;
 		if (service == null)
 			service = this;
 
 		_service = service;
 
-		if (!apiClass.isAssignableFrom(service.getClass()))
+		if (!apiClass.isAssignableFrom(service.getClass())) {
 			throw new IllegalArgumentException("Service " + service + " must be an instance of " + apiClass.getName());
+		}
+		ttc = new TpsThresholdChecker(tpsThreshold);
 	}
 
 	/**
@@ -111,11 +120,18 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 		}
 
 		Object result = null;
-
+		ServerBizLog sbLog = null;
+		Object obj = HedwigContextUtil.getAttribute(InternalConstants.HEDWIG_MONITORLOG, new ServerBizLog());
+		sbLog = (ServerBizLog) obj;
 		try {
 			HedwigContextUtil.setArguments(values);
+			if (ttc.isReached()) {
+				throw new HedwigException("Exceed service capacity, tpsThreshold:" + tpsThreshold);
+			}
 			result = method.invoke(_service, values);
 		} catch (Throwable e) {
+			sbLog.setExceptionClassname(HedwigMonitorUtil.getExceptionClassName(e));
+			sbLog.setExceptionDesc(HedwigMonitorUtil.getExceptionMsg(e));
 			if (e instanceof InvocationTargetException)
 				e = ((InvocationTargetException) e).getTargetException();
 
@@ -126,10 +142,10 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 			out.completeReply();
 			return;
 		} finally {
-			Object obj = HedwigContextUtil.getAttribute(InternalConstants.HEDWIG_MONITORLOG, null);
-			if (obj != null) {
-				ServerBizLog sbLog = (ServerBizLog) obj;
-				sbLog.setRespResultTime(new Date());
+			sbLog.setRespResultTime(new Date());
+			Object objDate = HedwigContextUtil.getAttribute(InternalConstants.HEDWIG_INVOKE_TIME, null);
+			if (objDate != null) {
+				sbLog.setReqTime((Date) objDate);
 			}
 		}
 

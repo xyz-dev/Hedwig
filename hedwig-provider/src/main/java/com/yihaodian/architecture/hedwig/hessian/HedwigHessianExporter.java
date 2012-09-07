@@ -27,6 +27,8 @@ public class HedwigHessianExporter extends RemoteExporter implements Initializin
 
 	private HedwigHessian2SkeletonInvoker skeletonInvoker;
 
+	protected int tpsThreshold;
+
 	/**
 	 * Specify the Hessian SerializerFactory to use.
 	 * <p>
@@ -69,10 +71,12 @@ public class HedwigHessianExporter extends RemoteExporter implements Initializin
 		try {
 			try {
 				// Try Hessian 3.x (with service interface argument).
-				Constructor ctor = HedwigHessianSkeleton.class.getConstructor(new Class[] { Object.class, Class.class });
+				Constructor ctor = HedwigHessianSkeleton.class.getConstructor(new Class[] { Object.class, Class.class,
+						int.class });
 				checkService();
 				checkServiceInterface();
-				skeleton = (HedwigHessianSkeleton) ctor.newInstance(new Object[] { getProxyForService(), getServiceInterface() });
+				skeleton = (HedwigHessianSkeleton) ctor.newInstance(new Object[] { getProxyForService(),
+						getServiceInterface(), tpsThreshold });
 			} catch (NoSuchMethodException ex) {
 				// Fall back to Hessian 2.x (without service interface
 				// argument).
