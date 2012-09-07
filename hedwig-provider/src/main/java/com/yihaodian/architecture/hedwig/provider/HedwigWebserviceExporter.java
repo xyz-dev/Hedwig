@@ -82,6 +82,10 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 			sbLog.setExceptionDesc(HedwigMonitorUtil.getExceptionMsg(ex));
 			throw new NestedServletException("Process request failed!!!", ex);
 		} finally {
+			Object obj = HedwigContextUtil.getAttribute(InternalConstants.HEDWIG_INVOKE_TIME, null);
+			if(obj!=null){
+				sbLog.setReqTime((Date) obj);
+			}
 			sbLog.setReqId(HedwigContextUtil.getRequestId());
 			sbLog.setUniqReqId(HedwigContextUtil.getGlobalId());
 			sbLog.setCommId(HedwigContextUtil.getTransactionId());

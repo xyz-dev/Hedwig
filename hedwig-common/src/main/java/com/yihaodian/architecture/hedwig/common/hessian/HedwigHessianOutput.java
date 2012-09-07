@@ -156,6 +156,8 @@ public class HedwigHessianOutput extends AbstractHessianOutput {
 		writeString(HedwigContextUtil.getGlobalId());
 		writeHeader(InternalConstants.HEDWIG_TXN_ID);
 		writeString(HedwigContextUtil.getTransactionId());
+		writeHeader(InternalConstants.HEDWIG_INVOKE_TIME);
+		writeObject(HedwigContextUtil.getAttribute(InternalConstants.HEDWIG_INVOKE_TIME, null));
 		// add requestId end
 		os.write('m');
 		int len = method.length();

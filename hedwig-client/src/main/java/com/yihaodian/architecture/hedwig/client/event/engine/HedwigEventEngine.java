@@ -68,12 +68,13 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 	public Object syncInnerThreadExec(HedwigContext context, final IEvent<Object> event) throws HedwigException {
 		HedwigAssert.isNull(event, "Execute event must not null!!!");
 		Object result = null;
+		Date reqTime =new Date(event.getStart());
 		final String globalId = getGlobalId();
 		final String reqId = event.getReqestId();
-		final ClientBizLog cbLog = HedwigMonitorClientUtil.createClientBizLog(context, reqId, globalId,
-				new Date(event.getStart()));
+		final ClientBizLog cbLog = HedwigMonitorClientUtil.createClientBizLog(context, reqId, globalId, reqTime);
 		HedwigContextUtil.setGlobalId(globalId);
 		HedwigContextUtil.setRequestId(reqId);
+		HedwigContextUtil.setAttribute(InternalConstants.HEDWIG_INVOKE_TIME, reqTime);
 		Object[] params = event.getInvocation().getArguments();
 		IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
 		event.setState(EventState.processing);
@@ -101,10 +102,10 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		HedwigAssert.isNull(event, "Execute event must not null!!!");
 		Object result = null;
 		Future<Object> f = null;
+		final Date reqTime = new Date(event.getStart());
 		final String globalId = getGlobalId();
 		final String reqId = event.getReqestId();
-		final ClientBizLog cbLog = HedwigMonitorClientUtil.createClientBizLog(context, reqId, globalId,
-				new Date(event.getStart()));
+		final ClientBizLog cbLog = HedwigMonitorClientUtil.createClientBizLog(context, reqId, globalId, reqTime);
 		Object[] params = event.getInvocation().getArguments();
 		try {
 			final IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
@@ -118,6 +119,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 					try {
 						HedwigContextUtil.setGlobalId(globalId);
 						HedwigContextUtil.setRequestId(reqId);
+						HedwigContextUtil.setAttribute(InternalConstants.HEDWIG_INVOKE_TIME, reqTime);
 						event.setState(EventState.processing);
 						r = handler.handle(context, event);
 					} catch (Throwable e) {
