@@ -60,7 +60,7 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 			IOException {
 		ServerBizLog sbLog = new ServerBizLog();
 		try {
-			if (ttc.check()) {
+			if (ttc.isReached()) {
 				throw new HedwigException("Exceed service capacity, tpsThreshold:" + tpsThreshold);
 			}
 			Date start = new Date();

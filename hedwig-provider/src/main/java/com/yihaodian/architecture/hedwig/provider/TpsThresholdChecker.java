@@ -36,7 +36,7 @@ public class TpsThresholdChecker {
 		}
 	}
 
-	public boolean check() {
+	public boolean isReached() {
 		boolean value = false;
 		if (threshold > 0) {
 			value = (curIvkCount.get() + efIvkCount) >= threshold;
