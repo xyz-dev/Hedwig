@@ -143,17 +143,18 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 			if (objDate != null) {
 				sbLog.setReqTime((Date) objDate);
 			}
+			// The complete call needs to be after the invoke to handle a
+			// trailing InputStream
+			in.completeCall();
+
+			out.startReply();
+
+			out.writeObject(result);
+
+			out.completeReply();
+			out.close();
 		}
 
-		// The complete call needs to be after the invoke to handle a
-		// trailing InputStream
-		in.completeCall();
 
-		out.startReply();
-
-		out.writeObject(result);
-
-		out.completeReply();
-		out.close();
 	}
 }
