@@ -17,7 +17,6 @@ import com.caucho.services.server.ServiceContext;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
-import com.yihaodian.architecture.hedwig.common.util.HedwigMonitorUtil;
 import com.yihaodian.architecture.hedwig.provider.TpsThresholdChecker;
 import com.yihaodian.monitor.dto.ServerBizLog;
 
@@ -130,8 +129,6 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 			}
 			result = method.invoke(_service, values);
 		} catch (Throwable e) {
-			sbLog.setExceptionClassname(HedwigMonitorUtil.getExceptionClassName(e));
-			sbLog.setExceptionDesc(HedwigMonitorUtil.getExceptionMsg(e));
 			if (e instanceof InvocationTargetException)
 				e = ((InvocationTargetException) e).getTargetException();
 
@@ -140,7 +137,7 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 			out.startReply();
 			out.writeFault("ServiceException", e.getMessage(), e);
 			out.completeReply();
-			return;
+			throw e;
 		} finally {
 			sbLog.setRespResultTime(new Date());
 			Object objDate = HedwigContextUtil.getAttribute(InternalConstants.HEDWIG_INVOKE_TIME, null);
