@@ -9,6 +9,7 @@ import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.util.NestedServletException;
 
 import com.caucho.hessian.io.AbstractHessianInput;
 import com.caucho.hessian.io.AbstractHessianOutput;
@@ -131,13 +132,11 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 		} catch (Throwable e) {
 			if (e instanceof InvocationTargetException)
 				e = ((InvocationTargetException) e).getTargetException();
-
 			log.debug(e.getMessage(), e);
-
 			out.startReply();
 			out.writeFault("ServiceException", e.getMessage(), e);
 			out.completeReply();
-			throw e;
+			throw new NestedServletException(e.getMessage());
 		} finally {
 			sbLog.setRespResultTime(new Date());
 			Object objDate = HedwigContextUtil.getAttribute(InternalConstants.HEDWIG_INVOKE_TIME, null);

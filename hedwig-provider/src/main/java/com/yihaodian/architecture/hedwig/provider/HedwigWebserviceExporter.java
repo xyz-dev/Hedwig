@@ -20,7 +20,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.util.NestedServletException;
 
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
@@ -72,7 +71,6 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 			sbLog.setSuccessed(MonitorConstants.FAIL);
 			sbLog.setExceptionClassname(HedwigMonitorUtil.getExceptionClassName(ex));
 			sbLog.setExceptionDesc(HedwigMonitorUtil.getExceptionMsg(ex));
-			throw new NestedServletException("Process request failed!!!", ex);
 		} finally {
 			sbLog.setReqId(HedwigContextUtil.getRequestId());
 			sbLog.setUniqReqId(HedwigContextUtil.getGlobalId());
