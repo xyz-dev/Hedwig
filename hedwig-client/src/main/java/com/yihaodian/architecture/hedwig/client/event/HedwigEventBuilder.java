@@ -30,7 +30,6 @@ public class HedwigEventBuilder {
 
 	public BaseEvent buildRequestEvent(MethodInvocation invocation) {
 		BaseEvent event = null;
-		String reqId = HedwigClientUtil.generateReqId();
 		long expire = clientProfile.getTimeout();
 		if (!HedwigUtil.isBlankString(clientProfile.getTarget())) {
 			event = directRequestEvent(invocation);
@@ -43,6 +42,7 @@ public class HedwigEventBuilder {
 			expire = expire << 1;
 		}
 		event.setExpireTime(expire);
+		String reqId = HedwigClientUtil.generateReqId(event);
 		event.setReqestId(reqId);
 		return event;
 	}

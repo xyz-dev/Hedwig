@@ -21,8 +21,7 @@ public class ConsistentHashBalancer implements LoadBalancer<ServiceProfile> {
 
 	@Override
 	public ServiceProfile select() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Not supported for now");
 	}
 
 	@Override

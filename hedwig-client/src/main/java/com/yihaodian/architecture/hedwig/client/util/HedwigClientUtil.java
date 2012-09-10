@@ -11,6 +11,7 @@ import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
+import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 
 /**
  * @author Archer
@@ -19,7 +20,10 @@ import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 public class HedwigClientUtil {
 
 	private static Lock lock = new ReentrantLock();
-
+	private static String shortIP;
+	static {
+		genShortIp();
+	}
 	public static Object getHessianProxy(HedwigContext context, String serviceUrl) throws MalformedURLException {
 		Object proxy = null;
 		if (context.getHessianProxyMap().containsKey(serviceUrl)) {
@@ -40,36 +44,33 @@ public class HedwigClientUtil {
 	}
 
 
-	public static String generateReqId() {
+	public static String generateReqId(IEvent<Object> event) {
 		String reqId = "";
-		String hostIp = ProperitesContainer.client().getProperty(PropKeyConstants.HOST_IP);
 		lock.lock();
 		try {
-			reqId = "req." + hostIp + "." + HedwigUtil.getCurrentNanoTime();
+			reqId = "req-" + HedwigUtil.getCurrentTime() + "-" + shortIP + event.hashCode();
 		} finally {
 			lock.unlock();
 		}
 		return reqId;
 	}
 
-	public static String generateGlobalId() {
+	public static String generateGlobalId(IEvent<Object> event) {
 		String glbId = "";
-		String hostIp = ProperitesContainer.client().getProperty(PropKeyConstants.HOST_IP);
 		lock.lock();
 		try {
-			glbId = "glb." + hostIp + "." + HedwigUtil.getCurrentNanoTime();
+			glbId = "glb-" + HedwigUtil.getCurrentTime() + "-" + shortIP + event.hashCode();
 		} finally {
 			lock.unlock();
 		}
 		return glbId;
 	}
 
-	public static String generateTransactionId() {
+	public static String generateTransactionId(IEvent<Object> event) {
 		String txnId = "";
-		String hostIp = ProperitesContainer.client().getProperty(PropKeyConstants.HOST_IP);
 		lock.lock();
 		try {
-			txnId = "txn." + hostIp + "." + HedwigUtil.getCurrentNanoTime();
+			txnId = "txn-" + HedwigUtil.getCurrentTime() + "-" + shortIP + event.hashCode();
 		} finally {
 			lock.unlock();
 		}
@@ -80,4 +81,17 @@ public class HedwigClientUtil {
 		int redoCount = nodeCount >= 1 ? (nodeCount - 1) : 0;
 		return redoCount;
 	}
+
+	public static void genShortIp() {
+		StringBuilder sb = new StringBuilder();
+		String hostIp = ProperitesContainer.client().getProperty(PropKeyConstants.HOST_IP, "");
+		if (!HedwigUtil.isBlankString(hostIp)) {
+			String[] nodes = hostIp.split("\\.");
+			if (nodes != null && nodes.length == 4) {
+				sb.append(nodes[2]).append(".").append(nodes[3]).append("-");
+			}
+		}
+		shortIP = sb.toString();
+	}
+
 }

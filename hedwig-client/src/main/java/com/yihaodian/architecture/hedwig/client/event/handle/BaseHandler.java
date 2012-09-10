@@ -32,7 +32,7 @@ public abstract class BaseHandler implements IEventHandler<HedwigContext, Object
 	public Object handle(HedwigContext context, IEvent<Object> event) throws HandlerException {
 		ClientBizLog cbLog = null;
 		String globalId = HedwigContextUtil.getGlobalId();
-		String txnId = HedwigClientUtil.generateTransactionId();
+		String txnId = HedwigClientUtil.generateTransactionId(event);
 		String reqId = event.getReqestId();
 		HedwigContextUtil.setTransactionId(txnId);
 		cbLog = HedwigMonitorClientUtil.createClientBizLog(context, reqId, globalId, new Date());

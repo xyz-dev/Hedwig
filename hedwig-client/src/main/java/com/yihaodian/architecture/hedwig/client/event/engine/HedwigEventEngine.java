@@ -69,7 +69,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		HedwigAssert.isNull(event, "Execute event must not null!!!");
 		Object result = null;
 		Date reqTime =new Date(event.getStart());
-		final String globalId = getGlobalId();
+		final String globalId = getGlobalId(event);
 		final String reqId = event.getReqestId();
 		final ClientBizLog cbLog = HedwigMonitorClientUtil.createClientBizLog(context, reqId, globalId, reqTime);
 		HedwigContextUtil.setGlobalId(globalId);
@@ -103,7 +103,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		Object result = null;
 		Future<Object> f = null;
 		final Date reqTime = new Date(event.getStart());
-		final String globalId = getGlobalId();
+		final String globalId = getGlobalId(event);
 		final String reqId = event.getReqestId();
 		final ClientBizLog cbLog = HedwigMonitorClientUtil.createClientBizLog(context, reqId, globalId, reqTime);
 		Object[] params = event.getInvocation().getArguments();
@@ -151,10 +151,10 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		return result;
 	}
 
-	private String getGlobalId() {
+	private String getGlobalId(IEvent<Object> event) {
 		String globalId = HedwigContextUtil.getGlobalId();
 		if (HedwigUtil.isBlankString(globalId)) {
-			globalId = HedwigClientUtil.generateGlobalId();
+			globalId = HedwigClientUtil.generateGlobalId(event);
 		}
 		return globalId;
 	}
@@ -164,7 +164,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		HedwigAssert.isNull(event, "Execute event must not null!!!");
 		Future<Object> f = null;
 		try {
-			final String globalId = getGlobalId();
+			final String globalId = getGlobalId(event);
 			final IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
 			f = tpes.submit(new Callable<Object>() {
 
@@ -204,7 +204,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 	@Override
 	public void schedulerExec(final HedwigContext context, final IScheduledEvent<Object> event) throws HedwigException {
 		final IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
-		final String globalId = getGlobalId();
+		final String globalId = getGlobalId(event);
 		stpes.schedule(new Runnable() {
 
 			@Override
