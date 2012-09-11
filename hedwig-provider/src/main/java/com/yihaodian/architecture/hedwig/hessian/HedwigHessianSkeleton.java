@@ -136,7 +136,7 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 			out.startReply();
 			out.writeFault("ServiceException", e.getMessage(), e);
 			out.completeReply();
-			throw new NestedServletException(e.getMessage());
+			throw new NestedServletException(e.getMessage(),e);
 		} finally {
 			sbLog.setRespResultTime(new Date());
 			Object objDate = HedwigContextUtil.getAttribute(InternalConstants.HEDWIG_INVOKE_TIME, null);

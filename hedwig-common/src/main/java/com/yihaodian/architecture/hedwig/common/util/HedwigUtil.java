@@ -43,9 +43,8 @@ public class HedwigUtil {
 
 	public static String generateServiceUrl(ServiceProfile sp) {
 		StringBuilder sb = new StringBuilder(sp.getProtocolPrefix());
-		sb.append("://").append(sp.getHostIp()).append(":").append(sp.getPort()).append("/")
-				.append(sp.getServiceAppName()).append("/").append(sp.getUrlPattern()).append("/")
-				.append(sp.getServiceName());
+		sb.append("://").append(sp.getHostIp()).append(":").append(sp.getPort()).append("/").append(sp.getUrlPattern())
+				.append("/").append(sp.getServiceName());
 		return sb.toString();
 	}
 

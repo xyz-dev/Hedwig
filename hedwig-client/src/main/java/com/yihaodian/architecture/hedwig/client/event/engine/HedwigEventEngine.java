@@ -109,7 +109,6 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		Object[] params = event.getInvocation().getArguments();
 		try {
 			final IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
-			logger.debug("Pool size:" + tpes.getPoolSize());
 			cbLog.setMemo(HedwigMonitorUtil.getThreadPoolInfo(tpes));
 			f = tpes.submit(new Callable<Object>() {
 

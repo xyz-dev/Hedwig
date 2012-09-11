@@ -26,17 +26,55 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	 */
 	private static final long serialVersionUID = 6012531717460254654L;
 	private String servicePath;
+
+	/**
+	 * 服务URL
+	 */
 	private String serviceUrl;
+
+	/**
+	 * 协议前缀
+	 */
 	private String protocolPrefix = InternalConstants.PROTOCOL_PROFIX_HTTP;
+	/**
+	 * 转发用规则
+	 */
 	private String urlPattern=InternalConstants.HEDWIG_URL_PATTERN;
+	/**
+	 * 机器IP
+	 */
 	private String hostIp;
+	/**
+	 * 进程ID
+	 */
 	private String jvmPid;
+	/**
+	 * 服务端口
+	 */
 	private int port = -1;
+	/**
+	 * 服务元数据版本
+	 */
 	private int revision = 0;
+	/**
+	 * 默认权重
+	 */
 	private int weighted = 1;
+	/**
+	 * 负载
+	 */
 	private double loadRate = 0.0d;
+	/**
+	 * 负载阀值
+	 */
 	private double loadThreshold = 0.9d;
+	/**
+	 * 当前权重
+	 */
 	private AtomicInteger curWeight = new AtomicInteger(weighted);
+	/**
+	 * 服务是否可用
+	 */
 	private AtomicBoolean available = new AtomicBoolean(true);
 	private RelivePolicy relivePolicy;;
 
