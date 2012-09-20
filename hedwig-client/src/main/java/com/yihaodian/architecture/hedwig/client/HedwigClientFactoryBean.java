@@ -3,6 +3,8 @@
  */
 package com.yihaodian.architecture.hedwig.client;
 
+import java.util.Set;
+
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.FactoryBean;
 
@@ -25,6 +27,37 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 	private String target;
 	private String clientAppName;
 	private Long timeout;
+	private Set<String> noRetryMethods;
+
+	public HedwigClientFactoryBean() {
+		super();
+	}
+
+	public HedwigClientFactoryBean(Class<?> clazz, String domainName, String serviceAppName, String serviceName,
+			String serviceVersion,
+			String clientAppName, Long timeout) throws Exception {
+		super();
+		this.serviceInterface = clazz;
+		this.serviceAppName = serviceAppName;
+		this.domainName = domainName;
+		this.serviceName = serviceName;
+		this.serviceVersion = serviceVersion;
+		this.clientAppName = clientAppName;
+		this.timeout = timeout;
+		afterPropertiesSet();
+	}
+
+	public HedwigClientFactoryBean(Class<?> clazz, String target, String serviceAppName, String clientAppName,
+			Long timeout)
+			throws Exception {
+		super();
+		this.serviceInterface = clazz;
+		this.serviceAppName = serviceAppName;
+		this.target = target;
+		this.clientAppName = clientAppName;
+		this.timeout = timeout;
+		afterPropertiesSet();
+	}
 
 	@Override
 	public Object getObject() throws Exception {
@@ -58,12 +91,11 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 			throw new InvalidParamException("clientAppName must not blank!!!");
 		}
 		p.setClientAppName(clientAppName);
+		if (HedwigUtil.isBlankString(serviceAppName)) {
+			throw new InvalidParamException("serviceAppName must not blank!!!");
+		}
+		p.setServiceAppName(serviceAppName);
 		if (HedwigUtil.isBlankString(target)) {
-			if (HedwigUtil.isBlankString(serviceAppName)) {
-				throw new InvalidParamException("serviceAppName must not blank!!!");
-			}
-			p.setServiceAppName(serviceAppName);
-
 			if (!HedwigUtil.isBlankString(domainName)) {
 				p.setDomainName(domainName);
 			}
@@ -75,6 +107,9 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 				throw new InvalidParamException("serviceVersion must not blank!!!");
 			}
 			p.setServiceVersion(serviceVersion);
+			if(noRetryMethods!=null){
+				p.setNoRetryMethods(noRetryMethods);
+			}
 		} else {
 			p.setTarget(target);
 		}
@@ -108,6 +143,10 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 
 	public void setClientAppName(String clientAppName) {
 		this.clientAppName = clientAppName;
+	}
+
+	public void setNoRetryMethods(Set<String> noRetryMethods) {
+		this.noRetryMethods = noRetryMethods;
 	}
 
 }

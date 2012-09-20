@@ -4,6 +4,7 @@
 package com.yihaodian.architecture.hedwig.common.dto;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
@@ -27,6 +28,7 @@ public class ClientProfile extends BaseProfile implements Serializable {
 	private boolean profileSensitive = false;
 	private String requestType = RequestType.SyncPool.getName();
 	private String clientAppName;
+	private Set<String> noRetryMethods;
 
 	public ClientProfile() {
 		super();
@@ -41,8 +43,9 @@ public class ClientProfile extends BaseProfile implements Serializable {
 		if (target != null) {
 			this.target = target;
 			String[] arr = target.split("/", 6);
-			this.serviceAppName = arr[3];
-			this.serviceName = arr[5];
+			if (arr != null && arr.length > 0) {
+				this.serviceName = arr[arr.length - 1];
+			}
 		}
 	}
 
@@ -88,6 +91,14 @@ public class ClientProfile extends BaseProfile implements Serializable {
 
 	public void setClientAppName(String clientAppName) {
 		this.clientAppName = clientAppName;
+	}
+
+	public Set<String> getNoRetryMethods() {
+		return noRetryMethods;
+	}
+
+	public void setNoRetryMethods(Set<String> noRetryMethods) {
+		this.noRetryMethods = noRetryMethods;
 	}
 
 	@Override

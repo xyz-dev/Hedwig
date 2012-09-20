@@ -113,8 +113,7 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 				logger.debug("Ending regist service " + strService);
 			}
 		} catch (Throwable e) {
-			logger.debug(e.getMessage());
-			System.exit(1);
+			logger.error("HedwigExporter can't regist service," + e.getMessage());
 		}
 	}
 

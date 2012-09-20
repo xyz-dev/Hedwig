@@ -3,12 +3,18 @@
  */
 package com.yihaodian.architecture.hedwig.register;
 
+import org.apache.zookeeper.Watcher.Event.KeeperState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
+import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
 import com.yihaodian.architecture.hedwig.common.util.ZkUtil;
+import com.yihaodian.architecture.zkclient.IZkStateListener;
 import com.yihaodian.architecture.zkclient.ZkClient;
 
 /**
@@ -17,6 +23,7 @@ import com.yihaodian.architecture.zkclient.ZkClient;
  */
 public class ServiceProviderZkRegister implements IServiceProviderRegister {
 
+	private Logger logger = LoggerFactory.getLogger(ServiceProviderZkRegister.class);
 	private ZkClient _zkClient = null;
 	private String parentPath = "";
 	private String childPath = "";
@@ -28,7 +35,7 @@ public class ServiceProviderZkRegister implements IServiceProviderRegister {
 	}
 
 	@Override
-	public void regist(ServiceProfile profile) throws InvalidParamException {
+	public void regist(final ServiceProfile profile) throws InvalidParamException {
 		parentPath = profile.getParentPath();
 		if (!_zkClient.exists(parentPath)) {
 			_zkClient.createPersistent(parentPath, true);
@@ -37,6 +44,21 @@ public class ServiceProviderZkRegister implements IServiceProviderRegister {
 		if (!_zkClient.exists(childPath)) {
 			_zkClient.createEphemeral(childPath, profile);
 		}
+		_zkClient.subscribeStateChanges(new IZkStateListener() {
+
+			@Override
+			public void handleStateChanged(KeeperState state) throws Exception {
+				logger.debug(InternalConstants.LOG_PROFIX + "zk connection state change to:" + state.toString());
+			}
+
+			@Override
+			public void handleNewSession() throws Exception {
+				logger.debug(InternalConstants.LOG_PROFIX + "Reconnect to zk!!!");
+				if (!_zkClient.exists(childPath)) {
+					_zkClient.createEphemeral(childPath, profile);
+				}
+			}
+		});
 		isRegisted = true;
 
 	}

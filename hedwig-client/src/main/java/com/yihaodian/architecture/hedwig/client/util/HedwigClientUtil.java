@@ -24,6 +24,7 @@ public class HedwigClientUtil {
 	static {
 		genShortIp();
 	}
+
 	public static Object getHessianProxy(HedwigContext context, String serviceUrl) throws MalformedURLException {
 		Object proxy = null;
 		if (context.getHessianProxyMap().containsKey(serviceUrl)) {
@@ -43,39 +44,24 @@ public class HedwigClientUtil {
 		return proxy;
 	}
 
-
 	public static String generateReqId(IEvent<Object> event) {
 		String reqId = "";
-		lock.lock();
-		try {
-			reqId = "req-" + HedwigUtil.getCurrentTime() + "-" + shortIP + event.hashCode();
-		} finally {
-			lock.unlock();
-		}
+		reqId = "req-" + HedwigUtil.getCurrentTime() + "-" + shortIP + event.hashCode();
 		return reqId;
 	}
 
 	public static String generateGlobalId(IEvent<Object> event) {
 		String glbId = "";
-		lock.lock();
-		try {
-			glbId = "glb-" + HedwigUtil.getCurrentTime() + "-" + shortIP + event.hashCode();
-		} finally {
-			lock.unlock();
-		}
+		glbId = "glb-" + HedwigUtil.getCurrentTime() + "-" + shortIP + event.hashCode();
 		return glbId;
 	}
 
 	public static String generateTransactionId(IEvent<Object> event) {
 		String txnId = "";
-		lock.lock();
-		try {
-			txnId = "txn-" + HedwigUtil.getCurrentTime() + "-" + shortIP + event.hashCode();
-		} finally {
-			lock.unlock();
-		}
+		txnId = "txn-" + HedwigUtil.getCurrentTime() + "-" + shortIP + event.hashCode() + "-" + event.getExecCount();
 		return txnId;
 	}
+
 	public static int getRedoCount(HedwigContext context) {
 		int nodeCount = context.getLocator().getAllService().size();
 		int redoCount = nodeCount >= 1 ? (nodeCount - 1) : 0;

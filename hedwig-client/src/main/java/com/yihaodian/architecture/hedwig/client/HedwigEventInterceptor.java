@@ -11,6 +11,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.remoting.support.RemotingSupport;
 
@@ -32,13 +33,14 @@ import com.yihaodian.architecture.hedwig.engine.event.IEvent;
  * @author Archer
  * 
  */
-public class HedwigEventInterceptor extends RemotingSupport implements MethodInterceptor, InitializingBean {
+public class HedwigEventInterceptor extends RemotingSupport implements MethodInterceptor, InitializingBean,
+		DisposableBean {
 	private Logger logger = LoggerFactory.getLogger(HedwigEventInterceptor.class);
 	protected ClientProfile clientProfile;
 	private HedwigHessianProxyFactory proxyFactory = new HedwigHessianProxyFactory();
 	private IServiceLocator<ServiceProfile> locator;
 	private Map<String, Object> hessianProxyMap = new ConcurrentHashMap<String, Object>();
-	private Class serviceInterface;
+	protected Class serviceInterface;
 	private HedwigContext eventContext;
 	private HedwigEventBuilder eventBuilder;
 	private HedwigEventEngine eventEngine;
@@ -104,5 +106,13 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 
 	public void setClientProfile(ClientProfile clientProfile) {
 		this.clientProfile = clientProfile;
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		hessianProxyMap = null;
+		if (eventEngine != null) {
+			eventEngine.shutdown();
+		}
 	}
 }

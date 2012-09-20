@@ -29,7 +29,7 @@ public class BaseEvent implements IEvent<Object> {
 	protected TimeUnit expireTimeUnit = TimeUnit.MILLISECONDS;
 	protected boolean retryable = false;
 	protected int execCount = 0;
-	protected int maxRedoCount = 3;
+	protected int maxRedoCount = 0;
 	protected long start;
 	protected Object result;
 	protected MethodInvocation invocation;

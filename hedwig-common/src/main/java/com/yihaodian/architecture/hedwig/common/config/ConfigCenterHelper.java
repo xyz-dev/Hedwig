@@ -25,7 +25,7 @@ public class ConfigCenterHelper {
 	}
 
 	private void init(String group, String file) {
-		properites = YccGlobalPropertyConfigurer.getProperties(group, file);
+		properites = YccGlobalPropertyConfigurer.getProperties(group, file, false);
 	}
 
 	public String getProperty(String key, String defaultValue) {

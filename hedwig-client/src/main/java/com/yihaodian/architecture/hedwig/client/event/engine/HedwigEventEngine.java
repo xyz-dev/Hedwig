@@ -233,4 +233,10 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		}
 		return result;
 	}
+
+	@Override
+	public void shutdown() {
+		tpes.shutdown();
+		stpes.shutdown();
+	}
 }

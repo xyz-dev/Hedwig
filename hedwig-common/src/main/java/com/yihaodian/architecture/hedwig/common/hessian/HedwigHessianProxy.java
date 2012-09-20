@@ -220,9 +220,9 @@ public class HedwigHessianProxy implements InvocationHandler {
 
 			return conn;
 		} catch (IOException e) {
-			if (conn instanceof HttpURLConnection)
+			if (conn instanceof HttpURLConnection) {
 				((HttpURLConnection) conn).disconnect();
-
+			}
 			throw e;
 		} catch (RuntimeException e) {
 			if (conn instanceof HttpURLConnection)

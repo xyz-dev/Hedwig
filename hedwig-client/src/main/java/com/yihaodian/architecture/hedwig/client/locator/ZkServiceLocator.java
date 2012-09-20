@@ -9,9 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.yihaodian.architecture.hedwig.balancer.BalancerFactory;
 import com.yihaodian.architecture.hedwig.balancer.LoadBalancer;
-import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
@@ -31,6 +33,7 @@ import com.yihaodian.architecture.zkclient.ZkClient;
  */
 public class ZkServiceLocator implements IServiceLocator<ServiceProfile> {
 
+	private static Logger logger = LoggerFactory.getLogger(ZkServiceLocator.class);
 	private ZkClient _zkClient = null;
 	private Map<String, ServiceProfile> profileContainer = new ConcurrentHashMap<String, ServiceProfile>();
 	private static boolean isProfileSensitive = false;
@@ -51,11 +54,9 @@ public class ZkServiceLocator implements IServiceLocator<ServiceProfile> {
 		String parentPath = profile.getParentPath();
 		List<String> childList = null;
 		if (parentPath != null) {
-			while (!_zkClient.exists(parentPath)) {
-				try {
-					Thread.sleep(InternalConstants.DEFAULT_WAITING);
-				} catch (Exception e) {
-				}
+			if (!_zkClient.exists(parentPath)) {
+				logger.error("Can't find path " + parentPath + " in ZK. Can't find service provider for now");
+				_zkClient.createPersistent(parentPath, true);
 			}
 			observeChild(parentPath);
 			childList = _zkClient.getChildren(parentPath);

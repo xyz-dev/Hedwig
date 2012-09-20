@@ -3,6 +3,8 @@
  */
 package com.yihaodian.architecture.hedwig.client.event;
 
+import java.util.Set;
+
 import org.aopalliance.intercept.MethodInvocation;
 
 import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
@@ -20,11 +22,13 @@ public class HedwigEventBuilder {
 
 	private HedwigContext context;
 	private ClientProfile clientProfile;
+	private Set<String> noRetoryMethods;
 
 	public HedwigEventBuilder(HedwigContext context, ClientProfile clientProfile) {
 		super();
 		this.context = context;
 		this.clientProfile = clientProfile;
+		this.noRetoryMethods = clientProfile.getNoRetryMethods();
 	}
 
 
@@ -49,7 +53,10 @@ public class HedwigEventBuilder {
 
 	private SyncRequestEvent SyncRequestEvent(MethodInvocation invocation) {
 		SyncRequestEvent event = new SyncRequestEvent(invocation);
-		event.setMaxRedoCount(HedwigClientUtil.getRedoCount(context));
+		String methodName = invocation.getMethod().getName();
+		if (noRetoryMethods == null || !noRetoryMethods.contains(methodName)) {
+			event.setMaxRedoCount(HedwigClientUtil.getRedoCount(context));
+		}
 		event.setRetryable(true);
 		event.setState(EventState.init);
 		return event;

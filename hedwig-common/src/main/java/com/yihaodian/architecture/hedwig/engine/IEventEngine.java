@@ -70,4 +70,6 @@ public interface IEventEngine<C extends IEventContext, T> {
 	public void schedulerExec(C context, final IScheduledEvent<T> event) throws HedwigException;
 
 	public Object exec(C context, IEvent<Object> event) throws HedwigException;
+
+	public void shutdown();
 }
