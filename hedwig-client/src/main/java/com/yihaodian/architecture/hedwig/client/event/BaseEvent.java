@@ -49,7 +49,7 @@ public class BaseEvent implements IEvent<Object> {
 		int len = stackTraceElements.length;
 		if (len > CALLER_POSITION) {
 			StackTraceElement el = stackTraceElements[CALLER_POSITION];
-			callerMethod = el.getClassName() + "." + el.getMethodName();
+			callerMethod = HedwigUtil.getShortClassName(el.getClassName()) + "." + el.getMethodName();
 		}
 	}
 

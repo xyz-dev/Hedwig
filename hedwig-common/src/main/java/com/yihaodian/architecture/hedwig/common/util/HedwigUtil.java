@@ -88,4 +88,14 @@ public class HedwigUtil {
 		return value;
 	}
 
+	public static String getShortClassName(String clazzName){
+		String value = clazzName;
+		if(clazzName!=null){
+			String[] arr = clazzName.split("\\.");
+			if (arr != null && arr.length > 0) {
+				value = arr[(arr.length - 1)];
+			}
+		}
+		return value;
+	}
 }
