@@ -35,7 +35,7 @@ public abstract class BaseHandler implements IEventHandler<HedwigContext, Object
 		String txnId = HedwigClientUtil.generateTransactionId(event);
 		String reqId = event.getReqestId();
 		HedwigContextUtil.setTransactionId(txnId);
-		cbLog = HedwigMonitorClientUtil.createClientBizLog(context, reqId, globalId, new Date());
+		cbLog = HedwigMonitorClientUtil.createClientBizLog(event, context, reqId, globalId, new Date());
 		cbLog.setCommId(txnId);
 		Object r = null;
 		Object[] params = event.getInvocation().getArguments();

@@ -71,7 +71,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		Date reqTime =new Date(event.getStart());
 		final String globalId = getGlobalId(event);
 		final String reqId = event.getReqestId();
-		final ClientBizLog cbLog = HedwigMonitorClientUtil.createClientBizLog(context, reqId, globalId, reqTime);
+		final ClientBizLog cbLog = HedwigMonitorClientUtil.createClientBizLog(event, context, reqId, globalId, reqTime);
 		HedwigContextUtil.setGlobalId(globalId);
 		HedwigContextUtil.setRequestId(reqId);
 		HedwigContextUtil.setAttribute(InternalConstants.HEDWIG_INVOKE_TIME, reqTime);
@@ -105,7 +105,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		final Date reqTime = new Date(event.getStart());
 		final String globalId = getGlobalId(event);
 		final String reqId = event.getReqestId();
-		final ClientBizLog cbLog = HedwigMonitorClientUtil.createClientBizLog(context, reqId, globalId, reqTime);
+		final ClientBizLog cbLog = HedwigMonitorClientUtil.createClientBizLog(event, context, reqId, globalId, reqTime);
 		Object[] params = event.getInvocation().getArguments();
 		try {
 			final IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);

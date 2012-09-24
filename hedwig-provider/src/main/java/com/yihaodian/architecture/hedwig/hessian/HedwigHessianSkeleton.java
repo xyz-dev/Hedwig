@@ -128,6 +128,7 @@ public class HedwigHessianSkeleton extends AbstractSkeleton {
 			if (ttc.isReached()) {
 				throw new HedwigException("Exceed service capacity, tpsThreshold:" + tpsThreshold);
 			}
+			sbLog.setMethodName(method.getName());
 			result = method.invoke(_service, values);
 		} catch (Throwable e) {
 			if (e instanceof InvocationTargetException)

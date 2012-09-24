@@ -23,6 +23,7 @@ import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 public class BaseEvent implements IEvent<Object> {
 
 	private static final long serialVersionUID = -3268122380332784050L;
+	private static final int CALLER_POSITION = 9;
 	protected long id;
 	protected String reqestId;
 	protected long expireTime = InternalConstants.DEFAULT_REQUEST_TIMEOUT;
@@ -36,10 +37,20 @@ public class BaseEvent implements IEvent<Object> {
 	protected List<EventState> states = new ArrayList<EventState>();
 	protected List<String> errorMessages = new ArrayList<String>();
 	protected RequestType requestType;
+	protected String serviceMethod;
+	protected String callerMethod;
 
-	public BaseEvent() {
+	public BaseEvent(MethodInvocation invocation) {
 		super();
+		this.invocation = invocation;
 		this.start = HedwigUtil.getCurrentTime();
+		this.serviceMethod = HedwigUtil.getMethodName(invocation);
+		StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+		int len = stackTraceElements.length;
+		if (len > CALLER_POSITION) {
+			StackTraceElement el = stackTraceElements[CALLER_POSITION];
+			callerMethod = el.getClassName() + "." + el.getMethodName();
+		}
 	}
 
 	@Override
@@ -172,6 +183,22 @@ public class BaseEvent implements IEvent<Object> {
 
 	public void setRequestType(RequestType requestType) {
 		this.requestType = requestType;
+	}
+
+	public String getServiceMethod() {
+		return serviceMethod;
+	}
+
+	public void setServiceMethod(String serviceMethod) {
+		this.serviceMethod = serviceMethod;
+	}
+
+	public String getCallerMethod() {
+		return callerMethod;
+	}
+
+	public void setCallerMethod(String callerMethod) {
+		this.callerMethod = callerMethod;
 	}
 
 }

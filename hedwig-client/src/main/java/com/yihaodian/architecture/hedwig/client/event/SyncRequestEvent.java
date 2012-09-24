@@ -17,8 +17,7 @@ public class SyncRequestEvent extends BaseEvent {
 	private static final long serialVersionUID = -8464312440807572894L;
 
 	public SyncRequestEvent(MethodInvocation invocation) {
-		super();
-		this.invocation = invocation;
+		super(invocation);
 	}
 
 	@Override

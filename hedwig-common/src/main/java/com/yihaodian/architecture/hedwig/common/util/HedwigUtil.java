@@ -5,6 +5,8 @@ package com.yihaodian.architecture.hedwig.common.util;
 
 import java.util.List;
 
+import org.aopalliance.intercept.MethodInvocation;
+
 import com.yihaodian.architecture.hedwig.common.dto.BaseProfile;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 
@@ -78,5 +80,12 @@ public class HedwigUtil {
 		return value;
 	}
 
+	public static String getMethodName(MethodInvocation invocation) {
+		String value = "unknowMethod";
+		if (invocation != null) {
+			value = invocation.getMethod().getName();
+		}
+		return value;
+	}
 
 }
