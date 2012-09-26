@@ -44,7 +44,7 @@ public class BaseEvent implements IEvent<Object> {
 		super();
 		this.invocation = invocation;
 		this.start = HedwigUtil.getCurrentTime();
-		this.serviceMethod = HedwigUtil.getMethodName(invocation);
+		this.serviceMethod = HedwigUtil.getClassName(invocation) + "." + HedwigUtil.getMethodName(invocation);
 		StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
 		int len = stackTraceElements.length;
 		if (len > CALLER_POSITION) {

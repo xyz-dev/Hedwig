@@ -84,7 +84,8 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 	@Override
 	public void destroy() throws Exception {
 		register.unRegist(profile);
-
+		logger.info("HedwigExporter destory service, serviceName:" + profile.getServiceName() + ",url:"
+				+ profile.getServiceUrl());
 	}
 
 	@Override
@@ -112,6 +113,8 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 			if (logger.isDebugEnabled()) {
 				logger.debug("Ending regist service " + strService);
 			}
+			logger.info("HedwigExporter publish service success,serviceName:" + profile.getServiceName() + ",url:"
+					+ profile.getServiceUrl());
 		} catch (Throwable e) {
 			logger.error("HedwigExporter can't regist service," + e.getMessage());
 		}

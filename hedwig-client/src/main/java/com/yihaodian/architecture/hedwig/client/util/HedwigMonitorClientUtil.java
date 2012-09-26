@@ -32,6 +32,7 @@ public class HedwigMonitorClientUtil {
 		cbLog.setReqId(reqId);
 		cbLog.setReqTime(reqTime);
 		cbLog.setMethodName(be.getCallerMethod());
+		cbLog.setServiceMethodName(be.getServiceMethod());
 		return cbLog;
 	}
 

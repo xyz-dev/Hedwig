@@ -88,6 +88,14 @@ public class HedwigUtil {
 		return value;
 	}
 
+	public static String getClassName(MethodInvocation invocation) {
+		String value = "unKnowClass";
+		if (invocation != null) {
+			value = getShortClassName(invocation.getMethod().getDeclaringClass().getName());
+		}
+		return value;
+	}
+
 	public static String getShortClassName(String clazzName){
 		String value = clazzName;
 		if(clazzName!=null){
