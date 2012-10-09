@@ -4,6 +4,7 @@
 package com.yihaodian.architecture.hedwig.common.dto;
 
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
@@ -76,6 +77,7 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	 * 服务状态
 	 */
 	private AtomicInteger status = new AtomicInteger(0);
+	private AtomicBoolean available = new AtomicBoolean(true);
 	private RelivePolicy relivePolicy;;
 
 	public ServiceProfile() {
@@ -241,6 +243,14 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 
 	public void setRelivePolicy(RelivePolicy relivePolicy) {
 		this.relivePolicy = relivePolicy;
+	}
+
+	public AtomicBoolean getAvailable() {
+		return available;
+	}
+
+	public void setAvailable(AtomicBoolean available) {
+		this.available = available;
 	}
 	
 }
