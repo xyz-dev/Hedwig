@@ -106,4 +106,15 @@ public class HedwigUtil {
 		}
 		return value;
 	}
+
+	public static String getErrorMsg(Throwable ex) {
+		String value = "";
+		if (ex != null) {
+			value = ex.getMessage();
+			if (isBlankString(value)) {
+				value = ex.getClass().getName();
+			}
+		}
+		return value;
+	}
 }

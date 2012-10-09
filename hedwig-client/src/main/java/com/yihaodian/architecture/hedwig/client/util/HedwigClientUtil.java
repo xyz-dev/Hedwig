@@ -80,4 +80,11 @@ public class HedwigClientUtil {
 		shortIP = sb.toString();
 	}
 
+	public static String generateReqId(IEvent<Object> event, String clientAppName, String serviceAppName) {
+		String reqId = "";
+		reqId = clientAppName + "-" + serviceAppName + "-" + HedwigUtil.getCurrentTime() + "-" + shortIP
+				+ event.hashCode();
+		return reqId;
+	}
+
 }

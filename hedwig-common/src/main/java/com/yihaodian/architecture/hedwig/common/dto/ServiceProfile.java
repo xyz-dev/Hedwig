@@ -26,6 +26,7 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	 */
 	private static final long serialVersionUID = 6012531717460254654L;
 	private String servicePath;
+	protected boolean defaultStatus = true;
 
 	/**
 	 * 服务URL
@@ -230,4 +231,12 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 		this.relivePolicy = relivePolicy;
 	}
 	
+	public boolean isDefaultStatus() {
+		return defaultStatus;
+	}
+
+	public void setDefaultStatus(boolean defaultStatus) {
+		this.defaultStatus = defaultStatus;
+	}
+
 }

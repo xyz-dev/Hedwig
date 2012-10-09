@@ -52,7 +52,7 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 		try {
 			result = eventEngine.exec(eventContext, event);
 		} catch (Throwable e) {
-			logger.error(InternalConstants.LOG_PROFIX + e.getMessage());
+			logger.error(InternalConstants.LOG_PROFIX + event.getReqestId() + " ,Msg: " + e.getMessage());
 		}
 		event = null;
 		return result;

@@ -141,7 +141,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		} catch (Throwable e) {
 			cbLog.setInParamObjects(params);
 			HedwigMonitorClientUtil.setException(cbLog, e);
-			throw new EngineException(e);
+			throw new EngineException(HedwigUtil.getErrorMsg(e), e.getCause());
 		} finally {
 			cbLog.setLayerType(MonitorConstants.LAYER_TYPE_ENGINE);
 			MonitorJmsSendUtil.asyncSendClientBizLog(cbLog);

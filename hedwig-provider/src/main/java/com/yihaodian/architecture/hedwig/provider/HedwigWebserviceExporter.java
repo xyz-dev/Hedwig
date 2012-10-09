@@ -48,6 +48,7 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 	private String serviceName;
 	private String serviceVersion;
 	private ApplicationContext springContext;
+	private boolean defaultStatus;
 
 	@Override
 	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
@@ -184,5 +185,12 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 		this.tpsThreshold = tpsThreshold;
 	}
 
+	public boolean isDefaultStatus() {
+		return defaultStatus;
+	}
+
+	public void setDefaultStatus(boolean defaultStatus) {
+		this.defaultStatus = defaultStatus;
+	}
 
 }
