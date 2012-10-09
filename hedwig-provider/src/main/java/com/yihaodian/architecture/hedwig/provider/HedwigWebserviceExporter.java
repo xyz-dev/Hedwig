@@ -113,6 +113,8 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 			}
 			if (!defaultStatus) {
 				profile.setStatus(ServiceStatus.DISENABLE);
+			}else{
+				profile.setStatus(ServiceStatus.ENABLE);
 			}
 			register.regist(profile);
 			if (logger.isDebugEnabled()) {
