@@ -4,12 +4,12 @@
 package com.yihaodian.architecture.hedwig.common.dto;
 
 import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
+import com.yihaodian.architecture.hedwig.common.constants.ServiceStatus;
 import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.common.util.RelivePolicy;
@@ -26,7 +26,6 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	 */
 	private static final long serialVersionUID = 6012531717460254654L;
 	private String servicePath;
-	protected boolean defaultStatus = true;
 
 	/**
 	 * 服务URL
@@ -74,9 +73,9 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	 */
 	private AtomicInteger curWeight = new AtomicInteger(weighted);
 	/**
-	 * 服务是否可用
+	 * 服务状态
 	 */
-	private AtomicBoolean available = new AtomicBoolean(true);
+	private AtomicInteger status = new AtomicInteger(0);
 	private RelivePolicy relivePolicy;;
 
 	public ServiceProfile() {
@@ -216,27 +215,28 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	}
 
 	public boolean isAvailable() {
-		boolean value = available.get();
-		if (!value && relivePolicy != null) {
+		boolean value = false;
+		int s = status.get();
+		if (s < ServiceStatus.ENABLE.getCode() && relivePolicy != null) {
 			value = relivePolicy.tryRelive();
+		}else{
+			value = true;
 		}
 		return value;
 	}
 
-	public void setAvailable(boolean available) {
-		this.available.set(available);
+
+
+	public int getStatus() {
+		return status.get();
+	}
+
+	public void setStatus(ServiceStatus status) {
+		this.status.set(status.getCode());
 	}
 
 	public void setRelivePolicy(RelivePolicy relivePolicy) {
 		this.relivePolicy = relivePolicy;
 	}
 	
-	public boolean isDefaultStatus() {
-		return defaultStatus;
-	}
-
-	public void setDefaultStatus(boolean defaultStatus) {
-		this.defaultStatus = defaultStatus;
-	}
-
 }

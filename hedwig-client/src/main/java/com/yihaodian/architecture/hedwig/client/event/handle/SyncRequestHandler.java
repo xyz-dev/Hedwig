@@ -8,6 +8,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
+import com.yihaodian.architecture.hedwig.common.constants.ServiceStatus;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
@@ -44,7 +45,7 @@ public class SyncRequestHandler extends BaseHandler {
 		}
 
 		if (hessianProxy == null) {
-			sp.setAvailable(false);
+			sp.setStatus(ServiceStatus.DISENABLE);
 			throw new HessianProxyException(reqId, "Service provider is not avaliable!!! " + sp.toString());
 		}
 		MethodInvocation invocation = event.getInvocation();
@@ -52,7 +53,9 @@ public class SyncRequestHandler extends BaseHandler {
 		try {
 			result = invocation.getMethod().invoke(hessianProxy, params);
 		} catch (Throwable e) {
-			sp.setAvailable(checkSPAvaliable(e));
+			if (!checkSPAvaliable(e)) {
+				sp.setStatus(ServiceStatus.TEMPORARY_DISENABLE);
+			}
 			throw new HandlerException(reqId, e.getMessage(), e.getCause());
 		}
 
