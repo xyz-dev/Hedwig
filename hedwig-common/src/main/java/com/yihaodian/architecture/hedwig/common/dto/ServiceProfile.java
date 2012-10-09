@@ -239,6 +239,9 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 
 	public void setStatus(AtomicInteger status) {
 		this.status = status;
+		if (status.get() < 1) {
+			this.available.set(false);
+		}
 	}
 
 	public void setRelivePolicy(RelivePolicy relivePolicy) {
