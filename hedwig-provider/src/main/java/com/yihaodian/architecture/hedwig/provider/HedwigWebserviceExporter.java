@@ -22,6 +22,7 @@ import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
+import com.yihaodian.architecture.hedwig.common.constants.ServiceStatus;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
@@ -109,6 +110,9 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 			}
 			if (logger.isDebugEnabled()) {
 				logger.debug("Starting regist service " + strService);
+			}
+			if (!defaultStatus) {
+				profile.setStatus(ServiceStatus.DISENABLE);
 			}
 			register.regist(profile);
 			if (logger.isDebugEnabled()) {
