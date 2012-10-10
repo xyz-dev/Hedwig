@@ -6,15 +6,11 @@ package com.yihaodian.architecture.hedwig.provider;
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
-import com.yihaodian.architecture.hedwig.common.util.HedwigExecutors;
 
 /**
  * @author Archer
@@ -26,7 +22,7 @@ public class TpsThresholdChecker {
 	private LinkedList<Integer> hisIvkCtList = new LinkedList<Integer>();
 	private AtomicInteger curIvkCount = new AtomicInteger(0);
 	private int efIvkCount = 0;
-	private Timer timer = new Timer();
+	private Timer timer = new Timer(true);
 	private Lock lock = new ReentrantLock();
 	public TpsThresholdChecker(int tpsThreshold) {
 		if(tpsThreshold>0){
