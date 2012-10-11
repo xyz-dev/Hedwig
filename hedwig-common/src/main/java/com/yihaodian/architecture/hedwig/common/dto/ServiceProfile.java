@@ -218,7 +218,8 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 
 	public boolean isAvailable() {
 		boolean value = false;
-		int s = status.get();
+
+		int s = status == null ? ServiceStatus.ENABLE.getCode() : status.get();
 		if (s < ServiceStatus.ENABLE.getCode() && relivePolicy != null) {
 			value = relivePolicy.tryRelive();
 		}else{
@@ -238,6 +239,8 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 		this.status.set(code);
 		if (code < 1) {
 			this.available.set(false);
+		} else {
+			this.available.set(true);
 		}
 	}
 
@@ -245,6 +248,8 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 		this.status = status;
 		if (status.get() < 1) {
 			this.available.set(false);
+		} else {
+			this.available.set(true);
 		}
 	}
 

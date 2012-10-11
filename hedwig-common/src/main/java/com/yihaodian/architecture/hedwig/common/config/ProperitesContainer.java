@@ -34,6 +34,8 @@ public class ProperitesContainer {
 		if (container == null) {
 			container = new ProperitesContainer();
 			container.loadFromConfigCenter(InternalConstants.CONFIG_GROUP, InternalConstants.CONFIG_FILE_CLIENT);
+			container.loadFromConfigCenter(InternalConstants.CONFIG_GROUP, InternalConstants.CONFIG_FILE_ZKCLUSTER);
+			container.load();
 		}
 		return container;
 	}
@@ -42,6 +44,8 @@ public class ProperitesContainer {
 		if (container == null) {
 			container = new ProperitesContainer();
 			container.loadFromConfigCenter(InternalConstants.CONFIG_GROUP, InternalConstants.CONFIG_FILE_PROVIDER);
+			container.loadFromConfigCenter(InternalConstants.CONFIG_GROUP, InternalConstants.CONFIG_FILE_ZKCLUSTER);
+			container.load();
 		}
 		return container;
 	}
@@ -52,7 +56,6 @@ public class ProperitesContainer {
 	private void loadFromConfigCenter(String group, String file) {
 		ConfigCenterHelper cc = new ConfigCenterHelper(group, file);
 		HEDWIG_ENV.putAll(cc.getProperites());
-		load();
 		createListener(group, file, this);
 	}
 

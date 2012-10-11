@@ -5,6 +5,7 @@ public interface InternalConstants {
 	public static final String CONFIG_GROUP = "yihaodian_common";
 	public static final String CONFIG_FILE_CLIENT = "hedwigClient.properties";
 	public static final String CONFIG_FILE_PROVIDER = "hedwigProvider.properties";
+	public static final String CONFIG_FILE_ZKCLUSTER = "zookeeper-cluster.properties";
 	public static final String BASE_ROOT = "/TheStore";
 	public static final char SEPARATOR = '/';
 	public static final String UNKONW_DOMAIN = "UnknowDomain";
