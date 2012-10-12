@@ -4,6 +4,7 @@
 package com.yihaodian.architecture.hedwig.common.dto;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -79,6 +80,7 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	private AtomicInteger status = new AtomicInteger(0);
 	private AtomicBoolean available = new AtomicBoolean(true);
 	private RelivePolicy relivePolicy;;
+	private Date registTime;
 
 	public ServiceProfile() {
 		super();
@@ -264,5 +266,14 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	public void setAvailable(AtomicBoolean available) {
 		this.available = available;
 	}
+
+	public Date getRegistTime() {
+		return registTime;
+	}
+
+	public void setRegistTime(Date registTime) {
+		this.registTime = registTime;
+	}
 	
+
 }

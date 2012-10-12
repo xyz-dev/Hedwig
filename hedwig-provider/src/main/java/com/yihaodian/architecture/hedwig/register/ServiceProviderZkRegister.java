@@ -3,6 +3,8 @@
  */
 package com.yihaodian.architecture.hedwig.register;
 
+import java.util.Date;
+
 import org.apache.zookeeper.Watcher.Event.KeeperState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +44,7 @@ public class ServiceProviderZkRegister implements IServiceProviderRegister {
 		}
 		childPath = ZkUtil.createChildPath(profile);
 		if (!_zkClient.exists(childPath)) {
+			profile.setRegistTime(new Date());
 			_zkClient.createEphemeral(childPath, profile);
 		}
 		_zkClient.subscribeStateChanges(new IZkStateListener() {

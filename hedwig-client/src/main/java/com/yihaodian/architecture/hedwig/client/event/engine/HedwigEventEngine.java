@@ -79,7 +79,6 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
 		event.setState(EventState.processing);
 		try {
-			cbLog.setMemo(HedwigMonitorUtil.getThreadPoolInfo(tpes));
 			result = handler.handle(context, event);
 			cbLog.setProviderHost(HedwigContextUtil.getString(InternalConstants.HEDWIG_SERVICE_IP, ""));
 			cbLog.setRespTime(new Date());
