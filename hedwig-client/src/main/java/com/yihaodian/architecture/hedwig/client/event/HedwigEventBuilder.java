@@ -56,8 +56,8 @@ public class HedwigEventBuilder {
 		String methodName = invocation.getMethod().getName();
 		if (noRetoryMethods == null || !noRetoryMethods.contains(methodName)) {
 			event.setMaxRedoCount(HedwigClientUtil.getRedoCount(context));
+			event.setRetryable(true);
 		}
-		event.setRetryable(true);
 		event.setState(EventState.init);
 		return event;
 	}

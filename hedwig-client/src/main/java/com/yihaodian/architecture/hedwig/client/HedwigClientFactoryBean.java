@@ -107,7 +107,7 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 				throw new InvalidParamException("serviceVersion must not blank!!!");
 			}
 			p.setServiceVersion(serviceVersion);
-			if(noRetryMethods!=null){
+			if (noRetryMethods != null && noRetryMethods.size() > 0) {
 				p.setNoRetryMethods(noRetryMethods);
 			}
 		} else {

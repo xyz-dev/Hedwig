@@ -14,6 +14,7 @@ public class AppProfile {
 	private String domainName = InternalConstants.UNKONW_DOMAIN;
 	private String serviceAppName = "defaultAppName";
 	private String urlPattern = InternalConstants.HEDWIG_URL_PATTERN;
+	private boolean assembleAppName = false;
 	private int port = -1;
 
 	public String getDomainName() {
@@ -46,6 +47,14 @@ public class AppProfile {
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	public boolean isAssembleAppName() {
+		return assembleAppName;
+	}
+
+	public void setAssembleAppName(boolean assembleAppName) {
+		this.assembleAppName = assembleAppName;
 	}
 
 }

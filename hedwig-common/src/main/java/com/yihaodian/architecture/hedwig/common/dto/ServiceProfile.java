@@ -53,7 +53,7 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	/**
 	 * 服务端口
 	 */
-	private int port = -1;
+	private int port = 8080;
 	/**
 	 * 服务元数据版本
 	 */
@@ -81,6 +81,7 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	private AtomicBoolean available = new AtomicBoolean(true);
 	private RelivePolicy relivePolicy;;
 	private Date registTime;
+	private boolean assembleAppName = false;
 
 	public ServiceProfile() {
 		super();
@@ -274,6 +275,13 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	public void setRegistTime(Date registTime) {
 		this.registTime = registTime;
 	}
-	
+
+	public boolean isAssembleAppName() {
+		return assembleAppName;
+	}
+
+	public void setAssembleAppName(boolean assembleAppName) {
+		this.assembleAppName = assembleAppName;
+	}
 
 }
