@@ -47,7 +47,7 @@ public class HedwigUtil {
 		StringBuilder sb = new StringBuilder(sp.getProtocolPrefix());
 		sb.append("://").append(sp.getHostIp()).append(":").append(sp.getPort()).append("/");
 		if(sp.isAssembleAppName()){
-			sb.append(sp.getServiceAppName());
+			sb.append(sp.getServiceAppName()).append("/");
 		}
 		sb.append(sp.getUrlPattern()).append("/").append(sp.getServiceName());
 		return sb.toString();
