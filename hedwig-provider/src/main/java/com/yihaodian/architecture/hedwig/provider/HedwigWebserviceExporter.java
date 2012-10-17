@@ -151,9 +151,11 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 			for (String beanName : names) {
 				HedwigHessianExporter hhe = (HedwigHessianExporter) springContext.getBean(beanName);
 				if (hhe.getServiceInterface().equals(getServiceInterface())) {
+					name =beanName;
 					if (beanName.startsWith("/")) {
 						name = beanName.replaceFirst("/", "");
 					}
+					break;
 				}
 			}
 		}
