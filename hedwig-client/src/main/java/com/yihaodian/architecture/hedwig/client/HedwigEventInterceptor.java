@@ -46,6 +46,8 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 	private HedwigEventEngine eventEngine;
 	protected String user;
 	protected String password;
+	protected boolean chunkedPost = true;
+	protected boolean overloadedEnable = false;
 
 	@Override
 	public Object invoke(MethodInvocation invocation) throws HedwigException {
@@ -66,6 +68,8 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 		proxyFactory.setReadTimeout(clientProfile.getTimeout());
 		proxyFactory.setHessian2Request(true);
 		proxyFactory.setHessian2Reply(true);
+		proxyFactory.setChunkedPost(chunkedPost);
+		proxyFactory.setOverloadEnabled(overloadedEnable);
 		if (!HedwigUtil.isBlankString(user) && !HedwigUtil.isBlankString(password)) {
 			proxyFactory.setUser(user);
 			proxyFactory.setPassword(password);
@@ -128,6 +132,14 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public void setChunkedPost(boolean chunkedPost) {
+		this.chunkedPost = chunkedPost;
+	}
+
+	public void setOverloadedEnable(boolean overloadedEnable) {
+		this.overloadedEnable = overloadedEnable;
 	}
 
 }
