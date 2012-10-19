@@ -79,6 +79,11 @@
 				<artifactId>gson</artifactId>
 				<version>2.1</version>
 			</dependency>
+			<dependency>
+				<groupId>com.yihaodian.architecture</groupId>
+				<artifactId>detector-monitor-client</artifactId>
+				<version>0.1-SNAPSHOT</version>
+			</dependency>
 		</dependencies>
 
 	</dependencyManagement>

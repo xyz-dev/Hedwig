@@ -53,7 +53,7 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	/**
 	 * 服务端口
 	 */
-	private int port = 8080;
+	private int port = -1;
 	/**
 	 * 服务元数据版本
 	 */

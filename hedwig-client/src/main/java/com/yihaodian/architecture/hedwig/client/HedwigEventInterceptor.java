@@ -44,6 +44,8 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 	private HedwigContext eventContext;
 	private HedwigEventBuilder eventBuilder;
 	private HedwigEventEngine eventEngine;
+	protected String user;
+	protected String password;
 
 	@Override
 	public Object invoke(MethodInvocation invocation) throws HedwigException {
@@ -64,6 +66,10 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 		proxyFactory.setReadTimeout(clientProfile.getTimeout());
 		proxyFactory.setHessian2Request(true);
 		proxyFactory.setHessian2Reply(true);
+		if (!HedwigUtil.isBlankString(user) && !HedwigUtil.isBlankString(password)) {
+			proxyFactory.setUser(user);
+			proxyFactory.setPassword(password);
+		}
 		eventContext = new HedwigContext(hessianProxyMap, clientProfile, proxyFactory, serviceInterface);
 		try {
 			if (!HedwigUtil.isBlankString(clientProfile.getTarget())) {
@@ -115,4 +121,13 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 			eventEngine.shutdown();
 		}
 	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 }

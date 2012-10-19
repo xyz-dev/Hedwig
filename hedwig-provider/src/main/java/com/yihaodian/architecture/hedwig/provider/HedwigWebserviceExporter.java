@@ -104,6 +104,8 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 			int port = appProfile.getPort();
 			if (port > 0) {
 				profile.setPort(port);
+			} else {
+				profile.setPort(8080);
 			}
 			String strService = profile.toString();
 			if (register == null) {

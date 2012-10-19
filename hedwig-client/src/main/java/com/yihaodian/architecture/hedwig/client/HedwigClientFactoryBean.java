@@ -47,6 +47,31 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 		afterPropertiesSet();
 	}
 
+	public HedwigClientFactoryBean(Class<?> clazz, String domainName, String serviceAppName, String serviceName,
+			String serviceVersion, String clientAppName, String user, String password, Long timeout) throws Exception {
+		super();
+		this.serviceInterface = clazz;
+		this.serviceAppName = serviceAppName;
+		this.domainName = domainName;
+		this.serviceName = serviceName;
+		this.serviceVersion = serviceVersion;
+		this.clientAppName = clientAppName;
+		this.timeout = timeout;
+		afterPropertiesSet();
+	}
+
+	public HedwigClientFactoryBean(Class<?> clazz, String target, String serviceAppName, String clientAppName,
+			Long timeout, String user, String password)
+			throws Exception {
+		super();
+		this.serviceInterface = clazz;
+		this.serviceAppName = serviceAppName;
+		this.target = target;
+		this.clientAppName = clientAppName;
+		this.timeout = timeout;
+		afterPropertiesSet();
+	}
+
 	public HedwigClientFactoryBean(Class<?> clazz, String target, String serviceAppName, String clientAppName,
 			Long timeout)
 			throws Exception {
@@ -58,7 +83,7 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 		this.timeout = timeout;
 		afterPropertiesSet();
 	}
-
+	
 	@Override
 	public Object getObject() throws Exception {
 		return serviceProxy;
