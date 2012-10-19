@@ -139,7 +139,5 @@
 		<module>hedwig-common</module>
 		<module>hedwig-provider</module>
 		<module>hedwig-zk</module>
-		<module>hedwig-monitor</module>
-		<module>hedwig-monitor-client</module>
 	</modules>
 </project>
