@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
-import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 
 /**
  * @author Archer Jiang
@@ -28,14 +27,14 @@ import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 public class TestNewVersionBalancer extends TestCase {
 
 	Logger logger = LoggerFactory.getLogger(TestNewVersionBalancer.class);
-	BlockingQueue<Runnable> bq = new LinkedBlockingQueue<Runnable>(30);
-	ExecutorService es = new ThreadPoolExecutor(10, 20, 10, TimeUnit.MINUTES,bq );
+	BlockingQueue<Runnable> bq = new LinkedBlockingQueue<Runnable>();
+	ExecutorService es = new ThreadPoolExecutor(10, 20, 10, TimeUnit.MINUTES, bq);
 	AtomicInteger ai = new AtomicInteger(0);
 
 	public void testRoundRobin() throws InterruptedException {
 		Set<ServiceProfile> serviceSet = new HashSet<ServiceProfile>();
 		ServiceProfile sp = null;
-		for (int i = 0; i < 11; i++) {
+		for (int i = 0; i < 2; i++) {
 			sp = new ServiceProfile();
 			sp.setServiceName("service" + i);
 			serviceSet.add(sp);
@@ -47,17 +46,18 @@ public class TestNewVersionBalancer extends TestCase {
 			es.execute(new Runnable() {
 				@Override
 				public void run() {
-					int a =ai.getAndIncrement();
+					int a = ai.getAndIncrement();
 					long start = System.nanoTime();
 					r.select();
-					System.out.println(Thread.currentThread().getName() + "Compute " + a + "RRBalancer Cost:"
+					System.out.println(Thread.currentThread().getName() + "Compute " + a + " RRBalancer Cost:"
 							+ (System.nanoTime() - start) + " blockingQueue size:" + bq.size());
 
 				}
 			});
 		}
 		for (ServiceProfile sp1 : serviceSet) {
-			System.out.println(sp1.getServiceName() + ":" + sp1.getSelectedCount().get());
+			// System.out.println(sp1.getServiceName() + ":" +
+			// sp1.getSelectedCount().get());
 		}
 		es.shutdown();
 	}
@@ -66,7 +66,7 @@ public class TestNewVersionBalancer extends TestCase {
 		Set<ServiceProfile> serviceSet = new HashSet<ServiceProfile>();
 		ServiceProfile sp = null;
 		Random random = new Random();
-		for (int i = 0; i < 11; i++) {
+		for (int i = 0; i < 1; i++) {
 			sp = new ServiceProfile();
 			sp.setServiceName("service" + i);
 			sp.setWeighted(random.nextInt(5));
@@ -79,17 +79,18 @@ public class TestNewVersionBalancer extends TestCase {
 			es.execute(new Runnable() {
 				@Override
 				public void run() {
-					int a =ai.getAndIncrement();
+					int a = ai.getAndIncrement();
 					long start = System.nanoTime();
 					r.select();
-					System.out.println(Thread.currentThread().getName() + "Compute " + a + "WRRBalancer Cost:"
+					System.out.println(Thread.currentThread().getName() + "Compute " + a + " WRRBalancer Cost:"
 							+ (System.nanoTime() - start) + " blockingQueue size:" + bq.size());
 
 				}
 			});
 		}
 		for (ServiceProfile sp1 : serviceSet) {
-			System.out.println(sp1.getServiceName() + ":" + sp1.getSelectedCount().get());
+			// System.out.println(sp1.getServiceName() + ":" +
+			// sp1.getSelectedCount().get());
 		}
 		es.shutdown();
 	}
@@ -98,7 +99,7 @@ public class TestNewVersionBalancer extends TestCase {
 		Set<ServiceProfile> serviceSet = new HashSet<ServiceProfile>();
 		ServiceProfile sp = null;
 		Random random = new Random();
-		for (int i = 0; i < 21; i++) {
+		for (int i = 0; i < 1; i++) {
 			sp = new ServiceProfile();
 			sp.setServiceName("TestService" + i);
 			sp.setHostIp("192.168.0." + i);
@@ -107,26 +108,25 @@ public class TestNewVersionBalancer extends TestCase {
 			sp.setWeighted(random.nextInt(5));
 			serviceSet.add(sp);
 		}
-		final ConditionLoadBalancer<ServiceProfile, IEvent<Object>> r = new ConsistentHashBalancer();
+		final ConditionLoadBalancer<ServiceProfile, String> r = new ConsistentHashBalancer();
 		r.updateProfiles(serviceSet);
-		for (int m = 0; m < 10000; m++) {
-			Thread.sleep(0);
+		for (int m = 0; m < 1000; m++) {
+			Thread.sleep(1);
 			es.execute(new Runnable() {
 				@Override
 				public void run() {
 					int a = ai.getAndIncrement();
 					long start = System.nanoTime();
 					r.select();
-					System.out.println(Thread.currentThread().getName() + "Compute " + a
- + " consistenthash Cost:"
-							+ (System.nanoTime() - start)
-							+ " blockingQueue size:" + bq.size());
+					System.out.println(Thread.currentThread().getName() + "Compute " + a + " CHBalancer Cost:"
+							+ (System.nanoTime() - start) + " blockingQueue size:" + bq.size());
 
 				}
 			});
 		}
 		for (ServiceProfile sp1 : serviceSet) {
-			System.out.println(sp1.getServiceName() + ":" + sp1.getSelectedCount().get());
+			// System.out.println(sp1.getServiceName() + ":" +
+			// sp1.getSelectedCount().get());
 		}
 		es.shutdown();
 	}

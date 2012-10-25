@@ -12,13 +12,12 @@ import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.hash.HashFunction;
 import com.yihaodian.architecture.hedwig.common.hash.HashFunctionFactory;
-import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 
 /**
  * @author Archer Jiang
  * 
  */
-public class ConsistentHashBalancer implements ConditionLoadBalancer<ServiceProfile, IEvent<Object>> {
+public class ConsistentHashBalancer implements ConditionLoadBalancer<ServiceProfile, String> {
 
 	private Circle<Long, ServiceProfile> profileCircle = new Circle<Long, ServiceProfile>();
 	private Lock lock = new ReentrantLock();
@@ -27,8 +26,18 @@ public class ConsistentHashBalancer implements ConditionLoadBalancer<ServiceProf
 	@Override
 	public ServiceProfile select() {
 		ServiceProfile sp = null;
-		long code = hf.hash64(System.nanoTime());
-		return getProfileFromCircle(code);
+		if (profileCircle != null && profileCircle.size() > 0) {
+			if (profileCircle.size() == 1) {
+				sp = profileCircle.firstVlue();
+				if (!sp.isAvailable()) {
+					sp = null;
+				}
+			} else {
+				long code = hf.hash64(System.nanoTime());
+				sp = getProfileFromCircle(code);
+			}
+		}
+		return sp;
 	}
 
 	private ServiceProfile getProfileFromCircle(Long code) {
@@ -40,7 +49,6 @@ public class ConsistentHashBalancer implements ConditionLoadBalancer<ServiceProf
 				tmp = profileCircle.lowerKey(tmp);
 				sp = profileCircle.get(tmp);
 				if (sp != null && sp.isAvailable()) {
-					sp.addSelectedCount();
 					break;
 				}
 				size--;
@@ -103,8 +111,19 @@ public class ConsistentHashBalancer implements ConditionLoadBalancer<ServiceProf
 	}
 
 	@Override
-	public ServiceProfile select(IEvent<Object> condition) {
-		long code = hf.hash64(condition);
-		return getProfileFromCircle(code);
+	public ServiceProfile select(String condition) {
+		ServiceProfile sp = null;
+		if (profileCircle != null && profileCircle.size() > 0) {
+			if (profileCircle.size() == 1) {
+				sp = profileCircle.firstVlue();
+				if (!sp.isAvailable()) {
+					sp = null;
+				}
+			} else {
+				long code = hf.hash64(condition);
+				sp = getProfileFromCircle(code);
+			}
+		}
+		return sp;
 	}
 }

@@ -42,7 +42,6 @@ public abstract class AbstractBalancer implements LoadBalancer<ServiceProfile> {
 				tmp = profileCircle.lowerKey(tmp);
 				sp = profileCircle.get(tmp);
 				if (sp != null && sp.isAvailable()) {
-					sp.addSelectedCount();
 					break;
 				}
 				size--;

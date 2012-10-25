@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -94,11 +93,6 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	 * 是否拼装appname到serviceurl中
 	 */
 	private boolean assembleAppName = false;
-
-	/**
-	 * 选中次数
-	 */
-	private AtomicLong selectedCount = new AtomicLong(0);
 
 	private Lock lock = new ReentrantLock();
 
@@ -298,18 +292,4 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 		this.assembleAppName = assembleAppName;
 	}
 
-	public AtomicLong getSelectedCount() {
-		return selectedCount;
-	}
-
-	public void setSelectedCount(AtomicLong selectedCount) {
-		this.selectedCount = selectedCount;
-	}
-
-	public void addSelectedCount() {
-		long v = this.selectedCount.incrementAndGet();
-		if (v < 0) {
-			this.selectedCount.set(0);
-		}
-	}
 }
