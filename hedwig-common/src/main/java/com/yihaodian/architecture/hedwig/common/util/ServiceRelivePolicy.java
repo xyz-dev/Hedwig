@@ -7,25 +7,22 @@ import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 
 /**
  * @author Archer
- *
+ * 
  */
 public class ServiceRelivePolicy implements RelivePolicy {
 
-	int tryCount = 0;
-	int threshold = InternalConstants.DEFAULT_RELIVE_THRESHOLD;
+	private int tryCount = 0;
+	private int threshold = InternalConstants.DEFAULT_RELIVE_THRESHOLD;
+
 	@Override
 	public boolean tryRelive() {
 		boolean value = false;
 		tryCount++;
 		if (tryCount >= threshold) {
+			tryCount = 0;
 			value = true;
-			resetCount();
 		}
 		return value;
 	}
 
-	private void resetCount() {
-		tryCount = 0;
-	}
-	
 }

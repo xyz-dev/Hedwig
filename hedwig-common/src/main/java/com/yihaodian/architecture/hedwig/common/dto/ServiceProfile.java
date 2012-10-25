@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
@@ -42,7 +44,7 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	/**
 	 * 转发用规则
 	 */
-	private String urlPattern=InternalConstants.HEDWIG_URL_PATTERN;
+	private String urlPattern = InternalConstants.HEDWIG_URL_PATTERN;
 	/**
 	 * 机器IP
 	 */
@@ -78,7 +80,7 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	/**
 	 * 服务状态
 	 */
-	private AtomicInteger status = new AtomicInteger(0);
+	private volatile ServiceStatus status = ServiceStatus.ENABLE;
 	private AtomicBoolean available = new AtomicBoolean(true);
 	/**
 	 * 复活策略
@@ -97,6 +99,8 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	 * 选中次数
 	 */
 	private AtomicLong selectedCount = new AtomicLong(0);
+
+	private Lock lock = new ReentrantLock();
 
 	public ServiceProfile() {
 		super();
@@ -236,39 +240,34 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 
 	public boolean isAvailable() {
 		boolean value = false;
-
-		int s = status == null ? ServiceStatus.ENABLE.getCode() : status.get();
-		if (s < ServiceStatus.ENABLE.getCode() && relivePolicy != null) {
-			value = relivePolicy.tryRelive();
-		}else{
+		ServiceStatus s = status == null ? ServiceStatus.ENABLE : status;
+		if (s.equals(ServiceStatus.ENABLE)) {
 			value = true;
+		} else if (s.equals(ServiceStatus.TEMPORARY_DISENABLE) && relivePolicy != null) {
+			lock.lock();
+			try {
+				if (s.equals(ServiceStatus.TEMPORARY_DISENABLE)) {
+					value = relivePolicy.tryRelive();
+					if (value) {
+						setStatus(ServiceStatus.ENABLE);
+					}
+				} else {
+					value = true;
+				}
+			} finally {
+				lock.unlock();
+			}
+
 		}
 		return value;
 	}
 
-
-
-	public int getStatus() {
-		return status.get();
+	public ServiceStatus getStatus() {
+		return status;
 	}
 
 	public void setStatus(ServiceStatus status) {
-		int code = status.getCode();
-		this.status.set(code);
-		if (code < 1) {
-			this.available.set(false);
-		} else {
-			this.available.set(true);
-		}
-	}
-
-	public void setStatus(AtomicInteger status) {
 		this.status = status;
-		if (status.get() < 1) {
-			this.available.set(false);
-		} else {
-			this.available.set(true);
-		}
 	}
 
 	public void setRelivePolicy(RelivePolicy relivePolicy) {
