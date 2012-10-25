@@ -26,8 +26,9 @@ public class BalancerFactory {
 	private BalancerFactory() {
 		super();
 		balancerContainer = new HashMap<String, String>();
-		balancerContainer.put(InternalConstants.BALANCER_NAME_ROUNDROBIN, RoundRobinBalancer.class.getName());
-		balancerContainer.put(InternalConstants.BALANCER_NAME_WEIGHTED_ROUNDROBIN, WeightedRoundRobinBalancer.class.getName());
+		balancerContainer.put(InternalConstants.BALANCER_NAME_ROUNDROBIN, RRBalancer.class.getName());
+		balancerContainer.put(InternalConstants.BALANCER_NAME_WEIGHTED_ROUNDROBIN, WRRBalancer.class.getName());
+		balancerContainer.put(InternalConstants.BALANCER_NAME_CONSISTENTHASH, ConsistentHashBalancer.class.getName());
 
 	}
 

@@ -7,35 +7,39 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.util.Random;
+import java.io.Serializable;
 
 /**
  * @author Archer Jiang
- *
+ * 
  */
 public class Murmur2 implements HashFunction {
-	private int hash(String data, int seed) {
-		return hash32(data.getBytes(), seed);
-	}
 
-	private int hash32(byte[] data, int seed) {
-		int m = 0x5bd1e995;
-		int r = 24;
+	/**
+	 * Generates 32 bit hash from byte array of the given length and seed.
+	 * 
+	 * @param data
+	 *            byte array to hash
+	 * @param length
+	 *            length of the array to hash
+	 * @param seed
+	 *            initial seed value
+	 * @return 32 bit hash of the given array
+	 */
+	public static int hash32(final byte[] data, int length, int seed) {
+		// 'm' and 'r' are mixing constants generated offline.
+		// They're not really 'magic', they just happen to work well.
+		final int m = 0x5bd1e995;
+		final int r = 24;
 
-		int h = seed ^ data.length;
+		// Initialize the hash to a random value
+		int h = seed ^ length;
+		int length4 = length / 4;
 
-		int len = data.length;
-		int len_4 = len >> 2;
-
-		for (int i = 0; i < len_4; i++) {
-			int i_4 = i << 2;
-			int k = data[i_4 + 3];
-			k = k << 8;
-			k = k | (data[i_4 + 2] & 0xff);
-			k = k << 8;
-			k = k | (data[i_4 + 1] & 0xff);
-			k = k << 8;
-			k = k | (data[i_4 + 0] & 0xff);
+		for (int i = 0; i < length4; i++) {
+			final int i4 = i * 4;
+			int k = (data[i4 + 0] & 0xff) + ((data[i4 + 1] & 0xff) << 8) + ((data[i4 + 2] & 0xff) << 16)
+					+ ((data[i4 + 3] & 0xff) << 24);
 			k *= m;
 			k ^= k >>> r;
 			k *= m;
@@ -43,20 +47,14 @@ public class Murmur2 implements HashFunction {
 			h ^= k;
 		}
 
-		int len_m = len_4 << 2;
-		int left = len - len_m;
-
-		if (left != 0) {
-			if (left >= 3) {
-				h ^= (int) data[len - 3] << 16;
-			}
-			if (left >= 2) {
-				h ^= (int) data[len - 2] << 8;
-			}
-			if (left >= 1) {
-				h ^= (int) data[len - 1];
-			}
-
+		// Handle the last few bytes of the input array
+		switch (length % 4) {
+		case 3:
+			h ^= (data[(length & ~3) + 2] & 0xff) << 16;
+		case 2:
+			h ^= (data[(length & ~3) + 1] & 0xff) << 8;
+		case 1:
+			h ^= (data[length & ~3] & 0xff);
 			h *= m;
 		}
 
@@ -67,30 +65,133 @@ public class Murmur2 implements HashFunction {
 		return h;
 	}
 
-	@Override
-	public int hash(Object data, int seed) {
-		int hashCode;
-		if (data instanceof String) {
-			hashCode = hash32(((String) data).getBytes(), seed);
-		} else {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			ObjectOutput out;
-			try {
-				out = new ObjectOutputStream(bos);
-				out.writeObject(data);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			byte[] objBytes = bos.toByteArray();
-			hashCode = hash32(objBytes, seed);
+	/**
+	 * Generates 32 bit hash from byte array with default seed value.
+	 * 
+	 * @param data
+	 *            byte array to hash
+	 * @param length
+	 *            length of the array to hash
+	 * @return 32 bit hash of the given array
+	 */
+	private static int hash32(final byte[] data, int length) {
+		return hash32(data, length, 0x9747b28c);
+	}
+
+
+	/**
+	 * Generates 64 bit hash from byte array of the given length and seed.
+	 * 
+	 * @param data
+	 *            byte array to hash
+	 * @param length
+	 *            length of the array to hash
+	 * @param seed
+	 *            initial seed value
+	 * @return 64 bit hash of the given array
+	 */
+	public static long hash64(final byte[] data, int length, int seed) {
+		final long m = 0xc6a4a7935bd1e995L;
+		final int r = 47;
+
+		long h = (seed & 0xffffffffl) ^ (length * m);
+
+		int length8 = length / 8;
+
+		for (int i = 0; i < length8; i++) {
+			final int i8 = i * 8;
+			long k = ((long) data[i8 + 0] & 0xff) + (((long) data[i8 + 1] & 0xff) << 8)
+					+ (((long) data[i8 + 2] & 0xff) << 16) + (((long) data[i8 + 3] & 0xff) << 24)
+					+ (((long) data[i8 + 4] & 0xff) << 32) + (((long) data[i8 + 5] & 0xff) << 40)
+					+ (((long) data[i8 + 6] & 0xff) << 48) + (((long) data[i8 + 7] & 0xff) << 56);
+
+			k *= m;
+			k ^= k >>> r;
+			k *= m;
+
+			h ^= k;
+			h *= m;
 		}
-		return hashCode;
+
+		switch (length % 8) {
+		case 7:
+			h ^= (long) (data[(length & ~7) + 6] & 0xff) << 48;
+		case 6:
+			h ^= (long) (data[(length & ~7) + 5] & 0xff) << 40;
+		case 5:
+			h ^= (long) (data[(length & ~7) + 4] & 0xff) << 32;
+		case 4:
+			h ^= (long) (data[(length & ~7) + 3] & 0xff) << 24;
+		case 3:
+			h ^= (long) (data[(length & ~7) + 2] & 0xff) << 16;
+		case 2:
+			h ^= (long) (data[(length & ~7) + 1] & 0xff) << 8;
+		case 1:
+			h ^= (long) (data[length & ~7] & 0xff);
+			h *= m;
+		}
+
+		h ^= h >>> r;
+		h *= m;
+		h ^= h >>> r;
+
+		return h;
+	}
+
+	/**
+	 * Generates 64 bit hash from byte array with default seed value.
+	 * 
+	 * @param data
+	 *            byte array to hash
+	 * @param length
+	 *            length of the array to hash
+	 * @return 64 bit hash of the given string
+	 */
+	private static long hash64(final byte[] data, int length) {
+		return hash64(data, length, 0xe17a1465);
+	}
+
+
+	@Override
+	public int hash32(final Object data) {
+		int value = -1;
+		byte[] bytes = getDataByteArr(data);
+		if (bytes != null) {
+			value = Math.abs(hash32(bytes, bytes.length));
+		}
+		return value;
 	}
 
 	@Override
-	public int hash(Object data) {
-		return hash(data, 2 << 16);
+	public long hash64(final Object data) {
+		long value = -1;
+		byte[] bytes = getDataByteArr(data);
+		if (bytes != null) {
+			value = Math.abs(hash64(bytes, bytes.length));
+		}
+		return value;
+	}
+
+	public byte[] getDataByteArr(Object data) {
+		byte[] bArr = null;
+		if (data != null) {
+			if (data instanceof String) {
+				bArr = ((String) data).getBytes();
+			} else if (data instanceof Serializable) {
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ObjectOutput out;
+				try {
+					out = new ObjectOutputStream(bos);
+					out.writeObject(data);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				bArr = bos.toByteArray();
+			} else {
+				bArr = data.toString().getBytes();
+			}
+		}
+		return bArr;
 	}
 
 }

@@ -56,6 +56,9 @@ public interface InternalConstants {
 	public static final int HEDWIG_CLIENT = -1;
 	public static final int HEDWIG_PROVIDER = 1;
 	
+	public static final int MIRROR_SEED = 30;
+	
+	public static final int INTEGER_BARRIER = Integer.MAX_VALUE / 2;
 
 	/**
 	 * 通讯平台domain name

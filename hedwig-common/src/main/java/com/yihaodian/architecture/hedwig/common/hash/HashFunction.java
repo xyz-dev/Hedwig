@@ -9,7 +9,7 @@ package com.yihaodian.architecture.hedwig.common.hash;
  */
 public interface HashFunction {
 
-	public int hash(Object data, int seed);
+	public int hash32(Object data);
 
-	public int hash(Object data);
+	public long hash64(Object data);
 }

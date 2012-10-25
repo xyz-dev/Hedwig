@@ -88,6 +88,7 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 			}
 			eventBuilder = new HedwigEventBuilder(eventContext, clientProfile);
 		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 			throw new HedwigException(e.getCause());
 		}
 
