@@ -233,25 +233,23 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	}
 
 	public boolean isAvailable() {
-		boolean value = false;
-		ServiceStatus s = status == null ? ServiceStatus.ENABLE : status;
-		if (s.equals(ServiceStatus.ENABLE)) {
-			value = true;
-		} else if (s.equals(ServiceStatus.TEMPORARY_DISENABLE) && relivePolicy != null) {
+		boolean value = true;
+		if (status!=null && status.equals(ServiceStatus.DISENABLE)) {
+			value = false;
+		} else if (status.equals(ServiceStatus.TEMPORARY_DISENABLE) && relivePolicy != null) {
 			lock.lock();
 			try {
-				if (s.equals(ServiceStatus.TEMPORARY_DISENABLE)) {
+				if (status.equals(ServiceStatus.TEMPORARY_DISENABLE)) {
 					value = relivePolicy.tryRelive();
 					if (value) {
 						setStatus(ServiceStatus.ENABLE);
+					} else {
+						value = false;
 					}
-				} else {
-					value = true;
 				}
 			} finally {
 				lock.unlock();
 			}
-
 		}
 		return value;
 	}
