@@ -45,7 +45,7 @@ public class SyncRequestHandler extends BaseHandler {
 		}
 
 		if (hessianProxy == null) {
-			sp.setStatus(ServiceStatus.DISENABLE);
+			sp.setCurStatus(ServiceStatus.DISENABLE);
 			throw new HessianProxyException(reqId, "Service provider is not avaliable!!! " + sp.toString());
 		}
 		MethodInvocation invocation = event.getInvocation();
@@ -54,7 +54,7 @@ public class SyncRequestHandler extends BaseHandler {
 			result = invocation.getMethod().invoke(hessianProxy, params);
 		} catch (Throwable e) {
 			if (!checkSPAvaliable(e)) {
-				sp.setStatus(ServiceStatus.TEMPORARY_DISENABLE);
+				sp.setCurStatus(ServiceStatus.TEMPORARY_DISENABLE);
 			}
 			throw new HandlerException(reqId, e.getMessage(), e.getCause());
 		}

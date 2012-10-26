@@ -57,14 +57,14 @@ public class HedwigHessianInterceptor extends RemoteAccessor implements MethodIn
 		String sUrl = sp.getServiceUrl();
 		Object hessianProxy = getHessianProxy(sUrl);
 		if (hessianProxy == null) {
-			sp.setStatus(ServiceStatus.DISENABLE);
+			sp.setCurStatus(ServiceStatus.DISENABLE);
 			throw new HedwigException("HedwigHessianInterceptor is not properly initialized");
 		}
 		ClassLoader originalClassLoader = overrideThreadContextClassLoader();
 		try {
 			result = invocation.getMethod().invoke(hessianProxy, invocation.getArguments());
 		} catch (InvocationTargetException ex) {
-			sp.setStatus(ServiceStatus.TEMPORARY_DISENABLE);
+			sp.setCurStatus(ServiceStatus.TEMPORARY_DISENABLE);
 			if (ex.getTargetException() instanceof HessianRuntimeException) {
 				HessianRuntimeException hre = (HessianRuntimeException) ex.getTargetException();
 				Throwable rootCause = (hre.getRootCause() != null ? hre.getRootCause() : hre);
@@ -75,7 +75,7 @@ public class HedwigHessianInterceptor extends RemoteAccessor implements MethodIn
 			}
 			throw new HedwigException(ex.getTargetException().getMessage());
 		} catch (Throwable ex) {
-			sp.setStatus(ServiceStatus.TEMPORARY_DISENABLE);
+			sp.setCurStatus(ServiceStatus.TEMPORARY_DISENABLE);
 			throw new HedwigException("Failed to invoke Hessian proxy for remote service [" + sUrl + "]", ex);
 		} finally {
 			resetThreadContextClassLoader(originalClassLoader);
