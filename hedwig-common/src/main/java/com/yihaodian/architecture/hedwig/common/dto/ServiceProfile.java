@@ -79,7 +79,10 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	/**
 	 * 服务状态
 	 */
-	private volatile ServiceStatus status = ServiceStatus.ENABLE;
+	@Deprecated
+	private AtomicInteger status = new AtomicInteger(1);
+	private volatile ServiceStatus serviceStatus = ServiceStatus.ENABLE;
+
 	private AtomicBoolean available = new AtomicBoolean(true);
 	/**
 	 * 复活策略
@@ -234,15 +237,15 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 
 	public boolean isAvailable() {
 		boolean value = true;
-		if (status!=null && status.equals(ServiceStatus.DISENABLE)) {
+		if (serviceStatus != null && serviceStatus.equals(ServiceStatus.DISENABLE)) {
 			value = false;
-		} else if (status.equals(ServiceStatus.TEMPORARY_DISENABLE) && relivePolicy != null) {
+		} else if (serviceStatus.equals(ServiceStatus.TEMPORARY_DISENABLE) && relivePolicy != null) {
 			lock.lock();
 			try {
-				if (status.equals(ServiceStatus.TEMPORARY_DISENABLE)) {
+				if (serviceStatus.equals(ServiceStatus.TEMPORARY_DISENABLE)) {
 					value = relivePolicy.tryRelive();
 					if (value) {
-						setStatus(ServiceStatus.ENABLE);
+						setServiceStatus(ServiceStatus.ENABLE);
 					} else {
 						value = false;
 					}
@@ -254,12 +257,20 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 		return value;
 	}
 
-	public ServiceStatus getStatus() {
+	public AtomicInteger getStatus() {
 		return status;
 	}
 
-	public void setStatus(ServiceStatus status) {
+	public void setStatus(AtomicInteger status) {
 		this.status = status;
+	}
+
+	public ServiceStatus getServiceStatus() {
+		return serviceStatus;
+	}
+
+	public void setServiceStatus(ServiceStatus serviceStatus) {
+		this.serviceStatus = serviceStatus;
 	}
 
 	public void setRelivePolicy(RelivePolicy relivePolicy) {
