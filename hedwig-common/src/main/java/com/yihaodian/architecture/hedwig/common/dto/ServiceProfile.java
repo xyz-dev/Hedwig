@@ -235,7 +235,8 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 
 	public boolean isAvailable() {
 		boolean value = true;
-		if (curStatus != null && curStatus.equals(ServiceStatus.DISENABLE)) {
+		curStatus = curStatus == null ? ServiceStatus.ENABLE : curStatus;
+		if (curStatus.equals(ServiceStatus.DISENABLE)) {
 			value = false;
 		} else if (curStatus.equals(ServiceStatus.TEMPORARY_DISENABLE) && relivePolicy != null) {
 			lock.lock();
