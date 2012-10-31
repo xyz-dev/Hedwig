@@ -11,6 +11,7 @@ import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
+import com.yihaodian.architecture.hedwig.common.uuid.UUID;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 
 /**
@@ -56,9 +57,9 @@ public class HedwigClientUtil {
 		return glbId;
 	}
 
-	public static String generateTransactionId(IEvent<Object> event) {
+	public static String generateTransactionId() {
 		String txnId = "";
-		txnId = "txn-" + HedwigUtil.getCurrentTime() + "-" + shortIP + event.hashCode() + "-" + event.getExecCount();
+		txnId = "txn-" + new UUID().toString();
 		return txnId;
 	}
 

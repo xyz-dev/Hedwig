@@ -122,7 +122,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 						r = handler.handle(context, event);
 					} catch (Throwable e) {
 						logger.error("Execute " + event.getExecCount() + " times failed!!! " + e.getMessage());
-						EngineUtil.retry(handler, event, context);
+						r = EngineUtil.retry(handler, event, context);
 					} finally {
 						cbLog.setProviderHost(HedwigContextUtil.getString(InternalConstants.HEDWIG_SERVICE_IP, ""));
 						HedwigContextUtil.clean();
@@ -176,7 +176,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 						r = handler.handle(context, event);
 					} catch (Throwable e) {
 						logger.debug(e.getMessage());
-						EngineUtil.retry(handler, event, context);
+						r = EngineUtil.retry(handler, event, context);
 					} finally {
 						HedwigContextUtil.clean();
 					}
