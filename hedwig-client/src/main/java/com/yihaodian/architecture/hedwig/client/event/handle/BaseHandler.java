@@ -30,6 +30,7 @@ public abstract class BaseHandler implements IEventHandler<HedwigContext, Object
 
 	@Override
 	public Object handle(HedwigContext context, IEvent<Object> event) throws HandlerException {
+		event.increaseExecCount();
 		ClientBizLog cbLog = null;
 		String globalId = HedwigContextUtil.getGlobalId();
 		String txnId = HedwigClientUtil.generateTransactionId(event);
@@ -39,7 +40,6 @@ public abstract class BaseHandler implements IEventHandler<HedwigContext, Object
 		cbLog.setCommId(txnId);
 		Object r = null;
 		Object[] params = event.getInvocation().getArguments();
-		event.increaseExecCount();
 		try {
 			r = doHandle(context, event, cbLog);
 			event.setState(EventState.sucess);
