@@ -120,4 +120,9 @@ public class HedwigUtil {
 		}
 		return value;
 	}
+
+	public static String filterSlash(String value) {
+		return value.replaceAll("/", "_");
+	}
+
 }

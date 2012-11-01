@@ -4,6 +4,7 @@
 package com.yihaodian.architecture.hedwig.balancer;
 
 import java.util.Collection;
+import java.util.Random;
 import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -22,9 +23,11 @@ public class ConsistentHashBalancer implements ConditionLoadBalancer<ServiceProf
 	private Circle<Long, ServiceProfile> profileCircle = new Circle<Long, ServiceProfile>();
 	private Lock lock = new ReentrantLock();
 	private HashFunction hf = HashFunctionFactory.getInstance().getMur2Function();
+	private Random random = new Random();
 
 	@Override
 	public ServiceProfile select() {
+
 		ServiceProfile sp = null;
 		if (profileCircle != null && profileCircle.size() > 0) {
 			if (profileCircle.size() == 1) {
@@ -33,7 +36,7 @@ public class ConsistentHashBalancer implements ConditionLoadBalancer<ServiceProf
 					sp = null;
 				}
 			} else {
-				long code = hf.hash64(System.nanoTime());
+				long code = hf.hash64(System.nanoTime() + "-" + random.nextInt(99));
 				sp = getProfileFromCircle(code);
 			}
 		}

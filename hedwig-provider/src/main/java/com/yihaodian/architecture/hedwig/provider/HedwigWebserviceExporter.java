@@ -168,7 +168,7 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 	}
 
 	public void setServiceName(String serviceName) {
-		this.serviceName = serviceName;
+		this.serviceName = HedwigUtil.filterSlash(serviceName);
 	}
 
 	public void setServiceVersion(String serviceVersion) {
@@ -194,10 +194,6 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 
 	public void setTpsThreshold(int tpsThreshold) {
 		this.tpsThreshold = tpsThreshold;
-	}
-
-	public boolean isDefaultStatus() {
-		return defaultStatus;
 	}
 
 	public void setDefaultStatus(boolean defaultStatus) {

@@ -4,6 +4,7 @@
 package com.yihaodian.architecture.hedwig.provider;
 
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
+import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 
 /**
  * @author Archer
@@ -22,7 +23,7 @@ public class AppProfile {
 	}
 
 	public void setDomainName(String domainName) {
-		this.domainName = domainName;
+		this.domainName = HedwigUtil.filterSlash(domainName);
 	}
 
 	public String getServiceAppName() {
@@ -30,7 +31,7 @@ public class AppProfile {
 	}
 
 	public void setServiceAppName(String serviceAppName) {
-		this.serviceAppName = serviceAppName;
+		this.serviceAppName = HedwigUtil.filterSlash(serviceAppName);
 	}
 
 	public String getUrlPattern() {
@@ -38,7 +39,7 @@ public class AppProfile {
 	}
 
 	public void setUrlPattern(String urlPattern) {
-		this.urlPattern = urlPattern;
+		this.urlPattern = HedwigUtil.filterSlash(urlPattern);
 	}
 
 	public int getPort() {

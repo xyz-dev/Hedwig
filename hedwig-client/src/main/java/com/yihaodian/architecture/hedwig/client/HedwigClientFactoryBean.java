@@ -143,15 +143,15 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 	}
 
 	public void setServiceAppName(String serviceAppName) {
-		this.serviceAppName = serviceAppName;
+		this.serviceAppName = HedwigUtil.filterSlash(serviceAppName);
 	}
 
 	public void setServiceName(String serviceName) {
-		this.serviceName = serviceName;
+		this.serviceName = HedwigUtil.filterSlash(serviceName);
 	}
 
 	public void setServiceVersion(String serviceVersion) {
-		this.serviceVersion = serviceVersion;
+		this.serviceVersion = HedwigUtil.filterSlash(serviceVersion);
 	}
 
 	public void setTarget(String target) {
@@ -163,11 +163,11 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 	}
 
 	public void setDomainName(String domainName) {
-		this.domainName = domainName;
+		this.domainName = HedwigUtil.filterSlash(domainName);
 	}
 
 	public void setClientAppName(String clientAppName) {
-		this.clientAppName = clientAppName;
+		this.clientAppName = HedwigUtil.filterSlash(clientAppName);
 	}
 
 	public void setNoRetryMethods(Set<String> noRetryMethods) {
