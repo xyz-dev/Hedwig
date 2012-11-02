@@ -28,6 +28,7 @@ import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.hessian.HedwigHessianProxyFactory;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.engine.event.IEvent;
+import com.yihaodian.monitor.util.MonitorJmsSendUtil;
 
 /**
  * @author Archer
@@ -64,6 +65,7 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+
 		eventEngine = HedwigEventEngine.getEngine();
 		proxyFactory.setReadTimeout(clientProfile.getTimeout());
 		proxyFactory.setHessian2Request(true);
@@ -76,6 +78,7 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 		}
 		eventContext = new HedwigContext(hessianProxyMap, clientProfile, proxyFactory, serviceInterface);
 		try {
+			MonitorJmsSendUtil.getInstance();
 			if (!HedwigUtil.isBlankString(clientProfile.getTarget())) {
 				HedwigClientUtil.createProxy(eventContext, clientProfile.getTarget());
 			} else {
@@ -87,6 +90,7 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 				}
 			}
 			eventBuilder = new HedwigEventBuilder(eventContext, clientProfile);
+			logger.info("Initial " + clientProfile.getServiceName() + " client successful.");
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			throw new HedwigException(e.getCause());
