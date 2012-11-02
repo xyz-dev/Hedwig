@@ -168,7 +168,7 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 	}
 
 	public void setServiceName(String serviceName) {
-		this.serviceName = HedwigUtil.filterSlash(serviceName);
+		this.serviceName = HedwigUtil.filterString(serviceName);
 	}
 
 	public void setServiceVersion(String serviceVersion) {

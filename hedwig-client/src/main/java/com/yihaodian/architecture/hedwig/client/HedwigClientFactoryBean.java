@@ -38,37 +38,29 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 			String clientAppName, Long timeout) throws Exception {
 		super();
 		this.serviceInterface = clazz;
-		this.serviceAppName = serviceAppName;
-		this.domainName = domainName;
-		this.serviceName = serviceName;
-		this.serviceVersion = serviceVersion;
-		this.clientAppName = clientAppName;
+		this.serviceAppName = HedwigUtil.filterString(serviceAppName);
+		this.domainName = HedwigUtil.filterString(domainName);
+		this.serviceName = HedwigUtil.filterString(serviceName);
+		this.serviceVersion = HedwigUtil.filterString(serviceVersion);
+		this.clientAppName = HedwigUtil.filterString(clientAppName);
 		this.timeout = timeout;
 		afterPropertiesSet();
 	}
 
 	public HedwigClientFactoryBean(Class<?> clazz, String domainName, String serviceAppName, String serviceName,
 			String serviceVersion, String clientAppName, String user, String password, Long timeout) throws Exception {
-		super();
-		this.serviceInterface = clazz;
-		this.serviceAppName = serviceAppName;
-		this.domainName = domainName;
-		this.serviceName = serviceName;
-		this.serviceVersion = serviceVersion;
-		this.clientAppName = clientAppName;
-		this.timeout = timeout;
+		this(clazz, domainName, serviceAppName, serviceAppName, serviceAppName, clientAppName, timeout);
+		this.user = user;
+		this.password = password;
 		afterPropertiesSet();
 	}
 
 	public HedwigClientFactoryBean(Class<?> clazz, String target, String serviceAppName, String clientAppName,
 			Long timeout, String user, String password)
 			throws Exception {
-		super();
-		this.serviceInterface = clazz;
-		this.serviceAppName = serviceAppName;
-		this.target = target;
-		this.clientAppName = clientAppName;
-		this.timeout = timeout;
+		this(clazz, target, serviceAppName, clientAppName, timeout);
+		this.user = user;
+		this.password = password;
 		afterPropertiesSet();
 	}
 
@@ -77,9 +69,9 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 			throws Exception {
 		super();
 		this.serviceInterface = clazz;
-		this.serviceAppName = serviceAppName;
+		this.serviceAppName = HedwigUtil.filterString(serviceAppName);
 		this.target = target;
-		this.clientAppName = clientAppName;
+		this.clientAppName = HedwigUtil.filterString(clientAppName);
 		this.timeout = timeout;
 		afterPropertiesSet();
 	}
@@ -143,15 +135,15 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 	}
 
 	public void setServiceAppName(String serviceAppName) {
-		this.serviceAppName = HedwigUtil.filterSlash(serviceAppName);
+		this.serviceAppName = HedwigUtil.filterString(serviceAppName);
 	}
 
 	public void setServiceName(String serviceName) {
-		this.serviceName = HedwigUtil.filterSlash(serviceName);
+		this.serviceName = HedwigUtil.filterString(serviceName);
 	}
 
 	public void setServiceVersion(String serviceVersion) {
-		this.serviceVersion = HedwigUtil.filterSlash(serviceVersion);
+		this.serviceVersion = HedwigUtil.filterString(serviceVersion);
 	}
 
 	public void setTarget(String target) {
@@ -163,11 +155,11 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 	}
 
 	public void setDomainName(String domainName) {
-		this.domainName = HedwigUtil.filterSlash(domainName);
+		this.domainName = HedwigUtil.filterString(domainName);
 	}
 
 	public void setClientAppName(String clientAppName) {
-		this.clientAppName = HedwigUtil.filterSlash(clientAppName);
+		this.clientAppName = HedwigUtil.filterString(clientAppName);
 	}
 
 	public void setNoRetryMethods(Set<String> noRetryMethods) {

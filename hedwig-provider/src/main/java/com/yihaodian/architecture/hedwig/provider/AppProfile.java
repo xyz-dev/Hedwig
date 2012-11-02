@@ -23,7 +23,7 @@ public class AppProfile {
 	}
 
 	public void setDomainName(String domainName) {
-		this.domainName = HedwigUtil.filterSlash(domainName);
+		this.domainName = HedwigUtil.filterString(domainName);
 	}
 
 	public String getServiceAppName() {
@@ -31,7 +31,7 @@ public class AppProfile {
 	}
 
 	public void setServiceAppName(String serviceAppName) {
-		this.serviceAppName = HedwigUtil.filterSlash(serviceAppName);
+		this.serviceAppName = HedwigUtil.filterString(serviceAppName);
 	}
 
 	public String getUrlPattern() {
@@ -39,7 +39,7 @@ public class AppProfile {
 	}
 
 	public void setUrlPattern(String urlPattern) {
-		this.urlPattern = HedwigUtil.filterSlash(urlPattern);
+		this.urlPattern = HedwigUtil.filterString(urlPattern);
 	}
 
 	public int getPort() {
