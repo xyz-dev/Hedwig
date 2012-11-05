@@ -65,7 +65,6 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-
 		eventEngine = HedwigEventEngine.getEngine();
 		proxyFactory.setReadTimeout(clientProfile.getTimeout());
 		proxyFactory.setHessian2Request(true);
