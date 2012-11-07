@@ -12,6 +12,7 @@ import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
 import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
+import com.yihaodian.configcentre.client.utils.YccGlobalPropertyConfigurer;
 
 /**
  * @author Archer
@@ -105,7 +106,10 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 			p.setTimeout(timeout);
 		}
 		if (HedwigUtil.isBlankString(clientAppName)) {
-			throw new InvalidParamException("clientAppName must not blank!!!");
+			clientAppName = YccGlobalPropertyConfigurer.getMainGroupId();
+			if (HedwigUtil.isBlankString(clientAppName)) {
+				throw new InvalidParamException("clientAppName must not blank!!!");
+			}
 		}
 		p.setClientAppName(clientAppName);
 		if (HedwigUtil.isBlankString(serviceAppName)) {

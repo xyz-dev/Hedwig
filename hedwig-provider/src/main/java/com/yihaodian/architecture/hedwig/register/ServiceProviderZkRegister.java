@@ -38,15 +38,7 @@ public class ServiceProviderZkRegister implements IServiceProviderRegister {
 
 	@Override
 	public void regist(final ServiceProfile profile) throws InvalidParamException {
-		parentPath = profile.getParentPath();
-		if (!_zkClient.exists(parentPath)) {
-			_zkClient.createPersistent(parentPath, true);
-		}
-		childPath = ZkUtil.createChildPath(profile);
-		if (!_zkClient.exists(childPath)) {
-			profile.setRegistTime(new Date());
-			_zkClient.createEphemeral(childPath, profile);
-		}
+		createZnodes(profile);
 		_zkClient.subscribeStateChanges(new IZkStateListener() {
 
 			@Override
@@ -64,6 +56,38 @@ public class ServiceProviderZkRegister implements IServiceProviderRegister {
 		});
 		isRegisted = true;
 
+	}
+
+	private void createZnodes(ServiceProfile profile) throws InvalidParamException {
+		String rollPath = "";
+		String refugeePath = "";
+		// create base path
+		parentPath = profile.getParentPath();
+		if (!_zkClient.exists(parentPath)) {
+			_zkClient.createPersistent(parentPath, true);
+		}
+		// create ephemeral node
+		childPath = ZkUtil.createChildPath(profile);
+		if (!_zkClient.exists(childPath)) {
+			profile.setRegistTime(new Date());
+			_zkClient.createEphemeral(childPath, profile);
+		}
+		// create roll path
+		rollPath = ZkUtil.generatePath(profile, InternalConstants.HEDWIG_PAHT_ROLL);
+		if (!_zkClient.exists(rollPath)) {
+			_zkClient.createPersistent(rollPath);
+		}
+		// create refugee path
+		refugeePath = ZkUtil.generatePath(profile, InternalConstants.HEDWIG_PAHT_CAMPS + "/"
+				+ InternalConstants.HEDWIG_PAHT_REFUGEE);
+		if (!_zkClient.exists(refugeePath)) {
+			_zkClient.createEphemeral(refugeePath);
+		}
+		// create ip node
+		String ipNode = rollPath + "/" + ProperitesContainer.provider().getProperty(PropKeyConstants.HOST_IP);
+		if (!_zkClient.exists(ipNode)) {
+			_zkClient.createEphemeral(ipNode);
+		}
 	}
 
 	@Override

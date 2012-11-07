@@ -60,6 +60,10 @@ public interface InternalConstants {
 	
 	public static final int INTEGER_BARRIER = Integer.MAX_VALUE / 2;
 
+	public static final String HEDWIG_PAHT_CAMPS = "CAMPS";
+	public static final String HEDWIG_PAHT_REFUGEE = "REFUGEE";
+	public static final String HEDWIG_PAHT_ROLL = "ROLL";
+
 	/**
 	 * 通讯平台domain name
 	 */
