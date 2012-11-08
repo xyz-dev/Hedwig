@@ -83,7 +83,7 @@ public class ServiceProviderZkRegister implements IServiceProviderRegister {
 			_zkClient.createEphemeral(refugeePath);
 		}
 		// create ip node
-		String ipNode = rollPath + "/" + ProperitesContainer.provider().getProperty(PropKeyConstants.HOST_IP);
+		String ipNode = rollPath + "/" + ZkUtil.generateProcessDesc(profile);
 		if (!_zkClient.exists(ipNode)) {
 			_zkClient.createEphemeral(ipNode);
 		}
