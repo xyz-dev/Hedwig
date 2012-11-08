@@ -6,8 +6,8 @@ public interface InternalConstants {
 	public static final String CONFIG_FILE_CLIENT = "hedwigClient.properties";
 	public static final String CONFIG_FILE_PROVIDER = "hedwigProvider.properties";
 	public static final String CONFIG_FILE_ZKCLUSTER = "zookeeper-cluster.properties";
+	public static final String STRING_SEPARATOR = ",";
 	public static final String BASE_ROOT = "/TheStore";
-	public static final char SEPARATOR = '/';
 	public static final String UNKONW_DOMAIN = "UnknowDomain";
 	public static final String PROPERITIES_FILE_NAME = "hedwig.properties";
 	public static final String PROPERITIES_PATH_KEY = "hedwig_config";

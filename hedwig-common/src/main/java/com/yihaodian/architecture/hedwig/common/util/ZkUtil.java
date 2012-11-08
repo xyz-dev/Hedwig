@@ -7,6 +7,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
+import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
 import com.yihaodian.architecture.hedwig.common.dto.BaseProfile;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
@@ -43,8 +44,14 @@ public class ZkUtil {
 	public static String createChildPath(ServiceProfile profile) throws InvalidParamException {
 		if (profile == null)
 			throw new InvalidParamException(" Service profile must not null!!!");
+		StringBuilder path = new StringBuilder(profile.getParentPath()).append("/")
+				.append(generateProcessDesc(profile));
+		return path.toString();
+	}
+
+	public static String generateProcessDesc(ServiceProfile profile) throws InvalidParamException {
 		String pid = ProperitesContainer.client().getProperty(PropKeyConstants.JVM_PID);
-		StringBuilder path = new StringBuilder(profile.getParentPath()).append("/").append(profile.getHostIp()).append(":").append(pid);
+		StringBuilder path = new StringBuilder().append(profile.getHostIp()).append(":").append(pid);
 		return path.toString();
 	}
 
@@ -65,5 +72,18 @@ public class ZkUtil {
 		path.append("/").append(profile.getDomainName()).append("/").append(profile.getServiceAppName()).append("/")
 				.append(subPath);
 		return path.toString();
+	}
+
+	public static String createRollPath(BaseProfile profile) throws InvalidParamException {
+		return ZkUtil.generatePath(profile, InternalConstants.HEDWIG_PAHT_ROLL);
+	}
+
+	public static String createRefugeePath(BaseProfile profile) throws InvalidParamException {
+		return ZkUtil.generatePath(profile, InternalConstants.HEDWIG_PAHT_CAMPS + "/"
+				+ InternalConstants.HEDWIG_PAHT_REFUGEE);
+	}
+
+	public static String createCampPath(BaseProfile profile, String campName) throws InvalidParamException {
+		return ZkUtil.generatePath(profile, InternalConstants.HEDWIG_PAHT_CAMPS + "/" + campName);
 	}
 }

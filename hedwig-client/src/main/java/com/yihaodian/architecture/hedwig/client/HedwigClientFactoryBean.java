@@ -3,6 +3,7 @@
  */
 package com.yihaodian.architecture.hedwig.client;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.aop.framework.ProxyFactory;
@@ -27,6 +28,7 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 	private String serviceVersion;
 	private String target;
 	private String clientAppName;
+	private String groupName;
 	private Long timeout;
 	private Set<String> noRetryMethods;
 
@@ -131,6 +133,14 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 			if (noRetryMethods != null && noRetryMethods.size() > 0) {
 				p.setNoRetryMethods(noRetryMethods);
 			}
+			if (groupName != null) {
+				String[] sArr = groupName.split(InternalConstants.STRING_SEPARATOR);
+				Set<String> nameSet = new HashSet<String>();
+				for(String name:sArr){
+					nameSet.add(name);
+				}
+				p.setGroupNames(nameSet);
+			}
 		} else {
 			p.setTarget(target);
 		}
@@ -168,6 +178,10 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 
 	public void setNoRetryMethods(Set<String> noRetryMethods) {
 		this.noRetryMethods = noRetryMethods;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
 	}
 
 }

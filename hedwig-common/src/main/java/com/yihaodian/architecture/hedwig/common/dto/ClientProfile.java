@@ -29,6 +29,15 @@ public class ClientProfile extends BaseProfile implements Serializable {
 	private String requestType = RequestType.SyncPool.getName();
 	private String clientAppName;
 	private Set<String> noRetryMethods;
+	private Set<String> groupNames;
+
+	public Set<String> getGroupNames() {
+		return groupNames;
+	}
+
+	public void setGroupNames(Set<String> groupName) {
+		this.groupNames = groupName;
+	}
 
 	public ClientProfile() {
 		super();

@@ -73,13 +73,12 @@ public class ServiceProviderZkRegister implements IServiceProviderRegister {
 			_zkClient.createEphemeral(childPath, profile);
 		}
 		// create roll path
-		rollPath = ZkUtil.generatePath(profile, InternalConstants.HEDWIG_PAHT_ROLL);
+		rollPath = ZkUtil.createRollPath(profile);
 		if (!_zkClient.exists(rollPath)) {
 			_zkClient.createPersistent(rollPath);
 		}
 		// create refugee path
-		refugeePath = ZkUtil.generatePath(profile, InternalConstants.HEDWIG_PAHT_CAMPS + "/"
-				+ InternalConstants.HEDWIG_PAHT_REFUGEE);
+		refugeePath = ZkUtil.createRefugeePath(profile);
 		if (!_zkClient.exists(refugeePath)) {
 			_zkClient.createEphemeral(refugeePath);
 		}
