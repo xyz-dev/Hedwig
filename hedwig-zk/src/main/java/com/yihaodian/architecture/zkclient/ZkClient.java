@@ -774,6 +774,17 @@ public class ZkClient implements Watcher {
         return (T) derializable(data);
     }
 
+	public byte[] readRawData(final String path, boolean returnNullIfPathNotExists) {
+		byte[] data = retryUntilConnected(new Callable<byte[]>() {
+
+			@Override
+			public byte[] call() throws Exception {
+				return _connection.readData(path, null, hasListeners(path));
+			}
+		});
+		return data;
+	}
+
     public Stat writeData(String path, Object object) {
         return writeData(path, object, -1);
     }
