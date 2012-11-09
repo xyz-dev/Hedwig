@@ -50,7 +50,9 @@ import java.util.IdentityHashMap;
 import com.caucho.hessian.io.AbstractHessianOutput;
 import com.caucho.hessian.io.Serializer;
 import com.caucho.hessian.io.SerializerFactory;
+import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
+import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
 import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
 
 /**
@@ -158,6 +160,8 @@ public class HedwigHessianOutput extends AbstractHessianOutput {
 		writeString(HedwigContextUtil.getTransactionId());
 		writeHeader(InternalConstants.HEDWIG_INVOKE_TIME);
 		writeObject(HedwigContextUtil.getAttribute(InternalConstants.HEDWIG_INVOKE_TIME, null));
+		writeHeader(PropKeyConstants.HOST_IP);
+		writeObject(ProperitesContainer.client().getProperty(PropKeyConstants.HOST_IP, ""));
 		// add requestId end
 		os.write('m');
 		int len = method.length();
