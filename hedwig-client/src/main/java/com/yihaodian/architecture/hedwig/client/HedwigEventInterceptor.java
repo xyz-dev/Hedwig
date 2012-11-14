@@ -18,8 +18,8 @@ import org.springframework.remoting.support.RemotingSupport;
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.client.event.HedwigEventBuilder;
 import com.yihaodian.architecture.hedwig.client.event.engine.HedwigEventEngine;
+import com.yihaodian.architecture.hedwig.client.locator.GroupServiceLocator;
 import com.yihaodian.architecture.hedwig.client.locator.IServiceLocator;
-import com.yihaodian.architecture.hedwig.client.locator.ZkServiceLocator;
 import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
@@ -81,7 +81,7 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 			if (!HedwigUtil.isBlankString(clientProfile.getTarget())) {
 				HedwigClientUtil.createProxy(eventContext, clientProfile.getTarget());
 			} else {
-				locator = new ZkServiceLocator(clientProfile);
+				locator = new GroupServiceLocator(clientProfile);
 				Collection<ServiceProfile> serviceProfiles = locator.getAllService();
 				eventContext.setLocator(locator);
 				for (ServiceProfile profile : serviceProfiles) {

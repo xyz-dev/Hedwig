@@ -74,16 +74,10 @@ public class ServiceProviderZkRegister implements IServiceProviderRegister {
 		}
 		// create roll path
 		rollPath = ZkUtil.createRollPath(profile);
-		if (!_zkClient.exists(rollPath)) {
-			_zkClient.createPersistent(rollPath);
-		}
 		// create refugee path
 		refugeePath = ZkUtil.createRefugeePath(profile);
-		if (!_zkClient.exists(refugeePath)) {
-			_zkClient.createEphemeral(refugeePath);
-		}
 		// create ip node
-		String ipNode = rollPath + "/" + ZkUtil.generateProcessDesc(profile);
+		String ipNode = rollPath + "/" + ZkUtil.getProcessDesc(profile);
 		if (!_zkClient.exists(ipNode)) {
 			_zkClient.createEphemeral(ipNode);
 		}

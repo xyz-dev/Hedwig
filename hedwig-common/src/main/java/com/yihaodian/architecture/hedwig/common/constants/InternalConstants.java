@@ -60,9 +60,9 @@ public interface InternalConstants {
 	
 	public static final int INTEGER_BARRIER = Integer.MAX_VALUE / 2;
 
-	public static final String HEDWIG_PAHT_CAMPS = "HEDWIG_CAMPS";
-	public static final String HEDWIG_PAHT_REFUGEE = "REFUGEE";
-	public static final String HEDWIG_PAHT_ROLL = "HEDWIG_ROLL";
+	public static final String HEDWIG_PAHT_CAMPS = "hedwig_camps";
+	public static final String HEDWIG_PAHT_REFUGEE = "refugee";
+	public static final String HEDWIG_PAHT_ROLL = "hedwig_roll";
 
 	/**
 	 * 通讯平台domain name

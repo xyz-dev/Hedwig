@@ -5,10 +5,8 @@ package com.yihaodian.architecture.hedwig.client.locator;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -41,104 +39,16 @@ public class GroupServiceLocator implements IServiceLocator<ServiceProfile> {
 	private static boolean isProfileSensitive = false;
 	private LoadBalancer<ServiceProfile> balancer;
 	private boolean initialized = false;
-	private Set<String> processSet = new HashSet<String>();
-	private ClientProfile clientProfile;
-	private Map<String, List<String>> campMap = new HashMap<String, List<String>>();
+	private GroupTracker groupTracker;
 
 	public GroupServiceLocator(ClientProfile clientProfile) throws HedwigException {
 		super();
-		this.clientProfile = clientProfile;
-		this.isProfileSensitive = clientProfile.isProfileSensitive();
 		this._zkClient = ZkUtil.getZkClientInstance();
-		observeCamps();
-		loadAvaliableProcess();
+		groupTracker = new GroupTracker(clientProfile);
+		this.isProfileSensitive = clientProfile.isProfileSensitive();
 		this.balancer = BalancerFactory.getInstance().getBalancer(clientProfile.getBalanceAlgo());
 		loadServiceProfile(clientProfile);
-		this.balancer.updateProfiles(profileContainer.values());
-
-	}
-	
-	private void getCamp
-
-	private void loadAvaliableProcess() {
-		Set<String> set = null;
-		try {
-			String baseCamp = ZkUtil.createCampPath(clientProfile, "");
-			Set<String> campSet = clientProfile.getGroupNames();
-			List<String> camps = _zkClient.getChildren(baseCamp);
-			if (camps != null && camps.size() > 1) {
-				if (campSet == null || campSet.size() <= 0) {
-					String refugeePath = ZkUtil.createRefugeePath(clientProfile);
-					List<String> refugee = _zkClient.getChildren(refugeePath);
-					if (refugee != null && refugee.size() > 0) {
-						campMap.put(refugeePath, refugee);
-					}
-				} else {
-					
-				}
-
-			}
-
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-
-	}
-
-	private void observeCamps() {
-		try {
-			Set<String> campSet = clientProfile.getGroupNames();
-			String campPath = null;
-			if (campSet != null && campSet.size() > 0) {
-				for (String campName : campSet) {
-					campPath = ZkUtil.createCampPath(clientProfile, campName);
-					if (!_zkClient.exists(campPath)) {
-						_zkClient.createPersistent(campPath, true);
-					}
-					_zkClient.subscribeChildChanges(campPath, new IZkChildListener() {
-
-						@Override
-						public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
-							updateProcess(parentPath, currentChilds);
-
-						}
-					});
-				}
-
-				String baseCamp = ZkUtil.createCampPath(clientProfile, "");
-				_zkClient.subscribeChildChanges(baseCamp, new IZkChildListener() {
-					@Override
-					public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
-						updateCamps(currentChilds);
-
-					}
-				});
-			} else {
-				campPath = ZkUtil.createRefugeePath(clientProfile);
-				_zkClient.subscribeChildChanges(campPath, new IZkChildListener() {
-
-					@Override
-					public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
-						updateProcess(parentPath, currentChilds);
-
-					}
-				});
-			}
-
-		} catch (Exception e) {
-			logger.error("Observe camps failed!!!");
-		}
-	}
-
-
-	protected void updateProcess(List<String> currentChilds) {
-		// TODO Auto-generated method stub
-
-	}
-
-	protected void updateCamps(List<String> currentChilds) {
-		// TODO Auto-generated method stub
-
+		this.balancer.updateProfiles(groupTracker.groupFilter(profileContainer));
 	}
 
 
@@ -196,7 +106,7 @@ public class GroupServiceLocator implements IServiceLocator<ServiceProfile> {
 							profileContainer.remove(child);
 						}
 					}
-					balancer.updateProfiles(profileContainer.values());
+					balancer.updateProfiles(groupTracker.groupFilter(profileContainer));
 				}
 
 				@Override
@@ -204,7 +114,7 @@ public class GroupServiceLocator implements IServiceLocator<ServiceProfile> {
 					if (!HedwigUtil.isBlankString(dataPath)) {
 						String child = HedwigUtil.getChildShortPath(dataPath);
 						addServiceProfile(child, data);
-						balancer.updateProfiles(profileContainer.values());
+						balancer.updateProfiles(groupTracker.groupFilter(profileContainer));
 					}
 				}
 			});
@@ -239,7 +149,7 @@ public class GroupServiceLocator implements IServiceLocator<ServiceProfile> {
 							}
 						}
 						profileContainer = newProfileMap;
-						balancer.updateProfiles(profileContainer.values());
+						balancer.updateProfiles(groupTracker.groupFilter(profileContainer));
 					}
 				}
 			});
