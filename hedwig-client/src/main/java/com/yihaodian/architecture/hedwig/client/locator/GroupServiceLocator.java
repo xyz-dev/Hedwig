@@ -44,9 +44,9 @@ public class GroupServiceLocator implements IServiceLocator<ServiceProfile> {
 	public GroupServiceLocator(ClientProfile clientProfile) throws HedwigException {
 		super();
 		this._zkClient = ZkUtil.getZkClientInstance();
+		this.balancer = BalancerFactory.getInstance().getBalancer(clientProfile.getBalanceAlgo());
 		groupTracker = new GroupTracker(clientProfile);
 		this.isProfileSensitive = clientProfile.isProfileSensitive();
-		this.balancer = BalancerFactory.getInstance().getBalancer(clientProfile.getBalanceAlgo());
 		loadServiceProfile(clientProfile);
 		this.balancer.updateProfiles(groupTracker.groupFilter(profileContainer));
 	}
