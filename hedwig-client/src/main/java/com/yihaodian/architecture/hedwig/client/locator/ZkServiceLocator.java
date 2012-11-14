@@ -34,21 +34,23 @@ import com.yihaodian.architecture.zkclient.ZkClient;
 public class ZkServiceLocator implements IServiceLocator<ServiceProfile> {
 
 	private static Logger logger = LoggerFactory.getLogger(ZkServiceLocator.class);
-	private ZkClient _zkClient = null;
-	private Map<String, ServiceProfile> profileContainer = new ConcurrentHashMap<String, ServiceProfile>();
-	private static boolean isProfileSensitive = false;
-	private LoadBalancer<ServiceProfile> balancer;
-	private boolean initialized = false;
+	protected ZkClient _zkClient = null;
+	protected Map<String, ServiceProfile> profileContainer = new ConcurrentHashMap<String, ServiceProfile>();
+	protected static boolean isProfileSensitive = false;
+	protected LoadBalancer<ServiceProfile> balancer;
+	protected boolean initialized = false;
+	protected ClientProfile clientProfile;
 
 	public ZkServiceLocator(ClientProfile clientProfile) throws HedwigException {
 		super();
-		isProfileSensitive = clientProfile.isProfileSensitive();
-		_zkClient = ZkUtil.getZkClientInstance();
-		balancer = BalancerFactory.getInstance().getBalancer(clientProfile.getBalanceAlgo());
-		loadServiceProfile(clientProfile);
-		balancer.updateProfiles(profileContainer.values());
-
+		this.clientProfile = clientProfile;
+		this.isProfileSensitive = clientProfile.isProfileSensitive();
+		this._zkClient = ZkUtil.getZkClientInstance();
+		this.balancer = BalancerFactory.getInstance().getBalancer(clientProfile.getBalanceAlgo());
+		this.loadServiceProfile(clientProfile);
+		this.balancer.updateProfiles(profileContainer.values());
 	}
+
 
 	private void loadServiceProfile(ClientProfile profile) {
 		String parentPath = profile.getParentPath();

@@ -3,26 +3,23 @@
  */
 package com.yihaodian.architecture.hedwig.client.locator;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yihaodian.architecture.hedwig.balancer.BalancerFactory;
-import com.yihaodian.architecture.hedwig.balancer.LoadBalancer;
+import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
-import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
-import com.yihaodian.architecture.hedwig.common.util.ServiceRelivePolicy;
 import com.yihaodian.architecture.hedwig.common.util.ZkUtil;
 import com.yihaodian.architecture.zkclient.IZkChildListener;
-import com.yihaodian.architecture.zkclient.IZkDataListener;
-import com.yihaodian.architecture.zkclient.ZkClient;
 
 /**
  * This locator is implemented base on zookeeper ephemeral node. It will
@@ -31,145 +28,131 @@ import com.yihaodian.architecture.zkclient.ZkClient;
  * @author Archer Jiang
  * 
  */
-public class GroupServiceLocator implements IServiceLocator<ServiceProfile> {
+public class GroupServiceLocator extends ZkServiceLocator {
 
 	private static Logger logger = LoggerFactory.getLogger(GroupServiceLocator.class);
-	private ZkClient _zkClient = null;
-	private Map<String, ServiceProfile> profileContainer = new ConcurrentHashMap<String, ServiceProfile>();
-	private static boolean isProfileSensitive = false;
-	private LoadBalancer<ServiceProfile> balancer;
-	private boolean initialized = false;
-	private GroupTracker groupTracker;
+	private Map<String, List<String>> campMap = new HashMap<String, List<String>>();
+	private Set<String> processSet = new HashSet<String>();
 
 	public GroupServiceLocator(ClientProfile clientProfile) throws HedwigException {
-		super();
-		this._zkClient = ZkUtil.getZkClientInstance();
-		this.balancer = BalancerFactory.getInstance().getBalancer(clientProfile.getBalanceAlgo());
-		groupTracker = new GroupTracker(clientProfile);
-		this.isProfileSensitive = clientProfile.isProfileSensitive();
-		loadServiceProfile(clientProfile);
-		this.balancer.updateProfiles(groupTracker.groupFilter(profileContainer));
+		super(clientProfile);
+		observeCamps();
+		loadAvailableProcess();
 	}
 
-
-	private void loadServiceProfile(ClientProfile profile) {
-		String parentPath = profile.getParentPath();
-		List<String> childList = null;
-		if (parentPath != null) {
-			if (!_zkClient.exists(parentPath)) {
-				logger.error("Can't find path " + parentPath + " in ZK. Can't find service provider for now");
-				_zkClient.createPersistent(parentPath, true);
-			}
-			observeChild(parentPath);
-			childList = _zkClient.getChildren(parentPath);
-			observeChildData(parentPath, childList);
-		}
-		initialized = true;
-	}
-
-	private void observeChildData(final String parentPath, List<String> childList) {
-		if (childList != null && childList.size() > 0) {
-			for (String child : childList) {
-				String childPath = HedwigUtil.getChildFullPath(parentPath, child);
-				if (_zkClient.exists(childPath)) {
-					Object obj = _zkClient.readData(childPath, true);
-					addServiceProfile(child, obj);
-					observeSpecifyChildData(childPath);
+	public Collection<ServiceProfile> groupFilter(Map<String, ServiceProfile> profiles) {
+		Collection<ServiceProfile> groupedProfiles = new ArrayList<ServiceProfile>();
+		if (processSet == null) {
+			groupedProfiles = profiles.values();
+		} else {
+			if (processSet.size() > 0) {
+				for (String key : profiles.keySet()) {
+					if (processSet.contains(key)) {
+						groupedProfiles.add(profiles.get(key));
+					}
 				}
 			}
 		}
+		return groupedProfiles;
 	}
 
-	private void addServiceProfile(String child, Object obj) {
-		if (obj != null) {
-			ServiceProfile sp = (ServiceProfile) obj;
-			sp.setRelivePolicy(new ServiceRelivePolicy());
-			profileContainer.put(child, sp);
+	/**
+	 * 
+	 */
+	private void loadAvailableProcess() {
+		Set<String> set = null;
+		String baseCamp = ZkUtil.createBaseCampPath(clientProfile);
+		Set<String> campSet = clientProfile.getGroupNames();
+		List<String> camps = _zkClient.getChildren(baseCamp);
+		if (camps != null && camps.size() > 1) {
+			if (campSet == null || campSet.size() <= 0) {
+				updateCampMap(InternalConstants.HEDWIG_PAHT_REFUGEE);
+			} else {
+				for (String campName : campSet) {
+					updateCampMap(campName);
+				}
+			}
+			processSet = totalProcess();
+		} else {
+			processSet = null;
+		}
+		balancer.updateProfiles(groupFilter(profileContainer));
+	}
+
+	private Set<String> totalProcess() {
+		Set<String> set = new HashSet<String>();
+		for (List<String> pl : campMap.values()) {
+			set.addAll(pl);
+		}
+		return set;
+	}
+
+	public void updateCampMap(String campName) {
+		try {
+			String campPath = ZkUtil.createCampPath(clientProfile, campName);
+			List<String> list = _zkClient.getChildren(campPath);
+			if (list != null && list.size() > 0) {
+				campMap.put(campPath, list);
+			}
+		} catch (Exception e) {
+			logger.error(InternalConstants.HANDLE_LOG_PROFIX + e.getMessage(), e);
 		}
 
 	}
 
 	/**
-	 * Observe specify node profile change.
-	 * 
+	 * Observe group change, include group increase/decrease and process
+	 * increase/decrease.
 	 */
-	private void observeSpecifyChildData(String childPath) {
+	private void observeCamps() {
+		try {
+			String baseCamp = ZkUtil.createBaseCampPath(clientProfile);
+			Set<String> campSet = clientProfile.getGroupNames();
+			String campPath = null;
+			if (campSet != null && campSet.size() > 0) {
+				for (String campName : campSet) {
+					campPath = ZkUtil.createCampPath(clientProfile, campName);
+					// observe available process change of interesting group
+					_zkClient.subscribeChildChanges(campPath, new IZkChildListener() {
 
-		if (isProfileSensitive) {
-			_zkClient.subscribeDataChanges(childPath, new IZkDataListener() {
+						@Override
+						public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
+							updateProcess(parentPath, currentChilds);
 
-				@Override
-				public void handleDataDeleted(String dataPath) throws Exception {
-					if (!HedwigUtil.isBlankString(dataPath)) {
-						String child = HedwigUtil.getChildShortPath(dataPath);
-						if (profileContainer.containsKey(child)) {
-							profileContainer.remove(child);
 						}
-					}
-					balancer.updateProfiles(groupTracker.groupFilter(profileContainer));
+					});
 				}
 
-				@Override
-				public void handleDataChange(String dataPath, Object data) throws Exception {
-					if (!HedwigUtil.isBlankString(dataPath)) {
-						String child = HedwigUtil.getChildShortPath(dataPath);
-						addServiceProfile(child, data);
-						balancer.updateProfiles(groupTracker.groupFilter(profileContainer));
+				// observe group change add or delete
+				_zkClient.subscribeChildChanges(baseCamp, new IZkChildListener() {
+					@Override
+					public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
+						loadAvailableProcess();
+
 					}
-				}
-			});
+				});
+			} else {
+				campPath = ZkUtil.createRefugeePath(clientProfile);
+				// observe refugee process
+				_zkClient.subscribeChildChanges(campPath, new IZkChildListener() {
+
+					@Override
+					public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
+						updateProcess(parentPath, currentChilds);
+
+					}
+				});
+			}
+
+		} catch (Exception e) {
+			logger.error("Observe camps failed!!!");
 		}
 	}
 
-	/**
-	 * Observe the node change, add or delete
-	 * 
-	 * @param basePath
-	 */
-	private void observeChild(String basePath) {
-		if (_zkClient.exists(basePath)) {
-			_zkClient.subscribeChildChanges(basePath, new IZkChildListener() {
-
-				@Override
-				public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
-					if (parentPath != null) {
-						Map<String, ServiceProfile> newProfileMap = new HashMap<String, ServiceProfile>();
-						ServiceProfile profile = null;
-						String childPath;
-						for (String child : currentChilds) {
-							childPath = HedwigUtil.getChildFullPath(parentPath, child);
-							if (!profileContainer.containsKey(child)) {
-								profile = _zkClient.readData(childPath, true);
-								observeSpecifyChildData(childPath);
-							} else {
-								profile = profileContainer.get(child);
-							}
-							if (profile != null) {
-								newProfileMap.put(childPath, profile);
-							}
-						}
-						profileContainer = newProfileMap;
-						balancer.updateProfiles(groupTracker.groupFilter(profileContainer));
-					}
-				}
-			});
-		}
-
-	}
-
-	@Override
-	public ServiceProfile getService() {
-		ServiceProfile sp = null;
-		while (!initialized) {
-			Thread.yield();
-		}
-		sp = balancer.select();
-		return sp;
-	}
-
-	@Override
-	public Collection<ServiceProfile> getAllService() {
-		return profileContainer.values();
+	protected void updateProcess(String campPath, List<String> currentChilds) {
+		campMap.put(campPath, currentChilds);
+		processSet = totalProcess();
+		balancer.updateProfiles(groupFilter(profileContainer));
 	}
 
 }
