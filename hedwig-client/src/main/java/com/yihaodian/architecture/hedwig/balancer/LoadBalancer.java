@@ -7,5 +7,7 @@ public interface LoadBalancer<P> {
 	public P select();
 
 	public void updateProfiles(Collection<P> serviceSet);
+	
+	public void setWhiteList(Collection<String> serviceSet);
 
 }

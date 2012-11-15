@@ -20,7 +20,8 @@ public class RRBalancer extends AbstractBalancer {
 		try {
 			Circle<Integer, ServiceProfile> circle = new Circle<Integer, ServiceProfile>();
 			int size = 0;
-			for (ServiceProfile sp : serviceSet) {
+			Collection<ServiceProfile> realServiceSet = BalancerUtil.filte(serviceSet, whiteList);
+			for (ServiceProfile sp : realServiceSet) {
 				circle.put(size++, sp);
 			}
 			profileCircle = circle;

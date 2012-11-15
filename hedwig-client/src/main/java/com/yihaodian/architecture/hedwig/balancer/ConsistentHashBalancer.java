@@ -24,6 +24,7 @@ public class ConsistentHashBalancer implements ConditionLoadBalancer<ServiceProf
 	private Lock lock = new ReentrantLock();
 	private HashFunction hf = HashFunctionFactory.getInstance().getMur2Function();
 	private Random random = new Random();
+	private Collection<String> whiteList = null;
 
 	@Override
 	public ServiceProfile select() {
@@ -65,9 +66,10 @@ public class ConsistentHashBalancer implements ConditionLoadBalancer<ServiceProf
 		lock.lock();
 		try {
 			Circle<Long, ServiceProfile> circle = new Circle<Long, ServiceProfile>();
-			int totalWeight = getTotalWeight(serviceSet);
-			int size = serviceSet.size();
-			for (ServiceProfile sp : serviceSet) {
+			Collection<ServiceProfile> realServiceSet = BalancerUtil.filte(serviceSet, whiteList);
+			int totalWeight = getTotalWeight(realServiceSet);
+			int size = realServiceSet.size();
+			for (ServiceProfile sp : realServiceSet) {
 				int mirror = getMirrorFactor(size, sp.getWeighted(), totalWeight, InternalConstants.MIRROR_SEED);
 				for (int i = 0; i < mirror; i++) {
 					String feed=sp.getServiceUrl()+i;
@@ -129,4 +131,12 @@ public class ConsistentHashBalancer implements ConditionLoadBalancer<ServiceProf
 		}
 		return sp;
 	}
+
+	@Override
+	public void setWhiteList(Collection<String> serviceSet) {
+		this.whiteList = serviceSet;
+		
+	}
+
+
 }

@@ -32,7 +32,8 @@ public class WRRBalancer extends AbstractBalancer {
 		try {
 			Circle<Integer, ServiceProfile> circle = new Circle<Integer, ServiceProfile>();
 			int size = 0;
-			for (ServiceProfile sp : serviceSet) {
+			Collection<ServiceProfile> realServiceSet = BalancerUtil.filte(serviceSet, whiteList);
+			for (ServiceProfile sp : realServiceSet) {
 				int weight = sp.getWeighted();
 				for (int i = 0; i < weight; i++) {
 					circle.put(size++, sp);

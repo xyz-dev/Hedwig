@@ -3,6 +3,7 @@
  */
 package com.yihaodian.architecture.hedwig.balancer;
 
+import java.util.Collection;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
@@ -21,6 +22,7 @@ public abstract class AbstractBalancer implements LoadBalancer<ServiceProfile> {
 	protected Lock lock = new ReentrantLock();
 	protected Random random = new Random();
 	protected AtomicInteger position = new AtomicInteger(random.nextInt(InternalConstants.INTEGER_BARRIER));
+	protected Collection<String> whiteList = null;
 
 	@Override
 	public ServiceProfile select() {
@@ -52,4 +54,11 @@ public abstract class AbstractBalancer implements LoadBalancer<ServiceProfile> {
 		}
 		return sp;
 	}
+
+	@Override
+	public void setWhiteList(Collection<String> serviceSet) {
+		this.whiteList = serviceSet;
+		
+	}
+
 }
