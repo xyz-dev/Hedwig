@@ -52,9 +52,7 @@ public class ZkUtil {
 	}
 
 	public static String getProcessDesc(ServiceProfile profile) throws InvalidParamException {
-		String pid = ProperitesContainer.client().getProperty(PropKeyConstants.JVM_PID);
-		StringBuilder path = new StringBuilder().append(profile.getHostIp()).append(":").append(profile.getPort())
-				.append("-").append(pid);
+		StringBuilder path = new StringBuilder().append(profile.getHostIp()).append(":").append(profile.getPort());
 		return path.toString();
 	}
 

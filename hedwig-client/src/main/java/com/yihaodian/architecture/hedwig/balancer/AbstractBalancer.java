@@ -3,10 +3,12 @@
  */
 package com.yihaodian.architecture.hedwig.balancer;
 
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 
 /**
@@ -17,7 +19,8 @@ public abstract class AbstractBalancer implements LoadBalancer<ServiceProfile> {
 
 	protected Circle<Integer, ServiceProfile> profileCircle = new Circle<Integer, ServiceProfile>();
 	protected Lock lock = new ReentrantLock();
-	protected AtomicInteger position = new AtomicInteger();
+	protected Random random = new Random();
+	protected AtomicInteger position = new AtomicInteger(random.nextInt(InternalConstants.INTEGER_BARRIER));
 
 	@Override
 	public ServiceProfile select() {
