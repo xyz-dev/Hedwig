@@ -57,13 +57,13 @@ public class ServiceProviderZkRegister implements IServiceProviderRegister {
 			}
 		});
 		_zkClient.subscribeChildChanges(parentPath, new IZkChildListener() {
-
+			
 			@Override
 			public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
-				if (!_zkClient.exists(childPath)) {
+				if(!_zkClient.exists(childPath)){
 					_zkClient.createEphemeral(childPath, profile);
 				}
-
+				
 			}
 		});
 		isRegisted = true;

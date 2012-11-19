@@ -13,6 +13,7 @@ import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
 import com.yihaodian.architecture.hedwig.common.exception.InvalidReturnValueException;
+import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 
 /**
  * @author Archer Jiang
@@ -20,15 +21,11 @@ import com.yihaodian.architecture.hedwig.common.exception.InvalidReturnValueExce
  */
 public class RegisterFactory {
 
-	public static Map<String, IServiceProviderRegister> registers = new HashMap<String, IServiceProviderRegister>();
+	public static Map<String, String> registers = new HashMap<String, String>();
 	private static Logger logger = LoggerFactory.getLogger(RegisterFactory.class);
 	
 	static {
-		try {
-			setRegister(InternalConstants.SERVICE_REGISTER_ZK, new ServiceProviderZkRegister());
-		} catch (HedwigException e) {
-			logger.error(e.getMessage());
-		}
+			registers.put(InternalConstants.SERVICE_REGISTER_ZK, ServiceProviderZkRegister.class.getName());
 	}
 
 	public static IServiceProviderRegister getZKRegister() throws HedwigException {
@@ -36,18 +33,19 @@ public class RegisterFactory {
 	}
 
 	public static IServiceProviderRegister getRegister(String name) throws HedwigException {
-		if (name == null)
-			throw new InvalidParamException("Name must not null");
-		IServiceProviderRegister register = null;
-		if (registers.containsKey(name)) {
-			register = registers.get(name);
+		if (HedwigUtil.isBlankString(name))
+			throw new InvalidParamException("Balancer name must not null");
+		String clazzName = registers.get(name);
+		if (clazzName != null) {
+			try {
+				Class clazz = Class.forName(clazzName);
+				return (IServiceProviderRegister) clazz.newInstance();
+			} catch (Throwable e) {
+				throw new InvalidReturnValueException("Can't find " + clazzName + " balancer");
+			}
+		} else {
+			throw new InvalidReturnValueException("Can't find " + name + " balancer");
 		}
-		if (register == null)
-			throw new InvalidReturnValueException("Register '" + name + "' must not null");
-		return register;
 	}
 
-	public static synchronized void setRegister(String name, IServiceProviderRegister register) {
-		registers.put(name, register);
-	}
 }
