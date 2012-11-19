@@ -63,7 +63,7 @@ public class ServiceProfile extends BaseProfile implements Serializable {
 	/**
 	 * 默认权重
 	 */
-	private int weighted = 2;
+	private int weighted = 1;
 	/**
 	 * 负载
 	 */
