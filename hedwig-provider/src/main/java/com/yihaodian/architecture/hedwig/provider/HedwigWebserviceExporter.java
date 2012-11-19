@@ -93,6 +93,7 @@ public class HedwigWebserviceExporter extends HedwigHessianExporter implements H
 	@Override
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
+		MonitorJmsSendUtil.getInstance();
 		try {
 			if (profile == null) {
 				profile = createServiceProfile();
