@@ -25,6 +25,7 @@ public class HandlerUtil {
 		NETWORK_EXCEPTIONS.add(ConnectException.class.getName());
 		NETWORK_EXCEPTIONS.add(SocketException.class.getName());
 		NETWORK_EXCEPTIONS.add(IOException.class.getName());
+		NETWORK_EXCEPTIONS.add(java.net.SocketTimeoutException.class.getName());
 	}
 	
 	public static boolean isNetworkException(Throwable exception) {

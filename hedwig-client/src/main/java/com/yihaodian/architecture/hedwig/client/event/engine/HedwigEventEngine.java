@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.yihaodian.architecture.hedwig.client.event.BaseEvent;
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
+import com.yihaodian.architecture.hedwig.client.event.handle.HandlerUtil;
 import com.yihaodian.architecture.hedwig.client.event.handle.HedwigHandlerFactory;
 import com.yihaodian.architecture.hedwig.client.event.util.EngineUtil;
 import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
@@ -122,7 +123,9 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 						r = handler.handle(context, event);
 					} catch (Throwable e) {
 						logger.error("Execute " + event.getExecCount() + " times failed!!! " + e.getMessage());
-						r = EngineUtil.retry(handler, event, context);
+						if (HandlerUtil.isNetworkException(e)) {
+							r = EngineUtil.retry(handler, event, context);
+						}
 					} finally {
 						cbLog.setProviderHost(HedwigContextUtil.getString(InternalConstants.HEDWIG_SERVICE_IP, ""));
 						HedwigContextUtil.clean();

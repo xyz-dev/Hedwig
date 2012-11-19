@@ -4,6 +4,7 @@
 package com.yihaodian.architecture.hedwig.register;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.zookeeper.Watcher.Event.KeeperState;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
 import com.yihaodian.architecture.hedwig.common.util.ZkUtil;
+import com.yihaodian.architecture.zkclient.IZkChildListener;
 import com.yihaodian.architecture.zkclient.IZkStateListener;
 import com.yihaodian.architecture.zkclient.ZkClient;
 
@@ -52,6 +54,16 @@ public class ServiceProviderZkRegister implements IServiceProviderRegister {
 				if (!_zkClient.exists(childPath)) {
 					_zkClient.createEphemeral(childPath, profile);
 				}
+			}
+		});
+		_zkClient.subscribeChildChanges(parentPath, new IZkChildListener() {
+
+			@Override
+			public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
+				if (!_zkClient.exists(childPath)) {
+					_zkClient.createEphemeral(childPath, profile);
+				}
+
 			}
 		});
 		isRegisted = true;

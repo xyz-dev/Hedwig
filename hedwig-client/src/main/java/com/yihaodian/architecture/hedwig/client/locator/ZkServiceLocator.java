@@ -44,7 +44,7 @@ public class ZkServiceLocator implements IServiceLocator<ServiceProfile> {
 	public ZkServiceLocator(ClientProfile clientProfile) throws HedwigException {
 		super();
 		this.clientProfile = clientProfile;
-		this.isProfileSensitive = clientProfile.isProfileSensitive();
+		this.isProfileSensitive = true;// clientProfile.isProfileSensitive();
 		this._zkClient = ZkUtil.getZkClientInstance();
 		this.balancer = BalancerFactory.getInstance().getBalancer(clientProfile.getBalanceAlgo());
 		this.loadServiceProfile(clientProfile);

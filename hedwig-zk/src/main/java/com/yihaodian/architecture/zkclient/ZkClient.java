@@ -43,6 +43,7 @@ import com.yihaodian.architecture.zkclient.ZkEventThread.ZkEvent;
 import com.yihaodian.architecture.zkclient.exception.ZkBadVersionException;
 import com.yihaodian.architecture.zkclient.exception.ZkException;
 import com.yihaodian.architecture.zkclient.exception.ZkInterruptedException;
+import com.yihaodian.architecture.zkclient.exception.ZkMarshallingError;
 import com.yihaodian.architecture.zkclient.exception.ZkNoNodeException;
 import com.yihaodian.architecture.zkclient.exception.ZkNodeExistsException;
 import com.yihaodian.architecture.zkclient.exception.ZkTimeoutException;
@@ -569,6 +570,18 @@ public class ZkClient implements Watcher {
 					exists(path, true);
 					try {
 						Object data = readData(path, null, true);
+						listener.handleDataChange(path, data);
+					} catch (ZkMarshallingError error) {
+						LOG.error("fire data changer events throws ZkMarshallingError");
+
+						// 兼容其它客户端写入非对象序列化的数据
+						byte[] data = null;
+						try {
+							data = readRawData(path, true);
+						} catch (Throwable t) {
+							LOG.error("read raw data error within fireDataChangedEvents");
+						}
+
 						listener.handleDataChange(path, data);
 					} catch (ZkNoNodeException e) {
 						listener.handleDataDeleted(path);
