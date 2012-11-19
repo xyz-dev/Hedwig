@@ -85,7 +85,7 @@ public class BaseEvent implements IEvent<Object> {
 	}
 
 	protected boolean isReachMaxRedoCount() {
-		return execCount > maxRedoCount;
+		return execCount > maxRedoCount || execCount > InternalConstants.MAX_REDO_THRESHOLD;
 	}
 
 	@Override

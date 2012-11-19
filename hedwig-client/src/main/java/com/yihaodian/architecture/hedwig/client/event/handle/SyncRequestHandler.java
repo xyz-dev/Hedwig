@@ -53,7 +53,7 @@ public class SyncRequestHandler extends BaseHandler {
 		try {
 			result = invocation.getMethod().invoke(hessianProxy, params);
 		} catch (Throwable e) {
-			if (!checkSPAvaliable(e)) {
+			if (HandlerUtil.isNetworkException(e)) {
 				sp.setCurStatus(ServiceStatus.TEMPORARY_DISENABLE);
 			}
 			throw new HandlerException(reqId, e.getMessage(), e.getCause());

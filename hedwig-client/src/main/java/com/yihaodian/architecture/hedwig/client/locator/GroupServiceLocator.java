@@ -3,8 +3,6 @@
  */
 package com.yihaodian.architecture.hedwig.client.locator;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
-import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.util.ZkUtil;
 import com.yihaodian.architecture.zkclient.IZkChildListener;
@@ -40,22 +37,6 @@ public class GroupServiceLocator extends ZkServiceLocator {
 		loadAvailableProcess();
 	}
 
-	public Collection<ServiceProfile> groupFilter(Map<String, ServiceProfile> profiles) {
-		Collection<ServiceProfile> groupedProfiles = new ArrayList<ServiceProfile>();
-		if (processSet == null) {
-			groupedProfiles = profiles.values();
-		} else {
-			if (processSet.size() > 0) {
-				for (String key : profiles.keySet()) {
-					if (processSet.contains(key)) {
-						groupedProfiles.add(profiles.get(key));
-					}
-				}
-			}
-		}
-		return groupedProfiles;
-	}
-
 	/**
 	 * 
 	 */
@@ -76,7 +57,8 @@ public class GroupServiceLocator extends ZkServiceLocator {
 		} else {
 			processSet = null;
 		}
-		balancer.updateProfiles(groupFilter(profileContainer));
+		balancer.setWhiteList(processSet);
+		balancer.updateProfiles(profileContainer.values());
 	}
 
 	private Set<String> totalProcess() {
@@ -139,7 +121,6 @@ public class GroupServiceLocator extends ZkServiceLocator {
 					@Override
 					public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
 						updateProcess(parentPath, currentChilds);
-
 					}
 				});
 			}
@@ -152,7 +133,8 @@ public class GroupServiceLocator extends ZkServiceLocator {
 	protected void updateProcess(String campPath, List<String> currentChilds) {
 		campMap.put(campPath, currentChilds);
 		processSet = totalProcess();
-		balancer.updateProfiles(groupFilter(profileContainer));
+		balancer.setWhiteList(processSet);
+		balancer.updateProfiles(profileContainer.values());
 	}
 
 }
