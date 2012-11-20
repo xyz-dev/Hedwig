@@ -40,7 +40,8 @@ public class ServiceProviderZkRegister implements IServiceProviderRegister {
 
 	@Override
 	public void regist(final ServiceProfile profile) throws InvalidParamException {
-		createZnodes(profile);
+		createPersistentZnodes(profile);
+		createEphemeralZnodes(profile);
 		_zkClient.subscribeStateChanges(new IZkStateListener() {
 
 			@Override
@@ -51,26 +52,35 @@ public class ServiceProviderZkRegister implements IServiceProviderRegister {
 			@Override
 			public void handleNewSession() throws Exception {
 				logger.debug(InternalConstants.LOG_PROFIX + "Reconnect to zk!!!");
-				if (!_zkClient.exists(childPath)) {
-					_zkClient.createEphemeral(childPath, profile);
-				}
+				createEphemeralZnodes(profile);
 			}
 		});
 		_zkClient.subscribeChildChanges(parentPath, new IZkChildListener() {
 			
 			@Override
 			public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
-				if(!_zkClient.exists(childPath)){
-					_zkClient.createEphemeral(childPath, profile);
-				}
-				
+				createEphemeralZnodes(profile);
 			}
 		});
 		isRegisted = true;
 
 	}
 
-	private void createZnodes(ServiceProfile profile) throws InvalidParamException {
+	private void createEphemeralZnodes(ServiceProfile profile) throws InvalidParamException {
+		// create service node
+		childPath = ZkUtil.createChildPath(profile);
+		if (!_zkClient.exists(childPath)) {
+			profile.setRegistTime(new Date());
+			_zkClient.createEphemeral(childPath, profile);
+		}
+		// create ip node
+		String ipNode = ZkUtil.createRollPath(profile) + "/" + ZkUtil.getProcessDesc(profile);
+		if (!_zkClient.exists(ipNode)) {
+			_zkClient.createEphemeral(ipNode);
+		}
+	}
+
+	private void createPersistentZnodes(ServiceProfile profile) throws InvalidParamException {
 		String rollPath = "";
 		String refugeePath = "";
 		// create base path
@@ -78,21 +88,10 @@ public class ServiceProviderZkRegister implements IServiceProviderRegister {
 		if (!_zkClient.exists(parentPath)) {
 			_zkClient.createPersistent(parentPath, true);
 		}
-		// create ephemeral node
-		childPath = ZkUtil.createChildPath(profile);
-		if (!_zkClient.exists(childPath)) {
-			profile.setRegistTime(new Date());
-			_zkClient.createEphemeral(childPath, profile);
-		}
 		// create roll path
 		rollPath = ZkUtil.createRollPath(profile);
 		// create refugee path
 		refugeePath = ZkUtil.createRefugeePath(profile);
-		// create ip node
-		String ipNode = rollPath + "/" + ZkUtil.getProcessDesc(profile);
-		if (!_zkClient.exists(ipNode)) {
-			_zkClient.createEphemeral(ipNode);
-		}
 	}
 
 	@Override

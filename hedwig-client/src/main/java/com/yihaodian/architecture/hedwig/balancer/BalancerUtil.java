@@ -6,6 +6,7 @@ package com.yihaodian.architecture.hedwig.balancer;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.yihaodian.architecture.hedwig.common.constants.ServiceStatus;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.util.ZkUtil;
 
@@ -24,7 +25,7 @@ public class BalancerUtil {
 				for (ServiceProfile sp : profiles) {
 					try {
 						String process = ZkUtil.getProcessDesc(sp);
-						if (whiteList.contains(process)) {
+						if (whiteList.contains(process) && !ServiceStatus.DISENABLE.equals(sp.getCurStatus())) {
 							groupedProfiles.add(sp);
 						}
 					} catch (Exception e) {
