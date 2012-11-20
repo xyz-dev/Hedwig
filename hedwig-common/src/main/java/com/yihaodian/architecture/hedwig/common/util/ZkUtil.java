@@ -32,7 +32,7 @@ public class ZkUtil {
 				try {
 					String serverList = ProperitesContainer.provider().getProperty(PropKeyConstants.ZK_SERVER_LIST);
 					if (!HedwigUtil.isBlankString(serverList)) {
-						_zkClient = new ZkClient(serverList);
+						_zkClient = new ZkClient(serverList, InternalConstants.ZK_SESSION_TIMEOUT, Integer.MAX_VALUE);
 					} else {
 						throw new HedwigException("ZK client initial error, serverList:" + serverList);
 					}

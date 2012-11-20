@@ -65,6 +65,8 @@ public interface InternalConstants {
 	public static final String HEDWIG_PAHT_REFUGEE = "refugee";
 	public static final String HEDWIG_PAHT_ROLL = "hedwig_roll";
 
+	public static final int ZK_SESSION_TIMEOUT = 5000;
+
 	/**
 	 * 通讯平台domain name
 	 */
