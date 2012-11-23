@@ -69,7 +69,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 	public Object syncInnerThreadExec(HedwigContext context, final IEvent<Object> event) throws HedwigException {
 		HedwigAssert.isNull(event, "Execute event must not null!!!");
 		Object result = null;
-		Date reqTime =new Date(event.getStart());
+		Date reqTime = new Date(event.getStart());
 		final String globalId = getGlobalId(event);
 		final String reqId = event.getReqestId();
 		final ClientBizLog cbLog = HedwigMonitorClientUtil.createClientBizLog(event, context, reqId, globalId, reqTime);
@@ -128,17 +128,19 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 						}
 					} finally {
 						cbLog.setProviderHost(HedwigContextUtil.getString(InternalConstants.HEDWIG_SERVICE_IP, ""));
+						cbLog.setCommId(HedwigContextUtil.getTransactionId());
 						HedwigContextUtil.clean();
 					}
 					return r;
 				}
 			});
-			if (f != null) {
-				result = f.get(event.getExpireTime(), event.getExpireTimeUnit());
+			result = f.get(event.getExpireTime(), event.getExpireTimeUnit());
+			if (event.getState().equals(EventState.sucess)) {
 				cbLog.setRespTime(new Date());
 				cbLog.setSuccessed(MonitorConstants.SUCCESS);
 			} else {
-				throw new EngineException("Future is null");
+				throw new EngineException(cbLog.getServiceMethodName()
+						+ " execute failed, use \"reqId\" to query the detail message!!!");
 			}
 		} catch (Throwable e) {
 			cbLog.setInParamObjects(params);

@@ -89,7 +89,7 @@ public class GroupServiceLocator extends ZkServiceLocator {
 	private void observeCamps() {
 		try {
 			String baseCamp = ZkUtil.createBaseCampPath(clientProfile);
-			Set<String> campSet = clientProfile.getGroupNames();
+			final Set<String> campSet = clientProfile.getGroupNames();
 			String campPath = null;
 			if (campSet != null && campSet.size() > 0) {
 				for (String campName : campSet) {
@@ -99,7 +99,7 @@ public class GroupServiceLocator extends ZkServiceLocator {
 
 						@Override
 						public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
-							updateProcess(parentPath, currentChilds);
+							updateProcess(parentPath, _zkClient.getChildren(parentPath));
 
 						}
 					});
@@ -109,6 +109,9 @@ public class GroupServiceLocator extends ZkServiceLocator {
 				_zkClient.subscribeChildChanges(baseCamp, new IZkChildListener() {
 					@Override
 					public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
+						for(String campName : campSet){
+							ZkUtil.createCampPath(clientProfile, campName);
+						}
 						loadAvailableProcess();
 
 					}
@@ -120,11 +123,10 @@ public class GroupServiceLocator extends ZkServiceLocator {
 
 					@Override
 					public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
-						updateProcess(parentPath, currentChilds);
+						updateProcess(parentPath, _zkClient.getChildren(parentPath));
 					}
 				});
 			}
-
 		} catch (Exception e) {
 			logger.error("Observe camps failed!!!");
 		}

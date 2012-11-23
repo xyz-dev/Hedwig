@@ -53,8 +53,10 @@ public abstract class BaseHandler implements IEventHandler<HedwigContext, Object
 				throw new HandlerException(event.getReqestId(), e.getMessage(), e.getCause());
 			}
 		} finally {
-			cbLog.setLayerType(MonitorConstants.LAYER_TYPE_HANDLER);
-			MonitorJmsSendUtil.asyncSendClientBizLog(cbLog);
+			if (MonitorConstants.FAIL == cbLog.getSuccessed()) {
+				cbLog.setLayerType(MonitorConstants.LAYER_TYPE_HANDLER);
+				MonitorJmsSendUtil.asyncSendClientBizLog(cbLog);
+			}
 		}
 
 		return r;
