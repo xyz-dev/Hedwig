@@ -4,13 +4,13 @@
 package com.yihaodian.architecture.hedwig.client.util;
 
 import java.util.Date;
+import java.util.Set;
 
 import com.yihaodian.architecture.hedwig.client.event.BaseEvent;
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
 import com.yihaodian.architecture.hedwig.common.util.HedwigMonitorUtil;
-import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 import com.yihaodian.monitor.dto.ClientBizLog;
 import com.yihaodian.monitor.util.MonitorConstants;
 
@@ -20,9 +20,9 @@ import com.yihaodian.monitor.util.MonitorConstants;
  */
 public class HedwigMonitorClientUtil {
 
-	public static ClientBizLog createClientBizLog(IEvent<Object> event, HedwigContext context, String reqId,
+	public static ClientBizLog createClientBizLog(BaseEvent event, HedwigContext context, String reqId,
 			String globalId, Date reqTime) {
-		BaseEvent be = (BaseEvent) event;
+		BaseEvent be = event;
 		ClientBizLog cbLog = new ClientBizLog();
 		cbLog.setCallApp(context.getClientProfile().getClientAppName());
 		cbLog.setCallHost(ProperitesContainer.client().getProperty(PropKeyConstants.HOST_IP));
@@ -30,6 +30,10 @@ public class HedwigMonitorClientUtil {
 		cbLog.setServiceName(context.getClientProfile().getServiceName());
 		cbLog.setProviderApp(context.getClientProfile().getServiceAppName());
 		cbLog.setReqId(reqId);
+		cbLog.setServiceVersion(context.getClientProfile().getServiceVersion());
+		Set<String> groupSet = context.getClientProfile().getGroupNames();
+		String groups = (groupSet == null || groupSet.size() == 0) ? "NoGroup" : groupSet.toString();
+		cbLog.setServiceGroup(groups);
 		cbLog.setReqTime(reqTime);
 		cbLog.setMethodName(be.getCallerMethod());
 		cbLog.setServiceMethodName(be.getServiceMethod());

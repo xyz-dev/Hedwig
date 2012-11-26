@@ -13,14 +13,14 @@ import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.constants.RequestType;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.engine.event.EventState;
-import com.yihaodian.architecture.hedwig.engine.event.IEvent;
+import com.yihaodian.architecture.hedwig.engine.event.IScheduledEvent;
 
 /**
  * @author Archer
  * @param <T>
  * 
  */
-public class BaseEvent implements IEvent<Object> {
+public abstract class BaseEvent implements IScheduledEvent<Object> {
 
 	private static final long serialVersionUID = -3268122380332784050L;
 	private static final int CALLER_POSITION = 9;
@@ -39,6 +39,8 @@ public class BaseEvent implements IEvent<Object> {
 	protected RequestType requestType;
 	protected String serviceMethod;
 	protected String callerMethod;
+	protected long execDely = 0;
+	protected TimeUnit delyUnit = TimeUnit.MICROSECONDS;
 
 	public BaseEvent(MethodInvocation invocation) {
 		super();
@@ -53,6 +55,14 @@ public class BaseEvent implements IEvent<Object> {
 		}
 	}
 
+	public long getDelay() {
+		return execDely;
+	}
+
+	public TimeUnit getDelayUnit() {
+		return delyUnit;
+	}
+	
 	@Override
 	public long getStart() {
 		return start;

@@ -41,7 +41,7 @@ public interface InternalConstants {
 	public static final int DEFAULT_SCHEDULER_POOL_IDLETIME = 60;
 
 	public static final int DEFAULT_RELIVE_THRESHOLD = 10;
-	public static final int MAX_REDO_THRESHOLD = 5;
+	public static final int MAX_REDO_THRESHOLD = 3;
 
 	public static final int DEFAULT_MAX_COLLECT_ROUND = 12;
 	public static final int DEFAULT_COLLECT_INTERVAL = 5;

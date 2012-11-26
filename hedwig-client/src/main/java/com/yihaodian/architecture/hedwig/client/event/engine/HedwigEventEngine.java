@@ -30,8 +30,6 @@ import com.yihaodian.architecture.hedwig.common.util.HedwigMonitorUtil;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.engine.IEventEngine;
 import com.yihaodian.architecture.hedwig.engine.event.EventState;
-import com.yihaodian.architecture.hedwig.engine.event.IEvent;
-import com.yihaodian.architecture.hedwig.engine.event.IScheduledEvent;
 import com.yihaodian.architecture.hedwig.engine.exception.EngineException;
 import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
 import com.yihaodian.architecture.hedwig.engine.handler.IEventHandler;
@@ -45,11 +43,11 @@ import com.yihaodian.monitor.util.MonitorJmsSendUtil;
  * @param <Object>
  * 
  */
-public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
+public class HedwigEventEngine implements IEventEngine<HedwigContext, BaseEvent, Object> {
 
 	private static Logger logger = LoggerFactory.getLogger(HedwigEventEngine.class);
 	private static HedwigEventEngine engine = new HedwigEventEngine();
-	protected IHandlerFactory<HedwigContext, Object> handlerFactory;
+	protected IHandlerFactory<HedwigContext, BaseEvent, Object> handlerFactory;
 	protected BlockingQueue<Runnable> eventQueue;
 	protected ThreadPoolExecutor tpes;
 	protected ScheduledThreadPoolExecutor stpes;
@@ -66,7 +64,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 	}
 
 	@Override
-	public Object syncInnerThreadExec(HedwigContext context, final IEvent<Object> event) throws HedwigException {
+	public Object syncInnerThreadExec(HedwigContext context, final BaseEvent event) throws HedwigException {
 		HedwigAssert.isNull(event, "Execute event must not null!!!");
 		Object result = null;
 		Date reqTime = new Date(event.getStart());
@@ -77,7 +75,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		HedwigContextUtil.setRequestId(reqId);
 		HedwigContextUtil.setAttribute(InternalConstants.HEDWIG_INVOKE_TIME, reqTime);
 		Object[] params = event.getInvocation().getArguments();
-		IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
+		IEventHandler<HedwigContext, BaseEvent, Object> handler = handlerFactory.create(event);
 		event.setState(EventState.processing);
 		try {
 			result = handler.handle(context, event);
@@ -98,7 +96,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 	}
 
 	@Override
-	public Object syncPoolExec(final HedwigContext context, final IEvent<Object> event) throws HedwigException {
+	public Object syncPoolExec(final HedwigContext context, final BaseEvent event) throws HedwigException {
 		HedwigAssert.isNull(event, "Execute event must not null!!!");
 		Object result = null;
 		Future<Object> f = null;
@@ -108,12 +106,12 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		final ClientBizLog cbLog = HedwigMonitorClientUtil.createClientBizLog(event, context, reqId, globalId, reqTime);
 		Object[] params = event.getInvocation().getArguments();
 		try {
-			final IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
+			final IEventHandler<HedwigContext, BaseEvent, Object> handler = handlerFactory.create(event);
 			cbLog.setMemo(HedwigMonitorUtil.getThreadPoolInfo(tpes));
 			f = tpes.submit(new Callable<Object>() {
 
 				@Override
-				public Object call() throws Exception {
+				public Object call() throws EngineException {
 					Object r = null;
 					try {
 						HedwigContextUtil.setGlobalId(globalId);
@@ -122,7 +120,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 						event.setState(EventState.processing);
 						r = handler.handle(context, event);
 					} catch (Throwable e) {
-						logger.error("Execute " + event.getExecCount() + " times failed!!! " + e.getMessage());
+						logger.error(e.getMessage(), e);
 						if (HandlerUtil.isNetworkException(e)) {
 							r = EngineUtil.retry(handler, event, context);
 						}
@@ -139,13 +137,18 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 				cbLog.setRespTime(new Date());
 				cbLog.setSuccessed(MonitorConstants.SUCCESS);
 			} else {
-				throw new EngineException(cbLog.getServiceMethodName()
-						+ " execute failed, use \"reqId\" to query the detail message!!!");
+				throw new EngineException(cbLog.getServiceMethodName() + " execute failed:" + event.getErrorMessages()
+						+ " use \"reqId\" to query the detail message!!!");
 			}
 		} catch (Throwable e) {
 			cbLog.setInParamObjects(params);
 			HedwigMonitorClientUtil.setException(cbLog, e);
-			throw new EngineException(HedwigUtil.getErrorMsg(e), e.getCause());
+			if (e instanceof EngineException) {
+				throw (EngineException) e;
+			} else {
+				throw new EngineException(HedwigUtil.getErrorMsg(e), e.getCause());
+			}
+
 		} finally {
 			cbLog.setLayerType(MonitorConstants.LAYER_TYPE_ENGINE);
 			MonitorJmsSendUtil.asyncSendClientBizLog(cbLog);
@@ -154,7 +157,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		return result;
 	}
 
-	private String getGlobalId(IEvent<Object> event) {
+	private String getGlobalId(BaseEvent event) {
 		String globalId = HedwigContextUtil.getGlobalId();
 		if (HedwigUtil.isBlankString(globalId)) {
 			globalId = HedwigClientUtil.generateGlobalId(event);
@@ -163,50 +166,23 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 	}
 
 	@Override
-	public Future<Object> asyncExec(final HedwigContext context, final IEvent<Object> event) throws HedwigException {
-		HedwigAssert.isNull(event, "Execute event must not null!!!");
-		Future<Object> f = null;
-		try {
-			final String globalId = getGlobalId(event);
-			final IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
-			f = tpes.submit(new Callable<Object>() {
-
-				@Override
-				public Object call() throws Exception {
-					Object r = null;
-					try {
-						HedwigContextUtil.setGlobalId(globalId);
-						HedwigContextUtil.setRequestId(event.getReqestId());
-						event.setState(EventState.processing);
-						r = handler.handle(context, event);
-					} catch (Throwable e) {
-						logger.debug(e.getMessage());
-						r = EngineUtil.retry(handler, event, context);
-					} finally {
-						HedwigContextUtil.clean();
-					}
-					return r;
-				}
-			});
-		} catch (Exception e) {
-			throw new EngineException(e.getCause());
-		}
-		return f;
-	}
-
-	@Override
-	public void asyncReliableExec(final HedwigContext context, final IEvent<Object> event) throws HedwigException {
+	public Future<Object> asyncExec(final HedwigContext context, final BaseEvent event) throws HedwigException {
 		throw new HedwigException("Not supported yet!!!");
 	}
 
 	@Override
-	public Object oneWayExec(final HedwigContext context, final IEvent<Object> event) throws HedwigException {
+	public void asyncReliableExec(final HedwigContext context, final BaseEvent event) throws HedwigException {
 		throw new HedwigException("Not supported yet!!!");
 	}
 
 	@Override
-	public void schedulerExec(final HedwigContext context, final IScheduledEvent<Object> event) throws HedwigException {
-		final IEventHandler<HedwigContext, Object> handler = handlerFactory.create(event);
+	public Object oneWayExec(final HedwigContext context, final BaseEvent event) throws HedwigException {
+		throw new HedwigException("Not supported yet!!!");
+	}
+
+	@Override
+	public void schedulerExec(final HedwigContext context, final BaseEvent event) throws HedwigException {
+		final IEventHandler<HedwigContext, BaseEvent, Object> handler = handlerFactory.create(event);
 		final String globalId = getGlobalId(event);
 		stpes.schedule(new Runnable() {
 
@@ -226,8 +202,8 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, Object> {
 		}, event.getDelay(), event.getDelayUnit());
 	}
 
-	public Object exec(HedwigContext eventContext, IEvent<Object> event) throws HedwigException {
-		BaseEvent bevent = (BaseEvent) event;
+	public Object exec(HedwigContext eventContext, BaseEvent event) throws HedwigException {
+		BaseEvent bevent = event;
 		int type = bevent.getRequestType().getIndex();
 		Object result = null;
 		if (RequestType.SyncInner.getIndex() == type) {

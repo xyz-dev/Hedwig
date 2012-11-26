@@ -15,19 +15,18 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.remoting.support.RemotingSupport;
 
+import com.yihaodian.architecture.hedwig.client.event.BaseEvent;
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.client.event.HedwigEventBuilder;
 import com.yihaodian.architecture.hedwig.client.event.engine.HedwigEventEngine;
 import com.yihaodian.architecture.hedwig.client.locator.GroupServiceLocator;
 import com.yihaodian.architecture.hedwig.client.locator.IServiceLocator;
 import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
-import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ClientProfile;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.hessian.HedwigHessianProxyFactory;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
-import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 import com.yihaodian.monitor.util.MonitorJmsSendUtil;
 
 /**
@@ -53,11 +52,11 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 	@Override
 	public Object invoke(MethodInvocation invocation) throws HedwigException {
 		Object result = null;
-		IEvent<Object> event = eventBuilder.buildRequestEvent(invocation);
+		BaseEvent event = eventBuilder.buildRequestEvent(invocation);
 		try {
 			result = eventEngine.exec(eventContext, event);
-		} catch (Throwable e) {
-			logger.error(InternalConstants.LOG_PROFIX + event.getReqestId() + " ,Msg: " + e.getMessage());
+		} catch (HedwigException e) {
+			throw e;
 		}
 		event = null;
 		return result;

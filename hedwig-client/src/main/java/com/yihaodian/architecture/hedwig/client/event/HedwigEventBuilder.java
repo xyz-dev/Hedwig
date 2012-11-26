@@ -39,7 +39,7 @@ public class HedwigEventBuilder {
 			event = directRequestEvent(invocation);
 			event.setRequestType(RequestType.SyncInner);
 		} else {
-			event = SyncRequestEvent(invocation);
+			event = syncRequestEvent(invocation);
 			event.setRequestType(RequestType.getByName(clientProfile.getRequestType()));
 		}
 		if (expire < InternalConstants.DEFAULT_REQUEST_TIMEOUT) {
@@ -51,7 +51,7 @@ public class HedwigEventBuilder {
 		return event;
 	}
 
-	private SyncRequestEvent SyncRequestEvent(MethodInvocation invocation) {
+	private SyncRequestEvent syncRequestEvent(MethodInvocation invocation) {
 		SyncRequestEvent event = new SyncRequestEvent(invocation);
 		String methodName = invocation.getMethod().getName();
 		if (noRetoryMethods == null || !noRetoryMethods.contains(methodName)) {

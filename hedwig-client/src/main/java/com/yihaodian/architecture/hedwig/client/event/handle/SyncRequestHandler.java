@@ -5,13 +5,13 @@ package com.yihaodian.architecture.hedwig.client.event.handle;
 
 import org.aopalliance.intercept.MethodInvocation;
 
+import com.yihaodian.architecture.hedwig.client.event.BaseEvent;
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.constants.ServiceStatus;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
-import com.yihaodian.architecture.hedwig.engine.event.IEvent;
 import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
 import com.yihaodian.architecture.hedwig.engine.exception.HessianProxyException;
 import com.yihaodian.architecture.hedwig.engine.exception.ProviderNotFindException;
@@ -24,7 +24,7 @@ import com.yihaodian.monitor.dto.ClientBizLog;
 public class SyncRequestHandler extends BaseHandler {
 
 	@Override
-	public Object doHandle(HedwigContext context, IEvent<Object> event, ClientBizLog cbLog) throws HandlerException {
+	public Object doHandle(HedwigContext context, BaseEvent event, ClientBizLog cbLog) throws HandlerException {
 
 		Object result = null;
 		ServiceProfile sp = context.getLocator().getService();

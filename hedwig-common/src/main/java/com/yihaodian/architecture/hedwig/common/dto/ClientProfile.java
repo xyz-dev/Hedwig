@@ -112,8 +112,9 @@ public class ClientProfile extends BaseProfile implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ClientProfile [balanceAlg=" + balanceAlgo + ", target=" + target + ", timeout=" + timeout + ", profileSensitive="
- + profileSensitive + "," + "groupNames=" + groupNames + "," + super.toString()
+		return "\nClientProfile [balanceAlg=" + balanceAlgo + ", target=" + target + ", timeout=" + timeout
+				+ ", profileSensitive=" + profileSensitive + "," + "groupNames=" + groupNames + ","
+				+ super.toString()
 				+ "]";
 	}
 
