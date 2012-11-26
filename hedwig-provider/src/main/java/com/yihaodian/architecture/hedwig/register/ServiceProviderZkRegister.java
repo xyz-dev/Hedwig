@@ -10,9 +10,7 @@ import org.apache.zookeeper.Watcher.Event.KeeperState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.yihaodian.architecture.hedwig.common.config.ProperitesContainer;
 import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
-import com.yihaodian.architecture.hedwig.common.constants.PropKeyConstants;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.exception.InvalidParamException;
@@ -34,7 +32,6 @@ public class ServiceProviderZkRegister implements IServiceProviderRegister {
 	private boolean isRegisted = false;
 
 	public ServiceProviderZkRegister() throws HedwigException {
-		String serverList = ProperitesContainer.provider().getProperty(PropKeyConstants.ZK_SERVER_LIST);
 		_zkClient = ZkUtil.getZkClientInstance();
 	}
 
@@ -107,6 +104,7 @@ public class ServiceProviderZkRegister implements IServiceProviderRegister {
 	@Override
 	public void unRegist(ServiceProfile profile) {
 		String servicePath = profile.getServicePath();
+		_zkClient.unsubscribeAll();
 		if (_zkClient.exists(servicePath)) {
 			_zkClient.delete(servicePath);
 		}
