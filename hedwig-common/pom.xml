@@ -9,7 +9,7 @@
 		<version>0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>hedwig-common</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.1.1-SNAPSHOT</version>
 	<name>hedwig-common</name>
 	<url>http://maven.apache.org</url>
 	<properties>

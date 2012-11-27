@@ -59,7 +59,8 @@ public class ServiceProviderZkRegister implements IServiceProviderRegister {
 				createEphemeralZnodes(profile);
 			}
 		});
-		_zkClient.subscribeChildChanges(ZkUtil.createBaseCampPath(profile), new IZkChildListener() {
+		String baseCampPath = ZkUtil.createBaseCampPath(profile);
+		_zkClient.subscribeChildChanges(baseCampPath, new IZkChildListener() {
 
 			@Override
 			public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {

@@ -12,6 +12,8 @@ public interface InternalConstants {
 	public static final String PROPERITIES_FILE_NAME = "hedwig.properties";
 	public static final String PROPERITIES_PATH_KEY = "hedwig_config";
 
+	public static final String REMOTE_EXCEPTION = "RemoteException";
+
 	public static final String HASH_FUNCTION_MUR2 = "murmur2";
 
 	public static final String LOG_PROFIX = "Hedwig said: ";

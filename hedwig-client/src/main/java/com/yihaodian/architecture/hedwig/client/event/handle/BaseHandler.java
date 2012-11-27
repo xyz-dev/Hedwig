@@ -11,7 +11,6 @@ import com.yihaodian.architecture.hedwig.client.util.HedwigClientUtil;
 import com.yihaodian.architecture.hedwig.client.util.HedwigMonitorClientUtil;
 import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
 import com.yihaodian.architecture.hedwig.engine.event.EventState;
-import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
 import com.yihaodian.architecture.hedwig.engine.handler.IEventHandler;
 import com.yihaodian.monitor.dto.ClientBizLog;
 import com.yihaodian.monitor.util.MonitorConstants;
@@ -25,7 +24,7 @@ import com.yihaodian.monitor.util.MonitorJmsSendUtil;
 public abstract class BaseHandler implements IEventHandler<HedwigContext, BaseEvent, Object> {
 
 	@Override
-	public Object handle(HedwigContext context, BaseEvent event) throws HandlerException {
+	public Object handle(HedwigContext context, BaseEvent event) throws Throwable {
 		event.increaseExecCount();
 		ClientBizLog cbLog = null;
 		String globalId = HedwigContextUtil.getGlobalId();
@@ -47,11 +46,7 @@ public abstract class BaseHandler implements IEventHandler<HedwigContext, BaseEv
 			event.setErrorMessage(e.getMessage());
 			cbLog.setInParamObjects(params);
 			HedwigMonitorClientUtil.setException(cbLog, e);
-			if (e instanceof HandlerException) {
-				throw (HandlerException) e;
-			} else {
-				throw new HandlerException(event.getReqestId(), e.getMessage(), e.getCause());
-			}
+			throw e;
 		} finally {
 			if (MonitorConstants.FAIL == cbLog.getSuccessed()) {
 				cbLog.setLayerType(MonitorConstants.LAYER_TYPE_HANDLER);
@@ -62,7 +57,6 @@ public abstract class BaseHandler implements IEventHandler<HedwigContext, BaseEv
 		return r;
 	}
 
-	abstract protected Object doHandle(HedwigContext context, BaseEvent event, ClientBizLog cbLog)
-			throws HandlerException;
+	abstract protected Object doHandle(HedwigContext context, BaseEvent event, ClientBizLog cbLog) throws Throwable;
 
 }

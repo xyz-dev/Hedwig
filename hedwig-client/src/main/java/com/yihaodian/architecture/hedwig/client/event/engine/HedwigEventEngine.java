@@ -31,7 +31,6 @@ import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.engine.IEventEngine;
 import com.yihaodian.architecture.hedwig.engine.event.EventState;
 import com.yihaodian.architecture.hedwig.engine.exception.EngineException;
-import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
 import com.yihaodian.architecture.hedwig.engine.handler.IEventHandler;
 import com.yihaodian.architecture.hedwig.engine.handler.IHandlerFactory;
 import com.yihaodian.monitor.dto.ClientBizLog;
@@ -64,7 +63,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, BaseEvent,
 	}
 
 	@Override
-	public Object syncInnerThreadExec(HedwigContext context, final BaseEvent event) throws HedwigException {
+	public Object syncInnerThreadExec(HedwigContext context, final BaseEvent event) {
 		HedwigAssert.isNull(event, "Execute event must not null!!!");
 		Object result = null;
 		Date reqTime = new Date(event.getStart());
@@ -82,10 +81,9 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, BaseEvent,
 			cbLog.setProviderHost(HedwigContextUtil.getString(InternalConstants.HEDWIG_SERVICE_IP, ""));
 			cbLog.setRespTime(new Date());
 			cbLog.setSuccessed(MonitorConstants.SUCCESS);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			cbLog.setInParamObjects(params);
 			HedwigMonitorClientUtil.setException(cbLog, e);
-			throw new EngineException(e.getMessage(), e.getCause());
 		} finally {
 			cbLog.setLayerType(MonitorConstants.LAYER_TYPE_ENGINE);
 			MonitorJmsSendUtil.asyncSendClientBizLog(cbLog);
@@ -96,7 +94,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, BaseEvent,
 	}
 
 	@Override
-	public Object syncPoolExec(final HedwigContext context, final BaseEvent event) throws HedwigException {
+	public Object syncPoolExec(final HedwigContext context, final BaseEvent event) {
 		HedwigAssert.isNull(event, "Execute event must not null!!!");
 		Object result = null;
 		Future<Object> f = null;
@@ -120,7 +118,6 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, BaseEvent,
 						event.setState(EventState.processing);
 						r = handler.handle(context, event);
 					} catch (Throwable e) {
-						logger.error(e.getMessage(), e);
 						if (HandlerUtil.isNetworkException(e)) {
 							r = EngineUtil.retry(handler, event, context);
 						}
@@ -133,26 +130,20 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, BaseEvent,
 				}
 			});
 			result = f.get(event.getExpireTime(), event.getExpireTimeUnit());
+			cbLog.setRespTime(new Date());
 			if (event.getState().equals(EventState.sucess)) {
-				cbLog.setRespTime(new Date());
 				cbLog.setSuccessed(MonitorConstants.SUCCESS);
 			} else {
+				cbLog.setSuccessed(MonitorConstants.FAIL);
 				throw new EngineException(cbLog.getServiceMethodName() + " execute failed:" + event.getErrorMessages()
 						+ " use \"reqId\" to query the detail message!!!");
 			}
 		} catch (Throwable e) {
 			cbLog.setInParamObjects(params);
 			HedwigMonitorClientUtil.setException(cbLog, e);
-			if (e instanceof EngineException) {
-				throw (EngineException) e;
-			} else {
-				throw new EngineException(HedwigUtil.getErrorMsg(e), e.getCause());
-			}
-
 		} finally {
 			cbLog.setLayerType(MonitorConstants.LAYER_TYPE_ENGINE);
 			MonitorJmsSendUtil.asyncSendClientBizLog(cbLog);
-
 		}
 		return result;
 	}
@@ -193,7 +184,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, BaseEvent,
 					HedwigContextUtil.setRequestId(event.getReqestId());
 					event.setState(EventState.processing);
 					handler.handle(context, event);
-				} catch (HandlerException e) {
+				} catch (Throwable e) {
 					logger.debug(e.getMessage());
 				} finally {
 					HedwigContextUtil.clean();
@@ -202,7 +193,7 @@ public class HedwigEventEngine implements IEventEngine<HedwigContext, BaseEvent,
 		}, event.getDelay(), event.getDelayUnit());
 	}
 
-	public Object exec(HedwigContext eventContext, BaseEvent event) throws HedwigException {
+	public Object exec(HedwigContext eventContext, BaseEvent event) {
 		BaseEvent bevent = event;
 		int type = bevent.getRequestType().getIndex();
 		Object result = null;

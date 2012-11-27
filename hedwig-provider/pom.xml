@@ -9,7 +9,7 @@
 		<version>0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>hedwig-provider</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.1.1-SNAPSHOT</version>
 	<name>hedwig-provider</name>
 	<url>http://maven.apache.org</url>
 	<properties>
@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>com.yihaodian.architecture</groupId>
 			<artifactId>hedwig-common</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.1.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

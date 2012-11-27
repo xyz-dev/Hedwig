@@ -12,7 +12,6 @@ import com.yihaodian.architecture.hedwig.common.constants.InternalConstants;
 import com.yihaodian.architecture.hedwig.common.constants.ServiceStatus;
 import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.util.HedwigContextUtil;
-import com.yihaodian.architecture.hedwig.engine.exception.HandlerException;
 import com.yihaodian.architecture.hedwig.engine.exception.HessianProxyException;
 import com.yihaodian.architecture.hedwig.engine.exception.ProviderNotFindException;
 import com.yihaodian.monitor.dto.ClientBizLog;
@@ -24,7 +23,7 @@ import com.yihaodian.monitor.dto.ClientBizLog;
 public class SyncRequestHandler extends BaseHandler {
 
 	@Override
-	public Object doHandle(HedwigContext context, BaseEvent event, ClientBizLog cbLog) throws HandlerException {
+	public Object doHandle(HedwigContext context, BaseEvent event, ClientBizLog cbLog) throws Throwable {
 
 		Object result = null;
 		ServiceProfile sp = context.getLocator().getService();
@@ -53,10 +52,11 @@ public class SyncRequestHandler extends BaseHandler {
 		try {
 			result = invocation.getMethod().invoke(hessianProxy, params);
 		} catch (Throwable e) {
+			event.setRemoteException(e.getCause());
 			if (HandlerUtil.isNetworkException(e)) {
 				sp.setCurStatus(ServiceStatus.TEMPORARY_DISENABLE);
 			}
-			throw new HandlerException(reqId, e.getMessage(), e.getCause());
+			throw e;
 		}
 
 		return result;

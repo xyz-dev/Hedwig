@@ -3,16 +3,19 @@
  */
 package com.yihaodian.architecture.hedwig.common.util;
 
-import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Archer
  *
  */
 public class HedwigAssert {
-	public static void isNull(Object object, String message) throws HedwigException {
+	private static Logger logger = LoggerFactory.getLogger(HedwigAssert.class);
+
+	public static void isNull(Object object, String message) {
 		if (object == null) {
-			throw new HedwigException(message);
+			logger.error(message);
 		}
 	}
 }

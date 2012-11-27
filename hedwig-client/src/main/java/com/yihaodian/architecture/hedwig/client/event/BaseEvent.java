@@ -41,6 +41,7 @@ public abstract class BaseEvent implements IScheduledEvent<Object> {
 	protected String callerMethod;
 	protected long execDely = 0;
 	protected TimeUnit delyUnit = TimeUnit.MICROSECONDS;
+	protected Throwable remoteException;
 
 	public BaseEvent(MethodInvocation invocation) {
 		super();
@@ -53,6 +54,14 @@ public abstract class BaseEvent implements IScheduledEvent<Object> {
 			StackTraceElement el = stackTraceElements[CALLER_POSITION];
 			callerMethod = HedwigUtil.getShortClassName(el.getClassName()) + "." + el.getMethodName();
 		}
+	}
+
+	public Throwable getRemoteException() {
+		return remoteException;
+	}
+
+	public void setRemoteException(Throwable remoteException) {
+		this.remoteException = remoteException;
 	}
 
 	public long getDelay() {

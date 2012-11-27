@@ -10,7 +10,6 @@ import com.yihaodian.architecture.hedwig.client.event.BaseEvent;
 import com.yihaodian.architecture.hedwig.client.event.DirectRequestEvent;
 import com.yihaodian.architecture.hedwig.client.event.HedwigContext;
 import com.yihaodian.architecture.hedwig.client.event.SyncRequestEvent;
-import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.util.HedwigAssert;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
 import com.yihaodian.architecture.hedwig.engine.handler.IEventHandler;
@@ -30,7 +29,7 @@ public class HedwigHandlerFactory implements IHandlerFactory<HedwigContext, Base
 	}
 
 	@Override
-	public IEventHandler<HedwigContext, BaseEvent, Object> create(BaseEvent event) throws HedwigException {
+	public IEventHandler<HedwigContext, BaseEvent, Object> create(BaseEvent event) {
 		IEventHandler<HedwigContext, BaseEvent, Object> handler = null;
 		String hName = HedwigUtil.generateHandlerName(event.getClass());
 		if (handlerMap.size() > 0 && handlerMap.containsKey(hName)) {

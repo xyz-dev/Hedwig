@@ -27,6 +27,7 @@ import com.yihaodian.architecture.hedwig.common.dto.ServiceProfile;
 import com.yihaodian.architecture.hedwig.common.exception.HedwigException;
 import com.yihaodian.architecture.hedwig.common.hessian.HedwigHessianProxyFactory;
 import com.yihaodian.architecture.hedwig.common.util.HedwigUtil;
+import com.yihaodian.architecture.hedwig.engine.event.EventState;
 import com.yihaodian.monitor.util.MonitorJmsSendUtil;
 
 /**
@@ -50,13 +51,16 @@ public class HedwigEventInterceptor extends RemotingSupport implements MethodInt
 	protected boolean overloadedEnable = false;
 
 	@Override
-	public Object invoke(MethodInvocation invocation) throws HedwigException {
+	public Object invoke(MethodInvocation invocation) throws Throwable {
 		Object result = null;
 		BaseEvent event = eventBuilder.buildRequestEvent(invocation);
-		try {
-			result = eventEngine.exec(eventContext, event);
-		} catch (HedwigException e) {
-			throw e;
+		result = eventEngine.exec(eventContext, event);
+		if (!event.getState().equals(EventState.sucess)) {
+			Throwable exception = event.getRemoteException();
+			if (exception == null) {
+				exception = new Exception(event.getErrorMessages());
+			}
+			throw exception;
 		}
 		event = null;
 		return result;
