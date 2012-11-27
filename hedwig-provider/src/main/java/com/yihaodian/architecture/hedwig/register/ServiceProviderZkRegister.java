@@ -59,6 +59,13 @@ public class ServiceProviderZkRegister implements IServiceProviderRegister {
 				createEphemeralZnodes(profile);
 			}
 		});
+		_zkClient.subscribeChildChanges(ZkUtil.createBaseCampPath(profile), new IZkChildListener() {
+
+			@Override
+			public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
+				ZkUtil.createRefugeePath(profile);
+			}
+		});
 		isRegisted = true;
 
 	}

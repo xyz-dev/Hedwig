@@ -45,6 +45,7 @@ public class GroupServiceLocator extends ZkServiceLocator {
 		String baseCamp = ZkUtil.createBaseCampPath(clientProfile);
 		Set<String> campSet = clientProfile.getGroupNames();
 		List<String> camps = _zkClient.getChildren(baseCamp);
+		campMap = new HashMap<String, List<String>>();
 		if (camps != null && camps.size() > 1) {
 			if (campSet == null || campSet.size() <= 0) {
 				updateCampMap(InternalConstants.HEDWIG_PAHT_REFUGEE);
@@ -91,6 +92,18 @@ public class GroupServiceLocator extends ZkServiceLocator {
 			String baseCamp = ZkUtil.createBaseCampPath(clientProfile);
 			final Set<String> campSet = clientProfile.getGroupNames();
 			String campPath = null;
+			// observe group change add or delete
+			_zkClient.subscribeChildChanges(baseCamp, new IZkChildListener() {
+				@Override
+				public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
+					if (campSet != null && campSet.size() > 0) {
+						for (String campName : campSet) {
+							ZkUtil.createCampPath(clientProfile, campName);
+						}
+					}
+					loadAvailableProcess();
+				}
+			});
 			if (campSet != null && campSet.size() > 0) {
 				for (String campName : campSet) {
 					campPath = ZkUtil.createCampPath(clientProfile, campName);
@@ -104,18 +117,6 @@ public class GroupServiceLocator extends ZkServiceLocator {
 						}
 					});
 				}
-
-				// observe group change add or delete
-				_zkClient.subscribeChildChanges(baseCamp, new IZkChildListener() {
-					@Override
-					public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
-						for(String campName : campSet){
-							ZkUtil.createCampPath(clientProfile, campName);
-						}
-						loadAvailableProcess();
-
-					}
-				});
 			} else {
 				campPath = ZkUtil.createRefugeePath(clientProfile);
 				// observe refugee process
