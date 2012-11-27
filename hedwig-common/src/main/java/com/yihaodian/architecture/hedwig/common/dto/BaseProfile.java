@@ -84,7 +84,7 @@ public class BaseProfile implements Serializable {
 
 	@Override
 	public String toString() {
-		return "\nBaseProfile [rootPath=" + rootPath + ", parentPath=" + parentPath + ", serviceAppName="
+		return "\nBaseProfile [rootPath=" + rootPath + ", parentPath=" + parentPath + ", \nserviceAppName="
 				+ serviceAppName + ", serviceName="
 				+ serviceName + ", serviceVersion=" + serviceVersion + "]";
 	}
