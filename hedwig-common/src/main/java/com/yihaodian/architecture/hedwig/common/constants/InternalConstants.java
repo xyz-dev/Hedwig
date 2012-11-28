@@ -73,4 +73,5 @@ public interface InternalConstants {
 	 * 通讯平台domain name
 	 */
 	public static final String HEDWIG_DOMAIN_NAME = "hedwig";
+	
 }
