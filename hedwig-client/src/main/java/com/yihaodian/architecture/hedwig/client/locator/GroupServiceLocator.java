@@ -89,7 +89,7 @@ public class GroupServiceLocator extends ZkServiceLocator {
 	 */
 	private void observeCamps() {
 		try {
-			String baseCamp = ZkUtil.createBaseCampPath(clientProfile);
+			final String baseCamp = ZkUtil.createBaseCampPath(clientProfile);
 			final Set<String> campSet = clientProfile.getGroupNames();
 			String campPath = null;
 			// observe group change add or delete
@@ -124,7 +124,10 @@ public class GroupServiceLocator extends ZkServiceLocator {
 
 					@Override
 					public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
-						updateProcess(parentPath, _zkClient.getChildren(parentPath));
+						List<String> list = _zkClient.getChildren(baseCamp);
+						if (list != null && list.size() > 1) {
+							updateProcess(parentPath, _zkClient.getChildren(parentPath));
+						}
 					}
 				});
 			}

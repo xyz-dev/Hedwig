@@ -30,10 +30,16 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 	private String clientAppName;
 	private String groupName;
 	private Long timeout;
+	private boolean autoRedo = false;
 	private Set<String> noRetryMethods;
 
 	public HedwigClientFactoryBean() {
 		super();
+	}
+
+	public HedwigClientFactoryBean(ClientProfile profile) throws Exception {
+		this.clientProfile = profile;
+		afterPropertiesSet();
 	}
 
 	public HedwigClientFactoryBean(Class<?> clazz, String domainName, String serviceAppName, String serviceName,
@@ -104,6 +110,7 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 
 	private ClientProfile createClientProfile() throws InvalidParamException {
 		ClientProfile p = new ClientProfile();
+		p.setRedoAble(autoRedo);
 		if (timeout != null && (timeout.longValue() > InternalConstants.DEFAULT_REQUEST_TIMEOUT)) {
 			p.setTimeout(timeout);
 		}
@@ -182,6 +189,10 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
+	}
+
+	public void setAutoRedo(boolean autoRedo) {
+		this.autoRedo = autoRedo;
 	}
 
 }

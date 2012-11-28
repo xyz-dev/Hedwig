@@ -28,11 +28,20 @@ public class ClientProfile extends BaseProfile implements Serializable {
 	private boolean profileSensitive = false;
 	private String requestType = RequestType.SyncPool.getName();
 	private String clientAppName;
+	private boolean redoAble = false;
 	private Set<String> noRetryMethods;
 	private Set<String> groupNames;
 
 	public Set<String> getGroupNames() {
 		return groupNames;
+	}
+
+	public boolean isRedoAble() {
+		return redoAble;
+	}
+
+	public void setRedoAble(boolean redoAble) {
+		this.redoAble = redoAble;
 	}
 
 	public void setGroupNames(Set<String> groupName) {

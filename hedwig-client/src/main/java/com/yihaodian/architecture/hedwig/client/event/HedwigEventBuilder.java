@@ -54,9 +54,11 @@ public class HedwigEventBuilder {
 	private SyncRequestEvent syncRequestEvent(MethodInvocation invocation) {
 		SyncRequestEvent event = new SyncRequestEvent(invocation);
 		String methodName = invocation.getMethod().getName();
-		if (noRetoryMethods == null || !noRetoryMethods.contains(methodName)) {
-			event.setMaxRedoCount(HedwigClientUtil.getRedoCount(context));
-			event.setRetryable(true);
+		if (clientProfile.isRedoAble()) {
+			if (noRetoryMethods == null || !noRetoryMethods.contains(methodName)) {
+				event.setMaxRedoCount(HedwigClientUtil.getRedoCount(context));
+				event.setRetryable(true);
+			}
 		}
 		event.setState(EventState.init);
 		return event;
