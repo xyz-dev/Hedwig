@@ -42,6 +42,23 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 		afterPropertiesSet();
 	}
 
+	public HedwigClientFactoryBean(ClientProfile profile, String userName, String pwd) throws Exception {
+		this.user = userName;
+		this.password = pwd;
+		this.clientProfile = profile;
+		afterPropertiesSet();
+	}
+
+	public HedwigClientFactoryBean(ClientProfile profile, String userName, String pwd, boolean chunkedPost,
+			boolean overloadedEnable) throws Exception {
+		this.user = userName;
+		this.password = pwd;
+		this.clientProfile = profile;
+		this.chunkedPost = chunkedPost;
+		this.overloadedEnable = overloadedEnable;
+		afterPropertiesSet();
+	}
+
 	public HedwigClientFactoryBean(Class<?> clazz, String domainName, String serviceAppName, String serviceName,
 			String serviceVersion,
 			String clientAppName, Long timeout) throws Exception {
