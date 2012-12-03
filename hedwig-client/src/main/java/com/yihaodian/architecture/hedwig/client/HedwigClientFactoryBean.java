@@ -75,7 +75,13 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 
 	public HedwigClientFactoryBean(Class<?> clazz, String domainName, String serviceAppName, String serviceName,
 			String serviceVersion, String clientAppName, String user, String password, Long timeout) throws Exception {
-		this(clazz, domainName, serviceAppName, serviceAppName, serviceAppName, clientAppName, timeout);
+		this.serviceInterface = clazz;
+		this.serviceAppName = HedwigUtil.filterString(serviceAppName);
+		this.domainName = HedwigUtil.filterString(domainName);
+		this.serviceName = HedwigUtil.filterString(serviceName);
+		this.serviceVersion = HedwigUtil.filterString(serviceVersion);
+		this.clientAppName = HedwigUtil.filterString(clientAppName);
+		this.timeout = timeout;
 		this.user = user;
 		this.password = password;
 		afterPropertiesSet();
@@ -84,7 +90,11 @@ public class HedwigClientFactoryBean extends HedwigEventInterceptor implements F
 	public HedwigClientFactoryBean(Class<?> clazz, String target, String serviceAppName, String clientAppName,
 			Long timeout, String user, String password)
 			throws Exception {
-		this(clazz, target, serviceAppName, clientAppName, timeout);
+		this.serviceInterface = clazz;
+		this.serviceAppName = HedwigUtil.filterString(serviceAppName);
+		this.target = target;
+		this.clientAppName = HedwigUtil.filterString(clientAppName);
+		this.timeout = timeout;
 		this.user = user;
 		this.password = password;
 		afterPropertiesSet();
